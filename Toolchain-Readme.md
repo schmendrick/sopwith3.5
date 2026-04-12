@@ -60,3 +60,17 @@ Or start it from that folder in File Explorer. If you move only the `.exe` witho
 - **`pkg-config: command not found` or missing SDL flags:** install `mingw-w64-x86_64-pkg-config` and `mingw-w64-x86_64-SDL`, and ensure you are in the **MINGW64** shell, not plain MSYS.
 - **`mingw32-make` not found:** install `mingw-w64-x86_64-make`.
 - **Wrong shell:** building with the MSYS (Cygwin-like) environment instead of **MINGW64** often breaks MinGW paths and `pkg-config` output.
+
+## Optional: formatting and `clang-tidy`
+
+From **`sopwith3/src`** (with `C:\msys64\mingw64\bin` on `PATH`):
+
+```bash
+pacman -S --needed mingw-w64-x86_64-clang-tools-extra
+mingw32-make -f Makefile.msys2 format-check
+mingw32-make -f Makefile.msys2 lint
+mingw32-make -f Makefile.msys2 style-check
+```
+
+- **`format-check`** — runs `clang-format --dry-run --Werror` on sources. [`sopwith3/.clang-format`](sopwith3/.clang-format) sets `DisableFormat: true` so the legacy layout is preserved; see [`sopwith3/STYLEGUIDE.md`](sopwith3/STYLEGUIDE.md).
+- **`lint`** — runs `clang-tidy` on all `.cpp` files (warnings are printed; exit code is 0 unless there are errors).

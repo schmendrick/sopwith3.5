@@ -4,6 +4,8 @@
 PKG_CONFIG ?= pkg-config
 # Absolute rm for clean when mingw32-make runs from Windows (no sh in PATH).
 RMCMD := C:/msys64/usr/bin/rm.exe -f
+CLANG_FORMAT ?= clang-format
+CLANG_TIDY ?= clang-tidy
 SDL_CFLAGS := $(shell $(PKG_CONFIG) --cflags sdl)
 SDL_LIBS := $(shell $(PKG_CONFIG) --libs sdl)
 
@@ -21,8 +23,11 @@ CP := C:/msys64/usr/bin/cp.exe
 OBJ := sopwith.o bird.o bomb.o bullet.o coll.o computer.o flock.o frag.o graphics.o ground.o init.o \
 	joystick.o keyboard.o main.o object.o ox.o plane.o player.o smoke.o sound.o sprites.o target.o \
 	timer.o message.o soundsys.o tune.o network.o remote.o sdl/event.o
+SRC_FILES := $(wildcard *.cpp) $(wildcard sdl/*.cpp)
+HDR_FILES := $(wildcard *.h) $(wildcard sdl/*.h) $(wildcard allegro/*.h) $(wildcard djgpp/*.h) \
+	$(wildcard hawknl/*.h) $(wildcard libnet/*.h)
 
-.PHONY: all clean copy-dlls
+.PHONY: all clean copy-dlls format format-check lint style-check
 
 all: $(BIN) copy-dlls
 
@@ -35,6 +40,19 @@ copy-dlls: $(BIN)
 
 clean:
 	$(RMCMD) $(OBJ) $(BIN)
+
+# No-op while ../.clang-format has DisableFormat: true (style = sources + STYLEGUIDE.md).
+format:
+	$(CLANG_FORMAT) -i $(SRC_FILES) $(HDR_FILES)
+
+# Verifies clang-format runs; with DisableFormat, --dry-run should not rewrite files.
+format-check:
+	$(CLANG_FORMAT) --dry-run --Werror $(SRC_FILES) $(HDR_FILES)
+
+lint:
+	$(CLANG_TIDY) $(SRC_FILES) -- -I. $(SDL_CFLAGS) -DSDL
+
+style-check: format-check lint
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
