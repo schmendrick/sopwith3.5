@@ -1,0 +1,1 @@
+"C:\msys64\usr\bin\env.exe" MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /f/Development/ai/sopwith3/sopwith3/sopwith3/src && rm -f message.o && mingw32-make -f Makefile.msys2"

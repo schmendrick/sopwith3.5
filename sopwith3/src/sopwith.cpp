@@ -121,6 +121,10 @@ int start(int argc,char* argv[])
     try {
       try {
         getoptions(std::vector<std::string>(argv+1,argv+argc));
+        /* -i sets ibmkeyboard only; -k also sets controls. Without this, controls==0 forces
+           getcontrol() even when gamemode was set on the command line (e.g. -s -i). */
+        if (ibmkeyboard && controls == 0 && gamemode != NO_GAMEMODE)
+          controls = KEYBOARD;
       }
       catch (std::exception& e) {
         std::stringstream exception;
@@ -130,8 +134,12 @@ int start(int argc,char* argv[])
       }
       if (showhelp) {
         std::string helptext;
-        helptext+="SOPWITH 3, Copyright (C) 2001 The Sopwith Team\n";
+        helptext+="SOPWITH 3.5, Copyright (C) 2026, Felix Schmutz\n";
+        helptext+="Based on SOPWITH 3, Copyright (C) 2001 The Sopwith Team\n";
         helptext+="Based on SOPWITH, Copyright (C) 1984-2000 David L. Clark\n";
+        helptext+="Check out the Sopwith 3.5 GitHub repository at:\n";
+        helptext+="https://github.com/felixschmutz/sopwith3.5\n";
+        helptext+="And make sure to check out the original Sopwith website at:\n";
         helptext+="http://sopwith3.sourceforge.net/\n";
         helptext+="Executable built on " __DATE__ " at " __TIME__ "\n";
         helptext+="Usage: sopwith3 [options]\n";
