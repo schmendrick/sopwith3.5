@@ -1,6 +1,0 @@
----
-# Sopwith 3 predates clang-format. The authoritative style is STYLEGUIDE.md and
-# the surrounding sources. Formatting is disabled so `clang-format --dry-run`
-# does not fight legacy spacing (e.g. `f(a,b)` vs `f(a, b)`).
-DisableFormat: true
-...

@@ -44,5 +44,3 @@ This file **only** records conventions that already appear in `sopwith3/src`. It
 ## Tooling (separate from code style)
 
 - **[`.editorconfig`](.editorconfig)** — editor defaults for this repo.
-- **[`.clang-format`](.clang-format)** — `DisableFormat: true` so the tree is not auto-rewritten; this document and the files remain the reference.
-- **`src/Makefile.msys2`** — optional `format-check` / `lint` / `style-check`; LLVM tools via `pacman -S --needed mingw-w64-x86_64-clang-tools-extra`.
