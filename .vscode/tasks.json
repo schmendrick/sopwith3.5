@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build: sopwith3 (MSYS2)",
+      "type": "process",
+      "command": "${env:ComSpec}",
+      "args": [
+        "/d",
+        "/c",
+        "${workspaceFolder}\\sopwith3\\build.bat"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": false
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "clean: sopwith3 (MSYS2)",
+      "type": "process",
+      "command": "${env:ComSpec}",
+      "args": [
+        "/d",
+        "/c",
+        "${workspaceFolder}\\sopwith3\\build.bat",
+        "clean"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

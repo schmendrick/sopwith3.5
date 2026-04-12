@@ -51,6 +51,14 @@ cd /path/to/your/clone/sopwith3
 
 Or start it from that folder in File Explorer. If you move only the `.exe` without the `data` tree beside it, graphics and sound will not load correctly.
 
+## VS Code / Cursor (this repo)
+
+Open the **repository root** folder that contains **`sopwith3/src`** and **`.vscode/`** (the parent of the inner `sopwith3` game directory).
+
+- **Build:** Command Palette → **Tasks: Run Build Task** (or set a keybinding for **`workbench.action.tasks.build`**). In **Cursor**, **Ctrl+Shift+B** is sometimes bound to something else (for example opening a browser); if so, assign **Run Build Task** to **Ctrl+Shift+B** in **Keyboard Shortcuts**, or run the task named **`build: sopwith3 (MSYS2)`** from the command palette.
+- **Debug:** **F5** needs the **C/C++** extension (`ms-vscode.cpptools`) and **GDB** at **`C:\msys64\mingw64\bin\gdb.exe`**. The compiler package alone does not install GDB; from an **MSYS2 MinGW 64-bit** shell run **`pacman -S mingw-w64-x86_64-gdb`**. If **`miDebuggerPath` is invalid**, GDB is missing or MSYS2 lives elsewhere—in the latter case set a user environment variable **`MINGW64_GDB`** to the full path of **`gdb.exe`** and use the launch configuration **Debug sopwith3 (gdb, MINGW64_GDB)**. The debug configuration runs the build task first; if the build fails, fix **`sopwith3/build.bat`** first.
+- **MSYS2 path:** If MSYS2 is not installed at **`C:\msys64`**, set the environment variable **`MSYS2_ROOT`** to your install directory (for example `D:\msys64`) before running **`sopwith3/build.bat`**, and update **`C_Cpp` / `miDebuggerPath`** paths in **`.vscode`** to match.
+
 ## Other makefiles
 
 - **`Makefile.win`** — legacy **Dev-C++**-style makefile (SDL + HawkNL). It expects a Dev-C++/MinGW layout and is not the maintained path; use **`Makefile.msys2`** unless you are deliberately reviving that setup.
@@ -60,3 +68,4 @@ Or start it from that folder in File Explorer. If you move only the `.exe` witho
 - **`pkg-config: command not found` or missing SDL flags:** install `mingw-w64-x86_64-pkg-config` and `mingw-w64-x86_64-SDL`, and ensure you are in the **MINGW64** shell, not plain MSYS.
 - **`mingw32-make` not found:** install `mingw-w64-x86_64-make`.
 - **Wrong shell:** building with the MSYS (Cygwin-like) environment instead of **MINGW64** often breaks MinGW paths and `pkg-config` output.
+- **VS Code / Cursor: “miDebuggerPath is invalid”:** install **`mingw-w64-x86_64-gdb`** in the **MINGW64** environment (`pacman -S mingw-w64-x86_64-gdb`) so **`mingw64\bin\gdb.exe`** exists, or point **`MINGW64_GDB`** at your **`gdb.exe`** and use the matching launch configuration.
