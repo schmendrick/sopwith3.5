@@ -69,6 +69,7 @@ The **C# port is explicitly out of scope for this repository** and will happen l
   - Estimate file size/runtime overhead and choose default test profile.
 - **Phase 2B (determinism prerequisites):** harden determinism enough for trustworthy replay baselines.
   - Audit RNG and wall-clock dependencies, then **refactor the affected code touchpoints** (e.g. seeding/loop/timer/RNG call-sites) so simulation is deterministic for test replay.
+  - Define, document, and implement a **portable deterministic RNG specification in C++** (algorithm + seed/overflow/call-order rules) so it can be mirrored later in the separate C# port.
   - Provide a test-only simulation step API that advances the game by exactly one logic frame per call (`framecounter += 1`), independent of wall-clock time (no SDL timer catch-up/backlog loops).
   - Confirm repeatability: same input+seed gives same state output across repeated runs.
 
