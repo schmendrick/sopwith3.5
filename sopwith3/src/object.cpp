@@ -76,8 +76,8 @@ void Object::setvel(int v,int dir)
 int Object::direction()
 {
   if (yv.integer>0)  { if (xv.integer<0) return 3; if (xv.integer==0) return 2; return 1; }
-  if (yv.integer==0) { if (xv.integer<0) return 4; if (xv.integer==0) return 6; return 0; }
-               if (xv.integer<0) return 5; if (xv.integer==0) return 6; return 7;
+  else if (yv.integer==0) { if (xv.integer<0) return 4; if (xv.integer==0) return 6; return 0; }
+  else { if (xv.integer<0) return 5; if (xv.integer==0) return 6; return 7; }
 }
 
 void Object::createexplosion(int speed,int step,bool pilotflag,bool noisy)

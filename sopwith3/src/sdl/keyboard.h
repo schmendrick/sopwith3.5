@@ -92,7 +92,7 @@ void pollkeyboard()
             break;
           default: k=0;
         }
-        if (k!=0)
+        if (k!=0) {
           if (event->type==SDL_KEYUP) {
             if ((k&keysprev)!=0)
               keysnext&=~k;
@@ -102,6 +102,7 @@ void pollkeyboard()
             keyspressed|=k;
             keysnext|=k;
           }
+        }
         break;
       default:
         erase=false;

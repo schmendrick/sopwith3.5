@@ -109,20 +109,23 @@ bool Plane::update()
       break;
     case FALLING:
       hitcounter-=2;
-      if (yv.integer<0 && xv.integer!=0)
+      if (yv.integer<0 && xv.integer!=0) {
         if (((inverted ? 1 : 0)^(xv.integer<0 ? 1 : 0))!=0)
           hitcounter-=flaps;
         else
           hitcounter+=flaps;
+      }
       if (hitcounter<=0) {
-        if (yv.integer<0)
+        if (yv.integer<0) {
           if (xv.integer<0)
             ++xv;
-          else
+          else {
             if (xv.integer>0)
               --xv;
             else
               inverted=!inverted;
+          }
+        }
         if (yv.integer>TERMINAL_VELOCITY)
           --yv;
         hitcounter=FALLCOUNT;
@@ -143,13 +146,14 @@ bool Plane::update()
       }
       else {
         stalled=(y.integer>=MAX_Y);
-        if (stalled)
+        if (stalled) {
           if (gamemode==NOVICE) {
             angle=(3*ANGLES/4);
             stalled=false;
           }
           else
             stall();
+        }
       }
       if (endstatus==WINNER || (gamemode!=MULTIPLE && version==2 && player->endstatus==WINNER))
         break;
@@ -169,7 +173,7 @@ bool Plane::update()
         newangle&=(ANGLES-1);
         changedvelocity=true;
       }
-      if ((framecounter&3)==0)
+      if ((framecounter&3)==0) {
         if (!stalled && newspeed<minspeed && gamemode!=NOVICE) {
           --newspeed;
           changedvelocity=true;
@@ -186,6 +190,7 @@ bool Plane::update()
               changedvelocity=true;
             }
         }
+      }
       if (changedvelocity) {
         if (athome)
           if (accel!=0 || flaps!=0)
@@ -463,17 +468,20 @@ void Plane::aim(int destx,int desty,Object* target,bool longway,int courseadjust
     #ifdef DEBUG
     errorfile<<'^'<<y.integer<<','<<desty<<','<<disty<<'^';
     #endif
-    if (disty!=0 && std::abs(disty)<6)
+    if (disty!=0 && std::abs(disty)<6) {
       if (disty<0)
         ++y;
       else
         --y;
-    else
-      if (distx!=0 && std::abs(distx)<6)
+    }
+    else {
+      if (distx!=0 && std::abs(distx)<6) {
         if (distx<0)
           ++x;
         else
           --x;
+      }
+    }
   }
   Plane tempplane(*this);
   int newspeed=std::max(minspeed,std::min(tempplane.speed+1,maxspeed));

@@ -133,13 +133,13 @@ int start(int argc,char* argv[])
         helptext+="SOPWITH 3, Copyright (C) 2001 The Sopwith Team\n";
         helptext+="Based on SOPWITH, Copyright (C) 1984-2000 David L. Clark\n";
         helptext+="http://sopwith3.sourceforge.net/\n";
-        helptext+="Executable built on "__DATE__" at "__TIME__"\n";
+        helptext+="Executable built on " __DATE__ " at " __TIME__ "\n";
         helptext+="Usage: sopwith3 [options]\n";
         helptext+="The (CASE SENSITIVE) options are:\n";
         helptext+="-s : Single player (expert)           -c : Single player against computer\n";
         helptext+="-n : Single player (novice)";
         if (networkavailable)
-        helptext+=                           "           -m : Multiple players on network\n";
+          helptext+="           -m : Multiple players on network\n";
         else
           helptext+='\n';
         helptext+="-k : Keyboard only                    -j : Joystick and keyboard\n";
@@ -197,8 +197,10 @@ void getoptions(const std::vector<std::string>& argv)
         case 's': getoption(*i,gamemode,SINGLE); break;
         case 'c': getoption(*i,gamemode,COMPUTER); break;
         /**/case 'n': getoption(*i,gamemode,NOVICE); break;/**/
-        case 'm': if (networkavailable)
-                    getoption(*i,gamemode,MULTIPLE); break;
+        case 'm':
+          if (networkavailable)
+            getoption(*i,gamemode,MULTIPLE);
+          break;
         case 'k': getoption(*i,controls,(controls|KEYBOARD)&~JOYSTICK); break;
         case 'j': getoption(*i,controls,controls|JOYSTICK); break;
         case 'i': getoption(*i,ibmkeyboard,true); break;
@@ -1014,7 +1016,7 @@ int history(int keys)
 {
   int extrakeys=keys&(KEY_SOUND|KEY_PAUSEGAME);
   keys&=~extrakeys;
-  if (!playbackfilename.empty())
+  if (!playbackfilename.empty()) {
     if (keys!=0)
       playbackfilename=""; /* playbackfilename.clear(); */
     else {
@@ -1031,6 +1033,7 @@ int history(int keys)
         playbackfilename=""; /* playbackfilename.clear(); */
       }
     }
+  }
   if (!recordfilename.empty() && keys!=historykeys) {
     putshort(outputfile,framecounter);
     putshort(outputfile,keys);
@@ -1065,8 +1068,8 @@ void endgame(int targetcolour)
   const std::list<Object*>::const_iterator end=objectlist.end();
   for (std::list<Object*>::const_iterator obj=objectlist.begin();obj!=end;++obj) {
     Plane* plane=dynamic_cast<Plane*>(*obj);
-    if (plane!=0)
-      if (plane->endstatus==Plane::NOTFINISHED)
+    if (plane!=0) {
+      if (plane->endstatus==Plane::NOTFINISHED) {
         if (plane->colour==wincolour &&
             (plane->lives>1 ||
              (plane->lives>0 &&
@@ -1074,6 +1077,8 @@ void endgame(int targetcolour)
           winner(plane);
         else
           loser(plane);
+      }
+    }
   }
 }
 
