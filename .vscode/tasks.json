@@ -22,9 +22,39 @@
         "panel": "shared",
         "focus": false
       },
-      "problemMatcher": [
-        "$gcc"
-      ]
+      "problemMatcher": {
+        "owner": "cpp",
+        "source": "g++",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/sopwith3/src"
+        ],
+        "pattern": [
+          {
+            "regexp": "^(.*?):(\\d+):(\\d+):\\s+fatal error:\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": "error",
+            "message": 4
+          },
+          {
+            "regexp": "^(.*?):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          },
+          {
+            "regexp": "^(.*?):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4
+          }
+        ]
+      }
     },
     {
       "label": "clean: sopwith3 (MSYS2)",
