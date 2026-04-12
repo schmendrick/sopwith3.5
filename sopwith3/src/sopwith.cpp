@@ -264,6 +264,58 @@ template<class T> void getoption(const std::string& s,T& option,T setting)
   option=setting;
 }
 
+namespace {
+
+bool menu_key_exits(int c)
+{
+  return c=='\x1b' || c==27;
+}
+
+void request_app_exit()
+{
+  exiting=true;
+  gamestatus=EXITING;
+}
+
+bool run_front_end_menus()
+{
+  if (gamemode==NO_GAMEMODE && controls==0) {
+    displaytitlescreen();
+    setsound(SOUND_PRIORITY_THEME,0,0);
+    updatesound();
+    while (!exiting) {
+      processtimerticks();
+      int c=inkey();
+      if (c==0)
+        continue;
+      if (menu_key_exits(c))
+        request_app_exit();
+      break;
+    }
+    clearsounds();
+    cleartitlescreen();
+  }
+  if (exiting)
+    return false;
+
+  if (gamemode==NO_GAMEMODE)
+    gamemode=getgamemode();
+  if (exiting)
+    return false;
+
+  if (controls==0)
+    getcontrol();
+  if (exiting)
+    return false;
+
+  if (gamemode==MULTIPLE && connmode==NO_CONN)
+    connmode=getside();
+
+  return !exiting;
+}
+
+}  // namespace
+
 void run()
 {
   #ifndef DEBUG
@@ -282,20 +334,8 @@ void run()
   Resource keyboardobject(initkeyboard,deinitkeyboard);
   Resource soundobject(initsound,deinitsound);
   Resource timerobject(inittimer,deinittimer);
-  if (gamemode==NO_GAMEMODE && controls==0) {
-    displaytitlescreen();
-    setsound(SOUND_PRIORITY_THEME,0,0);
-    updatesound();
-    while (!inkey())
-      processtimerticks();
-    clearsounds();
-    cleartitlescreen();
-  }
-
-  if (gamemode==NO_GAMEMODE)
-    gamemode=getgamemode();
-  if (controls==0)
-    getcontrol();
+  if (!run_front_end_menus())
+    return;
   Resource joystickobject;
   if ((controls&JOYSTICK)!=0) {
     initjoystick();
@@ -303,8 +343,6 @@ void run()
   }
   Resource networkobject;
   if (gamemode==MULTIPLE) {
-    if (connmode==NO_CONN)
-      connmode=getside();
     initnetwork();
     networkobject.destruction=deinitnetwork;
   }
@@ -383,9 +421,14 @@ Gamemode getgamemode()
   if (networkavailable)
     drawstr(0*8*zoomx(),22*8*zoomy(),colour_white,BLACK_BACKGROUND,"     M - multiple players on network");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (toupper(inkey())) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return NO_GAMEMODE;
+    }
+    switch (toupper(c)) {
       case 'S':
         return SINGLE;
       case 'C':
@@ -395,6 +438,7 @@ Gamemode getgamemode()
           return MULTIPLE;
     }
   }
+  return NO_GAMEMODE;
 }
 
 void processtimerticks()
@@ -413,9 +457,14 @@ void getcontrol()
   drawstr(0*8*zoomx(),22*8*zoomy(),colour_white,BLACK_BACKGROUND,"     3 - IBM Keyboard only");
   drawstr(0*8*zoomx(),23*8*zoomy(),colour_white,BLACK_BACKGROUND,"     4 - Non-IBM keyboard only");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (inkey()) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return;
+    }
+    switch (c) {
       case '1':
         controls=KEYBOARD|JOYSTICK;
         ibmkeyboard=true;
@@ -442,15 +491,21 @@ Connmode getside()
   drawstr(0*8*zoomx(),20*8*zoomy(),colour_white,BLACK_BACKGROUND,"Key: S - Server (start game)");
   drawstr(0*8*zoomx(),21*8*zoomy(),colour_white,BLACK_BACKGROUND,"     C - Client (join game)");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (toupper(inkey())) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return NO_CONN;
+    }
+    switch (toupper(c)) {
       case 'S':
         return SERVER;
       case 'C':
         return CLIENT;
     }
   }
+  return NO_CONN;
 }
 
 void initlevel()

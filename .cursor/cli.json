@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(*mingw32-make*)",
+      "Shell(mingw32-make*)"
+    ],
+    "deny": []
+  },
+  "approvalMode": "allowlist"
+}

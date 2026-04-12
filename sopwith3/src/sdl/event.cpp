@@ -24,6 +24,10 @@
 #ifdef SDL
 
 #include "event.h"
+#include "../def.h"
+
+extern bool exiting;
+extern Gamestatus gamestatus;
 
 std::list<SDL_Event> events;
 const std::list<SDL_Event>::const_iterator events_end=events.end();
@@ -31,8 +35,14 @@ const std::list<SDL_Event>::const_iterator events_end=events.end();
 void pollEvents()
 {
   SDL_Event event;
-  while (SDL_PollEvent(&event))
-    events.push_back(event);
+  while (SDL_PollEvent(&event)) {
+    if (event.type==SDL_QUIT) {
+      exiting=true;
+      gamestatus=EXITING;
+    }
+    else
+      events.push_back(event);
+  }
 }
 
 #endif
