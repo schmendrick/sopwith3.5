@@ -10,3 +10,9 @@
 .vs/
 .DS_Store
 Thumbs.db
+
+# Runtime / debug output (not part of the tree)
+stderr.txt
+stdout.txt
+# DEBUG builds write collision/debug log (see sopwith.cpp: errorfile)
+error
