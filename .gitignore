@@ -16,3 +16,5 @@ stderr.txt
 stdout.txt
 # DEBUG builds write collision/debug log (see sopwith.cpp: errorfile)
 error
+
+/debug-*.log
