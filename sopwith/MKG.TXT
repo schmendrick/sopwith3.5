@@ -1,0 +1,136 @@
+This file contains a description of what is in the sprite file and is used
+by mkg.c (along with sopwith.spr) to generate the C files which are linked into
+the executable.
+
+The left column is the actual data and the right column is the description of
+what the data means.
+
+The data is in the following format:
+4 numbers: colour data (possible bytes in the sprite file)
+string   : input filename (sprite file)
+string   : output filename (sprites)
+string   : output filename (collision data)
+number   : number of records to follow. Each record consists of:
+  flag      : 0 if no collision data is required.
+              1 if one of the dimensions (the most significant one) is colour,
+              2 if the sprite is neutral (no colour dimension)
+  string    : name of set of sprites
+  number (n): number of dimensions to follow
+  n numbers : dimensions (most significant first)
+  number    : vertical dimension in pixels
+  number    : horizontal dimension in pixels
+
+The file starts with an asterisk:
+
+*
+0                Colour index 0: black
+11                 "      "   1: light cyan
+13                 "      "   2: light magenta
+15                 "      "   3: white
+sopwith.spr      Input sprite file name
+sprites.c        Output C file name (sprites)
+coll.c           Output C file name (collision data)
+16               Sprite types to follow:
+1                First dimension is colour
+bombsprites      Name
+  2                Number of dimensions to follow (excluding height and width):
+    2                colours
+    8                angles
+  8                height
+  8                width
+1
+targetsprites
+  2
+    2                colours
+    4                subtypes
+  16
+  16
+1
+debrissprites
+  1
+    2                colours
+  16
+  16
+1
+fragsprites
+  2
+    3                colours
+    8                subtypes
+  8
+  8
+1
+planesprites
+  3
+    2                colours
+    2                orientations
+    16               angles
+  16
+  16
+1
+finalesprites
+  2
+    2                colours
+    4                distances
+  16
+  16
+1
+fallingsprites
+  2
+    2                colours
+    2                orientations
+  16
+  16
+2                There is no colour dimension
+flocksprites
+  1
+    2                flap states
+  16
+  16
+2
+birdsprites
+  1
+    2                flap states
+  2
+  4
+2
+oxsprites
+  1
+    2                alivenesses
+  16
+  16
+0                No collision detection required, thank you
+ghostsprites
+  1
+    2                colours
+  8
+  8
+0
+shotsprite
+  0
+  16
+  16
+0
+splatsprite
+  0
+  32
+  32
+1
+missilesprites
+  2
+    2                colours
+    16               angles
+  8
+  8
+1
+starburstsprites
+  2
+    2                colours
+    2                orientations
+  8
+  8
+1
+pixelsprites
+  1
+    3                colours
+  1
+  1

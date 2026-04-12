@@ -1,0 +1,43 @@
+# Sopwith 3 — MSYS2 MinGW64 + SDL 1.2 (no HawkNL for local play)
+# Build: from this directory in MINGW64 shell:  mingw32-make -f Makefile.msys2
+#
+PKG_CONFIG ?= pkg-config
+# Absolute rm for clean when mingw32-make runs from Windows (no sh in PATH).
+RMCMD := C:/msys64/usr/bin/rm.exe -f
+SDL_CFLAGS := $(shell $(PKG_CONFIG) --cflags sdl)
+SDL_LIBS := $(shell $(PKG_CONFIG) --libs sdl)
+
+CXX := g++
+CXXFLAGS := -Wall -W -DSDL $(SDL_CFLAGS) -Wno-deprecated-declarations
+
+BIN := ../sopwith3.exe
+BINDIR := ..
+MINGW_BIN := C:/msys64/mingw64/bin
+# Copy next to the .exe so double-click / Explorer works without MSYS2 on PATH.
+# (With -static-libgcc -static-libstdc++, only SDL + winpthread stay dynamic.)
+RUNTIME_DLLS := SDL.dll libwinpthread-1.dll
+CP := C:/msys64/usr/bin/cp.exe
+
+OBJ := sopwith.o bird.o bomb.o bullet.o coll.o computer.o flock.o frag.o graphics.o ground.o init.o \
+	joystick.o keyboard.o main.o object.o ox.o plane.o player.o smoke.o sound.o sprites.o target.o \
+	timer.o message.o soundsys.o tune.o network.o remote.o sdl/event.o
+
+.PHONY: all clean copy-dlls
+
+all: $(BIN) copy-dlls
+
+$(BIN): $(OBJ)
+	$(CXX) -o $@ $(OBJ) $(SDL_LIBS) -static-libgcc -static-libstdc++
+
+# Still required at runtime: SDL.dll (and any deps SDL pulls in from mingw64/bin).
+copy-dlls: $(BIN)
+	$(CP) -f $(addprefix $(MINGW_BIN)/,$(RUNTIME_DLLS)) $(BINDIR)/
+
+clean:
+	$(RMCMD) $(OBJ) $(BIN)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+sdl/event.o: sdl/event.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@

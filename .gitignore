@@ -1,0 +1,12 @@
+# Build artifacts
+*.o
+*.obj
+*.exe
+*.dll
+*.a
+*.lib
+
+# IDE / OS
+.vs/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,113 @@
+# Project: Sopwith 3
+# Makefile created by Dev-C++ 4.9.8.10
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = sopwith.o bird.o bomb.o bullet.o coll.o computer.o flock.o frag.o graphics.o ground.o init.o joystick.o keyboard.o main.o object.o ox.o plane.o player.o smoke.o sound.o sprites.o target.o timer.o message.o soundsys.o tune.o network.o remote.o sdl/event.o $(RES)
+LINKOBJ  = sopwith.o bird.o bomb.o bullet.o coll.o computer.o flock.o frag.o graphics.o ground.o init.o joystick.o keyboard.o main.o object.o ox.o plane.o player.o smoke.o sound.o sprites.o target.o timer.o message.o soundsys.o tune.o network.o remote.o sdl/event.o $(RES)
+LIBS =  -s -lSDLmain -lSDL -lNL_s -lwsock32 
+INCS = 
+CXXINCS = 
+BIN  = ../sopwith3.exe
+CXXFLAGS = $(CXXINCS)-Wold-style-cast -DSDL -DHAWKNL   -Wall -W
+CFLAGS = $(INCS)  -Wall -W
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../sopwith3.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\sopwith3.exe" $(LIBS)
+
+sopwith.o: sopwith.cpp sopwith.h def.h object.h s_fix.h plane.h init.h   resource.h sw_excep.h timer.h graphics.h sound.h keyboard.h joystick.h   network.h message.h soundsys.h tune.h ground.h player.h computer.h   remote.h target.h flock.h ox.h bomb.h frag.h smoke.h bullet.h
+	$(CPP) -c sopwith.cpp -o sopwith.o $(CXXFLAGS)
+
+bird.o: bird.cpp bird.h def.h object.h s_fix.h sopwith.h plane.h coll.h   ground.h graphics.h flock.h smoke.h
+	$(CPP) -c bird.cpp -o bird.o $(CXXFLAGS)
+
+bomb.o: bomb.cpp bomb.h def.h object.h s_fix.h plane.h sopwith.h coll.h   graphics.h sound.h soundsys.h tune.h bird.h flock.h smoke.h
+	$(CPP) -c bomb.cpp -o bomb.o $(CXXFLAGS)
+
+bullet.o: bullet.cpp bullet.h def.h object.h s_fix.h plane.h target.h   sopwith.h coll.h graphics.h bird.h flock.h smoke.h
+	$(CPP) -c bullet.cpp -o bullet.o $(CXXFLAGS)
+
+coll.o: coll.cpp 
+	$(CPP) -c coll.cpp -o coll.o $(CXXFLAGS)
+
+computer.o: computer.cpp computer.h def.h plane.h object.h s_fix.h   sopwith.h target.h
+	$(CPP) -c computer.cpp -o computer.o $(CXXFLAGS)
+
+flock.o: flock.cpp flock.h def.h object.h s_fix.h bird.h sopwith.h   plane.h coll.h graphics.h smoke.h
+	$(CPP) -c flock.cpp -o flock.o $(CXXFLAGS)
+
+frag.o: frag.cpp frag.h def.h object.h s_fix.h coll.h sopwith.h plane.h   graphics.h soundsys.h tune.h sound.h bird.h flock.h smoke.h
+	$(CPP) -c frag.cpp -o frag.o $(CXXFLAGS)
+
+graphics.o: graphics.cpp graphics.h def.h title.h font.h sdl/graphics.h   sopwith.h object.h s_fix.h plane.h sprites.h sw_excep.h
+	$(CPP) -c graphics.cpp -o graphics.o $(CXXFLAGS)
+
+ground.o: ground.cpp ground.h def.h
+	$(CPP) -c ground.cpp -o ground.o $(CXXFLAGS)
+
+init.o: init.cpp init.h sdl/init.h
+	$(CPP) -c init.cpp -o init.o $(CXXFLAGS)
+
+joystick.o: joystick.cpp joystick.h sopwith.h def.h object.h s_fix.h   plane.h sdl/joystick.h sdl/event.h
+	$(CPP) -c joystick.cpp -o joystick.o $(CXXFLAGS)
+
+keyboard.o: keyboard.cpp keyboard.h sopwith.h def.h object.h s_fix.h   plane.h sdl/keyboard.h sdl/event.h
+	$(CPP) -c keyboard.cpp -o keyboard.o $(CXXFLAGS)
+
+main.o: main.cpp sopwith.h def.h object.h s_fix.h plane.h
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+object.o: object.cpp object.h def.h s_fix.h target.h plane.h frag.h   bullet.h sopwith.h ground.h graphics.h player.h bomb.h
+	$(CPP) -c object.cpp -o object.o $(CXXFLAGS)
+
+ox.o: ox.cpp ox.h def.h object.h s_fix.h graphics.h coll.h bird.h flock.h   smoke.h plane.h frag.h
+	$(CPP) -c ox.cpp -o ox.o $(CXXFLAGS)
+
+plane.o: plane.cpp plane.h def.h object.h s_fix.h sopwith.h soundsys.h   tune.h sound.h ground.h target.h computer.h player.h bullet.h bomb.h   smoke.h coll.h graphics.h bird.h ox.h flock.h
+	$(CPP) -c plane.cpp -o plane.o $(CXXFLAGS)
+
+player.o: player.cpp player.h def.h plane.h object.h s_fix.h keyboard.h   sopwith.h joystick.h soundsys.h tune.h sound.h
+	$(CPP) -c player.cpp -o player.o $(CXXFLAGS)
+
+smoke.o: smoke.cpp smoke.h def.h object.h s_fix.h plane.h coll.h   graphics.h
+	$(CPP) -c smoke.cpp -o smoke.o $(CXXFLAGS)
+
+sound.o: sound.cpp sound.h def.h sopwith.h object.h s_fix.h plane.h   sdl/sound.h sw_excep.h
+	$(CPP) -c sound.cpp -o sound.o $(CXXFLAGS)
+
+sprites.o: sprites.cpp 
+	$(CPP) -c sprites.cpp -o sprites.o $(CXXFLAGS)
+
+target.o: target.cpp target.h def.h object.h s_fix.h sopwith.h plane.h   sound.h soundsys.h tune.h coll.h bullet.h bird.h flock.h computer.h   graphics.h smoke.h frag.h
+	$(CPP) -c target.cpp -o target.o $(CXXFLAGS)
+
+timer.o: timer.cpp timer.h def.h sdl/timer.h
+	$(CPP) -c timer.cpp -o timer.o $(CXXFLAGS)
+
+message.o: message.cpp message.h sdl/message.h keyboard.h
+	$(CPP) -c message.cpp -o message.o $(CXXFLAGS)
+
+soundsys.o: soundsys.cpp soundsys.h object.h def.h s_fix.h tune.h sound.h   sopwith.h plane.h message.h
+	$(CPP) -c soundsys.cpp -o soundsys.o $(CXXFLAGS)
+
+tune.o: tune.cpp tune.h def.h
+	$(CPP) -c tune.cpp -o tune.o $(CXXFLAGS)
+
+network.o: network.cpp network.h hawknl/network.h resource.h graphics.h   def.h keyboard.h sopwith.h object.h s_fix.h plane.h sw_excep.h
+	$(CPP) -c network.cpp -o network.o $(CXXFLAGS)
+
+remote.o: remote.cpp remote.h def.h plane.h object.h s_fix.h sopwith.h   network.h
+	$(CPP) -c remote.cpp -o remote.o $(CXXFLAGS)
+
+sdl/event.o: sdl/event.cpp sdl/event.h
+	$(CPP) -c sdl/event.cpp -o sdl/event.o $(CXXFLAGS)
