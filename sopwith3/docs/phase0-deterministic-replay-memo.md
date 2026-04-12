@@ -47,6 +47,25 @@ Can Sopwith 3 be made deterministically replayable with **less than 40 hours** o
   - Impact:
     - Mostly deterministic if insertion and sorting rules remain stable, but this must be verified with repeatability tests.
 
+### Risk assessment summary
+
+- **RNG consistency risk:** **Medium-High**
+  - Why: mixed RNG mechanisms are present (`randv` logic + direct `rand()` call in `soundsys.cpp`).
+  - Mitigation target: one documented portable RNG spec for simulation-critical behavior; isolate/replace direct libc `rand()` in determinism path.
+- **Wall-clock/timing risk:** **High**
+  - Why: main loop pacing depends on timer accumulation/catch-up (`speedtick`, `processtimerticks`, `timer()` in `sopwith.cpp`).
+  - Mitigation target: test-only fixed logical-step path (`framecounter`-driven) independent of realtime backlog.
+- **Order-dependence risk:** **Medium**
+  - Why: update/collision behavior depends on list/sort ordering and child insertion timing.
+  - Mitigation target: preserve existing update/collision order semantics and prove repeatability with same input+seed.
+
+### Criteria to move verdict from CONDITIONAL GO -> GO
+
+- Determinism touchpoint checklist shows concrete closure for baseline single-player path.
+- At least two repeated runs with same input+seed produce identical structured state output for chosen frame span.
+- Test-step API exists and can advance exactly N logical frames without realtime timer dependency.
+- Portable RNG spec is documented and implemented in C++ for the tested baseline.
+
 ## Candidate Approaches
 
 ## RNG Touchpoint Checklist (for implementation tracking)
@@ -125,18 +144,13 @@ Can Sopwith 3 be made deterministically replayable with **less than 40 hours** o
 
 ### If NO-GO
 
-- Primary blockers:
-  - `__`
-  - `__`
-- Alternative scope proposal:
-  - `__`
+- Not active for current verdict.
+- If verdict changes to `NO-GO`, document concrete blockers and a reduced-scope fallback plan here.
 
 ## Evidence Log (fill during investigation)
 
-- Build/run observations:
-  - Date:
-  - Commands:
-  - Notes: Pending manual run/quit-path verification.
+- Build/run baseline evidence is tracked in:
+  - `docs/phase1-build-run-smoke.md`
 - Determinism replay trial #1:
   - Seed/input:
   - Output comparison result:
@@ -149,7 +163,7 @@ Can Sopwith 3 be made deterministically replayable with **less than 40 hours** o
 ## Sign-off
 
 - Author: AI-assisted draft (to be finalized by maintainer)
-- Date:
+- Date: 2026-04-13
 - Related docs:
   - `docs/roadmap.md`
   - `docs/phase2-replay-model-decision.md` (to be created in Phase 2A)

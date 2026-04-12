@@ -37,6 +37,12 @@ The **C# port is explicitly out of scope for this repository** and will happen l
 - **Golden-state output:** Structured per-frame state dump used as the reference when comparing runs (for example, C++ baseline vs later C#).
 - **Logical frame:** One simulation step (the unit counted by `framecounter`), independent of wall-clock time.
 
+## Current Status
+
+- **Phase 0:** Completed with **CONDITIONAL GO** (see `docs/phase0-deterministic-replay-memo.md`).
+- **Phase 1:** Manual smoke baseline verified (build, launch, controls, clean quit path).
+- **Next active work:** Phase 2A replay-model decision doc at `docs/phase2-replay-model-decision.md`.
+
 ## Phases
 
 ## Phase 0 — Feasibility Memo
@@ -72,6 +78,11 @@ The **C# port is explicitly out of scope for this repository** and will happen l
   - Define, document, and implement a **portable deterministic RNG specification in C++** (algorithm + seed/overflow/call-order rules) so it can be mirrored later in the separate C# port.
   - Provide a test-only simulation step API that advances the game by exactly one logic frame per call (`framecounter += 1`), independent of wall-clock time (no SDL timer catch-up/backlog loops).
   - Confirm repeatability: same input+seed gives same state output across repeated runs.
+  - Track and execute deterministic refactors in these primary touchpoints:
+    - `src/sopwith.cpp` (seeding, main loop pacing, history/replay wiring)
+    - `src/object.cpp` (canonical `randv` update/consumption path)
+    - `src/soundsys.cpp` (direct `rand()` usage and classification/refactor)
+    - RNG consumer call-sites in `src/plane.cpp`, `src/bomb.cpp`, `src/target.cpp`
 
 **Exit criteria**
 - `docs/phase2-replay-model-decision.md` checked in with options considered, chosen model, and rationale.
@@ -110,5 +121,7 @@ The **C# port is explicitly out of scope for this repository** and will happen l
 ## Planned Companion Documents
 
 - `docs/phase0-deterministic-replay-memo.md` (first deliverable)
+- `docs/phase1-build-run-smoke.md` (build/run/manual-smoke evidence)
+- `docs/phase2-replay-model-decision.md` (Phase 2A replay model decision record)
 - `docs/replay-usage.md` (CLI flags, example commands, expected outputs, troubleshooting)
 - `docs/adr/0001-deterministic-replay-approach.md` (optional, if ADR style is used)
