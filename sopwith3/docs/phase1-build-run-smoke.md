@@ -20,27 +20,36 @@ Capture reproducible evidence that Sopwith 3.5 can be built, launched, interacte
 ## Observed Workflows
 
 - Build:
-  - `build.bat`
+  - `sdlbuild.bat`
 - Launch:
   - `F5` in Cursor (launch config)
   - `.\sopwith3.exe -s -k`
 
 ## Smoke Checklist
 
+###SDL
 - [x] Build succeeds.
 - [x] Game launches successfully.
 - [x] Basic controls respond in single-player (`-s -k` baseline).
 - [x] Clean quit path works without force-killing process.
 
+###Allegro
+- [ ] Build succeeds.
+- [ ] Game launches successfully.
+- [ ] Basic controls respond in single-player (`-s -k` baseline).
+- [ ] Clean quit path works without force-killing process.
+
+
 ## Notes
 
-- Manual smoke cycle required several runs/bugfixes before stabilizing.
+- Manual smoke cycle (SDL) required several runs/bugfixes before stabilizing.
 - Network/multiplayer paths are preserved but not part of this tested baseline.
 
 ## Exit-Criteria Mapping (Roadmap Phase 1)
 
-- Fresh machine can build and run from documented steps: **Met (current maintainer environment)**.
+- Fresh machine can build and run from documented steps on SDL: **Met for SDL (current maintainer environment)**.
 - Manual smoke includes launch/input/quit without force-kill: **Met**.
+- Fresh machine can build and run from documented steps on ALLEGRO: 
 
 ## Follow-up
 

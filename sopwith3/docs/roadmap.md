@@ -57,13 +57,17 @@ The **C# port is explicitly out of scope for this repository** and will happen l
 
 ## Phase 1 — Build & Run Reliability
 
-- Reproducible Windows build instructions.
-- Confirm binary startup and asset-path expectations.
-- Add a documented manual control path for clean shutdown/exit (so test runs can be started and stopped reliably).
+1. [x] Reproducible Windows build instructions for SDL                
+2. [x] Confirm binary startup and asset-path expectations for SDL
+3. [ ] Reproducible Windows build instructions for Allegro                
+4. [ ] Confirm binary startup and asset-path expectations for Allegro
+5. [ ] Reproducible Windows build instructions for building with SDL + Network code (build but untested)                
+6. [ ] Create separate branch for Allegro and DJGPP code, then remove that code from main branch
 
 **Exit criteria**
-- Fresh machine can build and run from documented steps.
+- Fresh machine can build and run from documented steps for BOTH SDL and Allegro and network
 - Manual smoke test includes launch, basic input sanity, and a verified way to quit without force-killing the process.
+
 
 ## Phase 2 — Replay Design + Determinism Prerequisites
 
