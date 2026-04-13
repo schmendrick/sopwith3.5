@@ -57,9 +57,22 @@ Run from repo root (PowerShell/cmd):
 Current result in this environment:
 
 - `mingw-w64-x86_64-allegro` (Allegro 5) was explicitly removed to avoid accidental linkage against the wrong major API.
-- That package provides **Allegro 5** headers/libs (`allegro5/...`), not the legacy **Allegro 4** header `<allegro.h>`.
-- This codebase's Allegro backend currently includes `<allegro.h>` and therefore expects Allegro 4 APIs.
-- `allegrobuild.bat` and `Makefile.msys2` now pin this backend to Allegro 4.x (requires `allegro-config`, version 4.x, and `/mingw64/include/allegro.h`).
+- This codebase's Allegro backend includes `<allegro.h>` and therefore expects Allegro 4 APIs.
+- Allegro 4.4.3.1 was built from source and installed into `/mingw64`.
+- `allegrobuild.bat` and `Makefile.msys2` now pin this backend to Allegro 4 artifacts (`/mingw64/include/allegro.h` and `/mingw64/lib/liballeg44.dll.a`).
+
+Allegro 4 source build (MSYS2 MINGW64) used:
+
+```bash
+cd /tmp
+wget -O allegro-4.4.3.1.tar.gz https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
+tar -xzf allegro-4.4.3.1.tar.gz
+cd allegro-4.4.3.1
+mkdir build-mingw && cd build-mingw
+cmake -G "MinGW Makefiles" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/mingw64 -DWANT_TESTS=off -DWANT_EXAMPLES=off -DWANT_TOOLS=off -DWANT_ALLEGROGL=off -DWANT_LOADPNG=off -DWANT_LOGG=off -DWANT_JPGALLEG=off ..
+mingw32-make -j4
+mingw32-make install
+```
 
 In short: SDL build is reproducible now; Allegro build wiring exists, but completing Allegro compilation requires an Allegro 4-compatible toolchain or backend migration to Allegro 5 APIs.
 

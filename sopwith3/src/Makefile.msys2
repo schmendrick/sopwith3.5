@@ -35,22 +35,29 @@ else ifeq ($(BACKEND),allegro)
 BIN := ../sopwith3-allegro.exe
 OBJDIR := build/allegro
 BACKEND_SRC :=
+ALLEGRO_HEADER := C:/msys64/mingw64/include/allegro.h
+ALLEGRO_IMPORT_LIB := C:/msys64/mingw64/lib/liballeg44.dll.a
+ifeq ($(wildcard $(ALLEGRO_HEADER)),)
+$(error Missing Allegro 4 headers at /mingw64/include/allegro.h. Install an Allegro 4 toolchain for MINGW64 or migrate backend to Allegro 5)
+endif
 BACKEND_CXXFLAGS := -DALLEGRO $(shell $(ALLEGRO_CONFIG) --cflags 2>/dev/null)
 BACKEND_LIBS := $(shell $(ALLEGRO_CONFIG) --libs 2>/dev/null)
 ALLEGRO_VERSION := $(shell $(ALLEGRO_CONFIG) --version 2>/dev/null)
 ifeq ($(strip $(ALLEGRO_VERSION)),)
-$(error Missing allegro-config. Allegro backend is pinned to Allegro 4.x and requires allegro-config from that toolchain)
+ifeq ($(wildcard $(ALLEGRO_IMPORT_LIB)),)
+$(error Could not find Allegro 4 import library (/mingw64/lib/liballeg44.dll.a))
 endif
+BACKEND_LIBS := -lalleg44
+else
 ifneq ($(firstword $(subst ., ,$(ALLEGRO_VERSION))),4)
 $(error Detected Allegro version '$(ALLEGRO_VERSION)'. Allegro backend is pinned to Allegro 4.x)
 endif
 ifeq ($(strip $(BACKEND_LIBS)),)
 $(error allegro-config did not provide linker flags. Verify your Allegro 4 toolchain installation)
 endif
-ifeq ($(wildcard /mingw64/include/allegro.h),)
-$(error Missing Allegro 4 headers at /mingw64/include/allegro.h. Install an Allegro 4 toolchain for MINGW64 or migrate backend to Allegro 5)
 endif
-POST_BUILD :=
+RUNTIME_DLLS := alleg44.dll libwinpthread-1.dll
+POST_BUILD := copy-dlls
 else
 $(error Invalid BACKEND '$(BACKEND)'. Use BACKEND=sdl or BACKEND=allegro)
 endif
