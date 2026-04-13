@@ -56,6 +56,7 @@ bool Computerplane::update()
     case WOUNDSTALL:
       if ((framecounter&1)==1)
         break;
+      [[fallthrough]];
     case FLYING:
     case STALLED:
       if (endstatus!=NOTFINISHED)

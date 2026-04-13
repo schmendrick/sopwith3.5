@@ -92,12 +92,14 @@ void Bomb::sound()
 void Bomb::adjustfall()
 {
   if (--life==0) {
-    if (yv.integer<0)
+    if (yv.integer<0) {
       if (xv.integer<0)
         ++xv;
-      else
+      else {
         if (xv.integer>0)
           --xv;
+      }
+    }
     if (yv.integer>TERMINAL_VELOCITY)
       --yv;
     life=BOMBLIFE;

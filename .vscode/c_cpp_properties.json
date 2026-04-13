@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "name": "Win32-MinGW-SDL",
+      "includePath": [
+        "${workspaceFolder}/sopwith3/src",
+        "${workspaceFolder}/sopwith3/src/sdl",
+        "${workspaceFolder}/sopwith3/src/allegro",
+        "${workspaceFolder}/sopwith3/src/djgpp",
+        "${workspaceFolder}/sopwith3/src/hawknl",
+        "${workspaceFolder}/sopwith3/src/libnet",
+        "C:/msys64/mingw64/include",
+        "C:/msys64/mingw64/include/SDL"
+      ],
+      "defines": [
+        "SDL",
+        "_GNU_SOURCE=1"
+      ],
+      "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-gcc-x64",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/sopwith3/src",
+          "C:/msys64/mingw64/include"
+        ],
+        "limitSymbolsToIncludedHeaders": false
+      }
+    }
+  ],
+  "version": 4
+}

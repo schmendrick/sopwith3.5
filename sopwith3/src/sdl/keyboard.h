@@ -36,9 +36,11 @@ int inkey()
     switch(event->type) {
       case SDL_KEYDOWN:
         if (event->key.keysym.sym>=1 && event->key.keysym.sym<=0xff) {
+          int sym=event->key.keysym.sym;
           events.erase(event);
-          return event->key.keysym.sym;
+          return sym;
         }
+        break;
       default:
         break;
     }
@@ -67,7 +69,6 @@ void flushkeybuf()
 
 void pollkeyboard()
 {
-  int k;
   if (!ibmkeyboard)
     return;
   pollEvents();
@@ -76,32 +77,37 @@ void pollkeyboard()
     switch(event->type) {
       case SDL_KEYDOWN:
       case SDL_KEYUP:
-        switch (event->key.keysym.sym) {
-          case SDLK_x:         k=KEY_ACCEL;     break;
-          case SDLK_z:         k=KEY_BRAKE;     break;
-          case SDLK_COMMA:     k=KEY_CLIMB;     break;
-          case SDLK_SLASH:     k=KEY_DESCEND;   break;
-          case SDLK_PERIOD:    k=KEY_FLIP;      break;
-          case SDLK_SPACE:     k=KEY_FIRE;      break;
-          case SDLK_b:         k=KEY_BOMB;      break;
-          case SDLK_h:         k=KEY_GOHOME;    break;
-          case SDLK_s:         k=KEY_SOUND;     break;
-          case SDLK_SCROLLOCK: k=KEY_BREAK;     breakf=true; break;
-          case SDLK_p:
-            k=KEY_PAUSEGAME;
-            break;
-          default: k=0;
+        {
+          int keymask=0;
+          switch (event->key.keysym.sym) {
+            case SDLK_x:         keymask=KEY_ACCEL;     break;
+            case SDLK_z:         keymask=KEY_BRAKE;     break;
+            case SDLK_COMMA:     keymask=KEY_CLIMB;     break;
+            case SDLK_SLASH:     keymask=KEY_DESCEND;   break;
+            case SDLK_PERIOD:    keymask=KEY_FLIP;      break;
+            case SDLK_SPACE:     keymask=KEY_FIRE;      break;
+            case SDLK_b:         keymask=KEY_BOMB;      break;
+            case SDLK_h:         keymask=KEY_GOHOME;    break;
+            case SDLK_s:         keymask=KEY_SOUND;     break;
+            case SDLK_ESCAPE:
+            case SDLK_SCROLLOCK: keymask=KEY_BREAK;     breakf=true; break;
+            case SDLK_p:
+              keymask=KEY_PAUSEGAME;
+              break;
+            default: keymask=0;
+          }
+          if (keymask!=0) {
+            if (event->type==SDL_KEYUP) {
+              if ((keymask&keysprev)!=0)
+                keysnext&=~keymask;
+              keyspressed&=~keymask;
+            }
+            else {
+              keyspressed|=keymask;
+              keysnext|=keymask;
+            }
+          }
         }
-        if (k!=0)
-          if (event->type==SDL_KEYUP) {
-            if ((k&keysprev)!=0)
-              keysnext&=~k;
-            keyspressed&=~k;
-          }
-          else {
-            keyspressed|=k;
-            keysnext|=k;
-          }
         break;
       default:
         erase=false;

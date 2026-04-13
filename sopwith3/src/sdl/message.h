@@ -22,12 +22,47 @@
 #define SOPWITH_SDL_MESSAGE_H
 
 #include "../keyboard.h"
+#include <iostream>
+#include <string>
+#ifdef _WIN32
+#include <cstdio>
+#include <windows.h>
+#endif
+
+inline void message_write_stderr(const std::string& s)
+{
+#ifdef _WIN32
+  std::fwrite(s.data(), 1, s.size(), stderr);
+  std::fputc('\n', stderr);
+  std::fflush(stderr);
+#else
+  std::cerr << s << std::endl;
+#endif
+}
 
 void message(const std::string& s)
 {
-  std::cerr << s << std::endl;
+#ifdef _WIN32
+  static bool io_rebound = false;
+  if (!io_rebound) {
+    /* SDL may disconnect CRT stdio from the parent console. If we already have a console,
+       AttachConsole(ATTACH_PARENT_PROCESS) fails with ERROR_ACCESS_DENIED — still freopen
+       CONOUT$/CONIN$ so stderr/stdin work again. */
+    if (GetConsoleWindow() == nullptr) {
+      if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+        (void)AllocConsole();
+      }
+    }
+    (void)freopen("CONOUT$", "w", stdout);
+    (void)freopen("CONOUT$", "w", stderr);
+    (void)freopen("CONIN$", "r", stdin);
+    std::ios::sync_with_stdio(true);
+    io_rebound = true;
+  }
+#endif
+  message_write_stderr(s);
   std::string temp;
-  getline(std::cin,temp);
+  getline(std::cin, temp);
 }
 
 #endif /* SOPWITH_SDL_MESSAGE_H */

@@ -58,20 +58,22 @@ void updatejoy()
       bool erase=true;
       switch(event->type) {
         case SDL_JOYAXISMOTION:
-          if (event->jaxis.axis==0)
+          if (event->jaxis.axis==0) {
             if (event->jaxis.value<-3200)
               x=-1;
             else if (event->jaxis.value>3200)
               x=1;
             else
               x=0;
-          if (event->jaxis.axis==1)
+          }
+          if (event->jaxis.axis==1) {
             if (event->jaxis.value<-3200)
               y=-1;
             else if (event->jaxis.value>3200)
               y=1;
             else
               y=0;
+          }
           break;
         case SDL_JOYBUTTONDOWN:
           if (event->jbutton.button==0) {

@@ -1,0 +1,7 @@
+{
+  "files.exclude": {
+    "**/*.o": true
+  },
+  "C_Cpp.errorSquiggles": "enabled",
+  "problems.autoReveal": true
+}

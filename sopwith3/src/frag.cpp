@@ -58,12 +58,14 @@ bool Frag::update()
     return false;
   }
   if (--life==0) {
-    if (yv.integer<0)
+    if (yv.integer<0) {
       if (xv.integer<0)
         ++xv;
-      else
+      else {
         if (xv.integer>0)
           --xv;
+      }
+    }
     if (yv.integer>(type==FRAG_PERSON ? -minspeed : TERMINAL_VELOCITY))
       --yv;
     life=FRAGLIFE;

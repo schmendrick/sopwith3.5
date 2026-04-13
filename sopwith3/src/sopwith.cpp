@@ -121,6 +121,10 @@ int start(int argc,char* argv[])
     try {
       try {
         getoptions(std::vector<std::string>(argv+1,argv+argc));
+        /* -i sets ibmkeyboard only; -k also sets controls. Without this, controls==0 forces
+           getcontrol() even when gamemode was set on the command line (e.g. -s -i). */
+        if (ibmkeyboard && controls == 0 && gamemode != NO_GAMEMODE)
+          controls = KEYBOARD;
       }
       catch (std::exception& e) {
         std::stringstream exception;
@@ -130,16 +134,20 @@ int start(int argc,char* argv[])
       }
       if (showhelp) {
         std::string helptext;
-        helptext+="SOPWITH 3, Copyright (C) 2001 The Sopwith Team\n";
+        helptext+="SOPWITH 3.5, Copyright (C) 2026, Felix Schmutz\n";
+        helptext+="Based on SOPWITH 3, Copyright (C) 2001 The Sopwith Team\n";
         helptext+="Based on SOPWITH, Copyright (C) 1984-2000 David L. Clark\n";
+        helptext+="Check out the Sopwith 3.5 GitHub repository at:\n";
+        helptext+="https://github.com/felixschmutz/sopwith3.5\n";
+        helptext+="And make sure to check out the original Sopwith website at:\n";
         helptext+="http://sopwith3.sourceforge.net/\n";
-        helptext+="Executable built on "__DATE__" at "__TIME__"\n";
+        helptext+="Executable built on " __DATE__ " at " __TIME__ "\n";
         helptext+="Usage: sopwith3 [options]\n";
         helptext+="The (CASE SENSITIVE) options are:\n";
         helptext+="-s : Single player (expert)           -c : Single player against computer\n";
         helptext+="-n : Single player (novice)";
         if (networkavailable)
-        helptext+=                           "           -m : Multiple players on network\n";
+          helptext+="           -m : Multiple players on network\n";
         else
           helptext+='\n';
         helptext+="-k : Keyboard only                    -j : Joystick and keyboard\n";
@@ -197,8 +205,10 @@ void getoptions(const std::vector<std::string>& argv)
         case 's': getoption(*i,gamemode,SINGLE); break;
         case 'c': getoption(*i,gamemode,COMPUTER); break;
         /**/case 'n': getoption(*i,gamemode,NOVICE); break;/**/
-        case 'm': if (networkavailable)
-                    getoption(*i,gamemode,MULTIPLE); break;
+        case 'm':
+          if (networkavailable)
+            getoption(*i,gamemode,MULTIPLE);
+          break;
         case 'k': getoption(*i,controls,(controls|KEYBOARD)&~JOYSTICK); break;
         case 'j': getoption(*i,controls,controls|JOYSTICK); break;
         case 'i': getoption(*i,ibmkeyboard,true); break;
@@ -262,6 +272,58 @@ template<class T> void getoption(const std::string& s,T& option,T setting)
   option=setting;
 }
 
+namespace {
+
+bool menu_key_exits(int c)
+{
+  return c=='\x1b' || c==27;
+}
+
+void request_app_exit()
+{
+  exiting=true;
+  gamestatus=EXITING;
+}
+
+bool run_front_end_menus()
+{
+  if (gamemode==NO_GAMEMODE && controls==0) {
+    displaytitlescreen();
+    setsound(SOUND_PRIORITY_THEME,0,0);
+    updatesound();
+    while (!exiting) {
+      processtimerticks();
+      int c=inkey();
+      if (c==0)
+        continue;
+      if (menu_key_exits(c))
+        request_app_exit();
+      break;
+    }
+    clearsounds();
+    cleartitlescreen();
+  }
+  if (exiting)
+    return false;
+
+  if (gamemode==NO_GAMEMODE)
+    gamemode=getgamemode();
+  if (exiting)
+    return false;
+
+  if (controls==0)
+    getcontrol();
+  if (exiting)
+    return false;
+
+  if (gamemode==MULTIPLE && connmode==NO_CONN)
+    connmode=getside();
+
+  return !exiting;
+}
+
+}  // namespace
+
 void run()
 {
   #ifndef DEBUG
@@ -280,20 +342,8 @@ void run()
   Resource keyboardobject(initkeyboard,deinitkeyboard);
   Resource soundobject(initsound,deinitsound);
   Resource timerobject(inittimer,deinittimer);
-  if (gamemode==NO_GAMEMODE && controls==0) {
-    displaytitlescreen();
-    setsound(SOUND_PRIORITY_THEME,0,0);
-    updatesound();
-    while (!inkey())
-      processtimerticks();
-    clearsounds();
-    cleartitlescreen();
-  }
-
-  if (gamemode==NO_GAMEMODE)
-    gamemode=getgamemode();
-  if (controls==0)
-    getcontrol();
+  if (!run_front_end_menus())
+    return;
   Resource joystickobject;
   if ((controls&JOYSTICK)!=0) {
     initjoystick();
@@ -301,8 +351,6 @@ void run()
   }
   Resource networkobject;
   if (gamemode==MULTIPLE) {
-    if (connmode==NO_CONN)
-      connmode=getside();
     initnetwork();
     networkobject.destruction=deinitnetwork;
   }
@@ -381,9 +429,14 @@ Gamemode getgamemode()
   if (networkavailable)
     drawstr(0*8*zoomx(),22*8*zoomy(),colour_white,BLACK_BACKGROUND,"     M - multiple players on network");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (toupper(inkey())) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return NO_GAMEMODE;
+    }
+    switch (toupper(c)) {
       case 'S':
         return SINGLE;
       case 'C':
@@ -393,6 +446,7 @@ Gamemode getgamemode()
           return MULTIPLE;
     }
   }
+  return NO_GAMEMODE;
 }
 
 void processtimerticks()
@@ -411,9 +465,14 @@ void getcontrol()
   drawstr(0*8*zoomx(),22*8*zoomy(),colour_white,BLACK_BACKGROUND,"     3 - IBM Keyboard only");
   drawstr(0*8*zoomx(),23*8*zoomy(),colour_white,BLACK_BACKGROUND,"     4 - Non-IBM keyboard only");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (inkey()) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return;
+    }
+    switch (c) {
       case '1':
         controls=KEYBOARD|JOYSTICK;
         ibmkeyboard=true;
@@ -440,15 +499,21 @@ Connmode getside()
   drawstr(0*8*zoomx(),20*8*zoomy(),colour_white,BLACK_BACKGROUND,"Key: S - Server (start game)");
   drawstr(0*8*zoomx(),21*8*zoomy(),colour_white,BLACK_BACKGROUND,"     C - Client (join game)");
   displayscreen();
-  while (true) {
+  while (!exiting) {
     processtimerticks();
-    switch (toupper(inkey())) {
+    int c=inkey();
+    if (menu_key_exits(c)) {
+      request_app_exit();
+      return NO_CONN;
+    }
+    switch (toupper(c)) {
       case 'S':
         return SERVER;
       case 'C':
         return CLIENT;
     }
   }
+  return NO_CONN;
 }
 
 void initlevel()
@@ -1014,7 +1079,7 @@ int history(int keys)
 {
   int extrakeys=keys&(KEY_SOUND|KEY_PAUSEGAME);
   keys&=~extrakeys;
-  if (!playbackfilename.empty())
+  if (!playbackfilename.empty()) {
     if (keys!=0)
       playbackfilename=""; /* playbackfilename.clear(); */
     else {
@@ -1031,6 +1096,7 @@ int history(int keys)
         playbackfilename=""; /* playbackfilename.clear(); */
       }
     }
+  }
   if (!recordfilename.empty() && keys!=historykeys) {
     putshort(outputfile,framecounter);
     putshort(outputfile,keys);
@@ -1065,8 +1131,8 @@ void endgame(int targetcolour)
   const std::list<Object*>::const_iterator end=objectlist.end();
   for (std::list<Object*>::const_iterator obj=objectlist.begin();obj!=end;++obj) {
     Plane* plane=dynamic_cast<Plane*>(*obj);
-    if (plane!=0)
-      if (plane->endstatus==Plane::NOTFINISHED)
+    if (plane!=0) {
+      if (plane->endstatus==Plane::NOTFINISHED) {
         if (plane->colour==wincolour &&
             (plane->lives>1 ||
              (plane->lives>0 &&
@@ -1074,6 +1140,8 @@ void endgame(int targetcolour)
           winner(plane);
         else
           loser(plane);
+      }
+    }
   }
 }
 
