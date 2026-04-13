@@ -42,6 +42,11 @@ unsigned long timer()
   return static_cast<unsigned long>((SDL_GetTicks()-ticksStart)*ticksPerMilliseconds);
 }
 
+void timeridle()
+{
+  SDL_Delay(1);
+}
+
 void deinittimer()
 {
 }

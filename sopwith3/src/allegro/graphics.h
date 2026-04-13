@@ -22,6 +22,8 @@
 #define SOPWITH_ALLEGRO_GRAPHICS_H
 
 #include <allegro.h>
+#include <chrono>
+#include <fstream>
 #include <map>
 #include <string>
 #include "../sopwith.h"
@@ -56,6 +58,49 @@ struct Extendedbitmap {
 };
 
 std::map<std::string,Extendedbitmap*> bitmapmap;
+volatile unsigned long switchInCount=0;
+volatile unsigned long switchOutCount=0;
+
+void debug_log_gfx(const char* runId,const char* hypothesisId,const char* location,const char* message,const std::string& data)
+{
+  std::ofstream dbg("F:/Development/ai/sopwith3/sopwith3/debug-bea600.log",std::ios::app);
+  if (!dbg)
+    return;
+  const long long ts=std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()).count();
+  // #region agent log
+  dbg << "{\"sessionId\":\"bea600\",\"runId\":\"" << runId
+      << "\",\"hypothesisId\":\"" << hypothesisId
+      << "\",\"location\":\"" << location
+      << "\",\"message\":\"" << message
+      << "\",\"data\":{" << data
+      << "},\"timestamp\":" << ts << "}\n";
+  // #endregion
+}
+
+namespace {
+  void display_switch_in_callback()
+  {
+    ++switchInCount;
+    // #region agent log
+    debug_log_gfx("baseline","H11","allegro/graphics.h:display_switch_in_callback","display_switch_in",
+                  std::string("\"switchInCount\":")+tostring(static_cast<int>(switchInCount))+
+                  ",\"switchOutCount\":"+tostring(static_cast<int>(switchOutCount)));
+    // #endregion
+  }
+  END_OF_FUNCTION(display_switch_in_callback);
+
+  void display_switch_out_callback()
+  {
+    ++switchOutCount;
+    // #region agent log
+    debug_log_gfx("baseline","H11","allegro/graphics.h:display_switch_out_callback","display_switch_out",
+                  std::string("\"switchInCount\":")+tostring(static_cast<int>(switchInCount))+
+                  ",\"switchOutCount\":"+tostring(static_cast<int>(switchOutCount)));
+    // #endregion
+  }
+  END_OF_FUNCTION(display_switch_out_callback);
+}
 
 BITMAP* spritetobitmap(unsigned char* sprite,int width,int height,bool resize=true)
 {
@@ -123,7 +168,21 @@ void graphicsmode()
       exception << "Allegro: set_gfx_mode(int,int,int,int,int): " << allegro_error;
       throw sw_excep(exception);
     }
-  set_display_switch_mode(SWITCH_BACKGROUND);
+  const int switchModeResult=set_display_switch_mode(SWITCH_BACKGROUND);
+  LOCK_FUNCTION(display_switch_in_callback);
+  LOCK_FUNCTION(display_switch_out_callback);
+  const int switchInResult=set_display_switch_callback(SWITCH_IN,display_switch_in_callback);
+  const int switchOutResult=set_display_switch_callback(SWITCH_OUT,display_switch_out_callback);
+  // #region agent log
+  debug_log_gfx("baseline","H10","allegro/graphics.h:graphicsmode","gfx_mode_initialized",
+                std::string("\"screenW\":")+tostring(SCREEN_W)+
+                ",\"screenH\":"+tostring(SCREEN_H)+
+                ",\"colorDepth\":"+tostring(bitmap_color_depth(screen))+
+                ",\"gfxCaps\":"+tostring(gfx_capabilities)+
+                ",\"switchModeResult\":"+tostring(switchModeResult)+
+                ",\"switchInResult\":"+tostring(switchInResult)+
+                ",\"switchOutResult\":"+tostring(switchOutResult));
+  // #endregion
   BITMAP* palettebitmap=load_bitmap("data/images/palette.pcx",palette);
   if (palettebitmap!=0)
     set_palette(palette);
@@ -206,6 +265,10 @@ void graphicsmode()
 
 void textmode()
 {
+  // #region agent log
+  debug_log_gfx("baseline","H15","allegro/graphics.h:textmode","textmode_enter",
+                std::string("\"bitmapCount\":")+tostring(static_cast<int>(bitmapmap.size())));
+  // #endregion
   const std::map<std::string,Extendedbitmap*>::const_iterator end=bitmapmap.end();
   for (std::map<std::string,Extendedbitmap*>::const_iterator cur=bitmapmap.begin();cur!=end;++cur) {
     delete cur->second;
@@ -214,6 +277,9 @@ void textmode()
 
   destroy_bitmap(buffer);
   set_gfx_mode(GFX_TEXT,0,0,0,0);
+  // #region agent log
+  debug_log_gfx("baseline","H15","allegro/graphics.h:textmode","textmode_done","\"ok\":1");
+  // #endregion
 }
 
 inline int cgapixel(unsigned char quad,int index)
@@ -259,6 +325,13 @@ void displaytitlescreen()
   /* get_palette(palette); */
   /* set_palette(black_palette); */
   stretch_blit(titlebitmap,screen,0,0,titlebitmap->w,titlebitmap->h,0,0,screen_width,screen_height);
+  // #region agent log
+  debug_log_gfx("baseline","H12","allegro/graphics.h:displaytitlescreen","title_stretch_blit_done",
+                std::string("\"titleW\":")+tostring(titlebitmap->w)+
+                ",\"titleH\":"+tostring(titlebitmap->h)+
+                ",\"screenW\":"+tostring(screen_width)+
+                ",\"screenH\":"+tostring(screen_height));
+  // #endregion
   /* fade_in(palette,1); */
   destroy_bitmap(titlebitmap);
 }
@@ -267,6 +340,9 @@ void cleartitlescreen()
 {
   /* fade_out(1); */
   clear_bitmap(screen);
+  // #region agent log
+  debug_log_gfx("baseline","H12","allegro/graphics.h:cleartitlescreen","title_clear_screen","\"ok\":1");
+  // #endregion
   /* set_palette(palette); */
 }
 
@@ -297,6 +373,18 @@ void putimage(int x,int y,void* p,int,int)
 void displayscreen()
 {
   blit(buffer,screen,0,0,0,0,screen_width,screen_height);
+  static unsigned long displayCount=0;
+  ++displayCount;
+  if (displayCount<=20 || (displayCount%120)==0) {
+    debug_log_gfx("baseline","H7","allegro/graphics.h:displayscreen","blit_done",
+                  std::string("\"displayCount\":")+tostring(static_cast<int>(displayCount))+
+                  ",\"screenW\":"+tostring(screen->w)+
+                  ",\"screenH\":"+tostring(screen->h)+
+                  ",\"isVideo\":"+tostring(is_video_bitmap(screen)?1:0)+
+                  ",\"isWindowed\":"+tostring(is_windowed_mode()?1:0)+
+                  ",\"switchInCount\":"+tostring(static_cast<int>(switchInCount))+
+                  ",\"switchOutCount\":"+tostring(static_cast<int>(switchOutCount)));
+  }
 }
 
 void drawmapobject(int x,int y,int c)

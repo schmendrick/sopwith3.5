@@ -25,6 +25,7 @@
 
 void inittimer();
 unsigned long timer();
+void timeridle();
 void deinittimer();
 
 #endif /* SOPWITH_TIMER_H */
