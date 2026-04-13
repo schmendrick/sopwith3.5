@@ -6,7 +6,7 @@ It starts from the Sopwith 3 source code published on SourceForge, which itself 
 
 ## Why this repository exists
 
-- Make the code compile reliably on modern systems (yes, especially Win11).
+- Make the code compile reliably on... well... win11, as I will not test myself on other OS.
 - Fix bugs found while rebuilding and testing the code.
 - Preserve the gameplay baseline while improving reliability and maintainability.
 - Extend the replay feature.

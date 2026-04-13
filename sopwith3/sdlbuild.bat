@@ -13,12 +13,12 @@ set "SRC=%BATDIR%\src"
 set "SRCBASH=%SRC:\=/%"
 
 if not exist "%MSYS2%\usr\bin\env.exe" (
-  echo build.bat: MSYS2 not found at "%MSYS2%". Install MSYS2 or set MSYS2_ROOT to your install directory.
+  echo sdlbuild.bat: MSYS2 not found at "%MSYS2%". Install MSYS2 or set MSYS2_ROOT to your install directory.
   exit /b 1
 )
 
 if not exist "%SRC%\Makefile.msys2" (
-  echo build.bat: missing "%SRC%\Makefile.msys2"
+  echo sdlbuild.bat: missing "%SRC%\Makefile.msys2"
   exit /b 1
 )
 

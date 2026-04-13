@@ -8,7 +8,7 @@
       "args": [
         "/d",
         "/c",
-        "${workspaceFolder}\\sopwith3\\build.bat"
+        "${workspaceFolder}\\sopwith3\\sdlbuild.bat"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -63,7 +63,7 @@
       "args": [
         "/d",
         "/c",
-        "${workspaceFolder}\\sopwith3\\build.bat",
+        "${workspaceFolder}\\sopwith3\\sdlbuild.bat",
         "clean"
       ],
       "options": {
