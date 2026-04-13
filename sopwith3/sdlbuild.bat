@@ -22,5 +22,5 @@ if not exist "%SRC%\Makefile.msys2" (
   exit /b 1
 )
 
-"%MSYS2%\usr\bin\env.exe" MSYSTEM=MINGW64 /usr/bin/bash -lc "cd '%SRCBASH%' && mingw32-make -f Makefile.msys2 %OP%"
+"%MSYS2%\usr\bin\env.exe" MSYSTEM=MINGW64 /usr/bin/bash -lc "cd '%SRCBASH%' && mingw32-make -f Makefile.msys2 BACKEND=sdl %OP%"
 exit /b %ERRORLEVEL%

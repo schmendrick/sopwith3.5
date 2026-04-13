@@ -1,43 +1,77 @@
-# Sopwith 3 — MSYS2 MinGW64 + SDL 1.2 (no HawkNL for local play)
-# Build: from this directory in MINGW64 shell:  mingw32-make -f Makefile.msys2
+# Sopwith 3 -- MSYS2 MinGW64 build (SDL / Allegro backend selectable)
+# Build from this directory in a MINGW64 shell:
+#   mingw32-make -f Makefile.msys2 BACKEND=sdl
+#   mingw32-make -f Makefile.msys2 BACKEND=allegro
 #
 PKG_CONFIG ?= pkg-config
-# Absolute rm for clean when mingw32-make runs from Windows (no sh in PATH).
+ALLEGRO_CONFIG ?= allegro-config
+
+# Absolute tools for when mingw32-make is started via Windows batch wrapper.
 RMCMD := C:/msys64/usr/bin/rm.exe -f
-SDL_CFLAGS := $(shell $(PKG_CONFIG) --cflags sdl)
-SDL_LIBS := $(shell $(PKG_CONFIG) --libs sdl)
-
-CXX := g++
-CXXFLAGS := -Wall -W -DSDL $(SDL_CFLAGS) -Wno-deprecated-declarations
-
-BIN := ../sopwith3.exe
-BINDIR := ..
-MINGW_BIN := C:/msys64/mingw64/bin
-# Copy next to the .exe so double-click / Explorer works without MSYS2 on PATH.
-# (With -static-libgcc -static-libstdc++, only SDL + winpthread stay dynamic.)
-RUNTIME_DLLS := SDL.dll libwinpthread-1.dll
+MKDIR := C:/msys64/usr/bin/mkdir.exe -p
 CP := C:/msys64/usr/bin/cp.exe
+MINGW_BIN := C:/msys64/mingw64/bin
+BINDIR := ..
 
-OBJ := sopwith.o bird.o bomb.o bullet.o coll.o computer.o flock.o frag.o graphics.o ground.o init.o \
-	joystick.o keyboard.o main.o object.o ox.o plane.o player.o smoke.o sound.o sprites.o target.o \
-	timer.o message.o soundsys.o tune.o network.o remote.o sdl/event.o
+BACKEND ?= sdl
+CXX := g++
+BASE_CXXFLAGS := -Wall -W -Wno-deprecated-declarations
+
+COMMON_SRC := sopwith.cpp bird.cpp bomb.cpp bullet.cpp coll.cpp computer.cpp flock.cpp frag.cpp \
+	graphics.cpp ground.cpp init.cpp joystick.cpp keyboard.cpp main.cpp object.cpp ox.cpp \
+	plane.cpp player.cpp smoke.cpp sound.cpp sprites.cpp target.cpp timer.cpp message.cpp \
+	soundsys.cpp tune.cpp network.cpp remote.cpp
+
+ifeq ($(BACKEND),sdl)
+BIN := ../sopwith3.exe
+OBJDIR := build/sdl
+BACKEND_SRC := sdl/event.cpp
+BACKEND_CXXFLAGS := -DSDL $(shell $(PKG_CONFIG) --cflags sdl)
+BACKEND_LIBS := $(shell $(PKG_CONFIG) --libs sdl)
+# Still required at runtime: SDL.dll (and any deps SDL pulls in from mingw64/bin).
+RUNTIME_DLLS := SDL.dll libwinpthread-1.dll
+POST_BUILD := copy-dlls
+else ifeq ($(BACKEND),allegro)
+BIN := ../sopwith3-allegro.exe
+OBJDIR := build/allegro
+BACKEND_SRC :=
+BACKEND_CXXFLAGS := -DALLEGRO $(shell $(ALLEGRO_CONFIG) --cflags 2>/dev/null)
+BACKEND_LIBS := $(shell $(ALLEGRO_CONFIG) --libs 2>/dev/null)
+ALLEGRO_VERSION := $(shell $(ALLEGRO_CONFIG) --version 2>/dev/null)
+ifeq ($(strip $(ALLEGRO_VERSION)),)
+$(error Missing allegro-config. Allegro backend is pinned to Allegro 4.x and requires allegro-config from that toolchain)
+endif
+ifneq ($(firstword $(subst ., ,$(ALLEGRO_VERSION))),4)
+$(error Detected Allegro version '$(ALLEGRO_VERSION)'. Allegro backend is pinned to Allegro 4.x)
+endif
+ifeq ($(strip $(BACKEND_LIBS)),)
+$(error allegro-config did not provide linker flags. Verify your Allegro 4 toolchain installation)
+endif
+ifeq ($(wildcard /mingw64/include/allegro.h),)
+$(error Missing Allegro 4 headers at /mingw64/include/allegro.h. Install an Allegro 4 toolchain for MINGW64 or migrate backend to Allegro 5)
+endif
+POST_BUILD :=
+else
+$(error Invalid BACKEND '$(BACKEND)'. Use BACKEND=sdl or BACKEND=allegro)
+endif
+
+CXXFLAGS := $(BASE_CXXFLAGS) $(BACKEND_CXXFLAGS)
+SRC := $(COMMON_SRC) $(BACKEND_SRC)
+OBJ := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRC))
 
 .PHONY: all clean copy-dlls
 
-all: $(BIN) copy-dlls
+all: $(BIN) $(POST_BUILD)
 
 $(BIN): $(OBJ)
-	$(CXX) -o $@ $(OBJ) $(SDL_LIBS) -static-libgcc -static-libstdc++
+	$(CXX) -o $@ $(OBJ) $(BACKEND_LIBS) -static-libgcc -static-libstdc++
 
-# Still required at runtime: SDL.dll (and any deps SDL pulls in from mingw64/bin).
 copy-dlls: $(BIN)
 	$(CP) -f $(addprefix $(MINGW_BIN)/,$(RUNTIME_DLLS)) $(BINDIR)/
 
 clean:
 	$(RMCMD) $(OBJ) $(BIN)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-sdl/event.o: sdl/event.cpp
+$(OBJDIR)/%.o: %.cpp
+	$(MKDIR) $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@

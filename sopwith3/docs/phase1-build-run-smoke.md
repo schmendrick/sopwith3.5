@@ -21,19 +21,20 @@ Capture reproducible evidence that Sopwith 3.5 can be built, launched, interacte
 
 - Build:
   - `sdlbuild.bat`
+  - `allegrobuild.bat`
 - Launch:
   - `F5` in Cursor (launch config)
   - `.\sopwith3.exe -s -k`
 
 ## Smoke Checklist
 
-###SDL
+### SDL
 - [x] Build succeeds.
 - [x] Game launches successfully.
 - [x] Basic controls respond in single-player (`-s -k` baseline).
 - [x] Clean quit path works without force-killing process.
 
-###Allegro
+### Allegro
 - [ ] Build succeeds.
 - [ ] Game launches successfully.
 - [ ] Basic controls respond in single-player (`-s -k` baseline).
@@ -44,12 +45,13 @@ Capture reproducible evidence that Sopwith 3.5 can be built, launched, interacte
 
 - Manual smoke cycle (SDL) required several runs/bugfixes before stabilizing.
 - Network/multiplayer paths are preserved but not part of this tested baseline.
+- Allegro backend source currently targets legacy Allegro 4 APIs (`<allegro.h>`), while MSYS2 `mingw-w64-x86_64-allegro` provides Allegro 5 (`allegro5/...`), so Allegro build remains blocked in this environment.
 
 ## Exit-Criteria Mapping (Roadmap Phase 1)
 
 - Fresh machine can build and run from documented steps on SDL: **Met for SDL (current maintainer environment)**.
 - Manual smoke includes launch/input/quit without force-kill: **Met**.
-- Fresh machine can build and run from documented steps on ALLEGRO: 
+- Fresh machine can build and run from documented steps on ALLEGRO: **Not met (current MSYS2 package provides Allegro 5, source backend expects Allegro 4 API/header)**.
 
 ## Follow-up
 
