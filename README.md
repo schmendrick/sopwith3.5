@@ -10,6 +10,7 @@ It starts from the Sopwith 3 source code published on SourceForge, which itself 
 - Fix bugs found while rebuilding and testing the code.
 - Preserve the gameplay baseline while improving reliability and maintainability.
 - Extend the replay feature.
+- make it possible to widen the screen (done via commandline argument)
 - In 2015, I also created Sopwith.NET (on SourceForge). It was an experiment to port Sopwith 3 C++ to C#. The game ran, but never got past alpha because I made the classic mistake: extending while porting.
 
 ## AI coding experiment + extensions

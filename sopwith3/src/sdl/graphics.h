@@ -163,7 +163,7 @@ void graphicsmode()
     SDL_WM_SetIcon(icon,reinterpret_cast<Uint8*>(bitmask));
     SDL_FreeSurface(icon);
   }
-  if ((screen=SDL_SetVideoMode(2560,400,8,SDL_SWSURFACE))==0) {
+  if ((screen=SDL_SetVideoMode(requested_screen_width,400,8,SDL_SWSURFACE))==0) {
       std::stringstream exception;
       exception << "SDL: SDL_SetVideoMode(int,int,int,Uint32): " << SDL_GetError();
       throw sw_excep(exception);
@@ -180,7 +180,6 @@ void graphicsmode()
   screen_height=screen->h;
   units_per_screen_width=screen_width/2;
   units_per_screen_height=screen_height/2;
-  std::cout<<" "<<screen_width<<"x"<<screen_height;
 
   for (int a1=0;a1<0x2;++a1)
     for (int a2=0;a2<0x8;++a2)

@@ -55,6 +55,7 @@ extern Connmode connmode;
 extern int lastkey;
 extern bool exiting;
 extern int latency;
+extern int requested_screen_width;
 extern Plane* headplanes[2];
 extern std::string address;
 extern int computerplayers;

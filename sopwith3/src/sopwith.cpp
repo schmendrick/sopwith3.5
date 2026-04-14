@@ -71,6 +71,7 @@ unsigned int speed;
 
 /* options */
 int latency=1;
+int requested_screen_width=640;
 bool soundflag=true;
 int controls=0;
 bool ibmkeyboard=false;
@@ -154,6 +155,7 @@ int start(int argc,char* argv[])
         helptext+="-k : Keyboard only                    -j : Joystick and keyboard\n";
         helptext+="-i : IBM PC Keyboard                  -q : Begin game with sound off\n";
         helptext+="-y#: Set latency to # (default:1) (!) -g#: Start on level # (default:0) (!)\n";
+        helptext+="-W#: Set window width in pixels (default:640)\n";
         helptext+="-h*: Record game on file *            -v*: Play back file *\n";
         helptext+="-D : Turn on certain \"The Author's Edition\" features (!)\n";
         helptext+="-F : Generate missing graphics files from built-in sprites (if possible)\n";
@@ -194,43 +196,60 @@ int start(int argc,char* argv[])
 
 void getoptions(const std::vector<std::string>& argv)
 {
-  const std::vector<std::string>::const_iterator end=argv.end();
-  for (std::vector<std::string>::const_iterator i=argv.begin();i!=end;++i) {
-    if (i->length()<2 || (*i)[0]!='-') {
+  for (std::vector<std::string>::size_type argi=0;argi<argv.size();++argi) {
+    const std::string& arg=argv[argi];
+    if (arg.length()<2 || arg[0]!='-') {
       std::stringstream exception;
-      exception << "Unrecognized option: " << *i;
+      exception << "Unrecognized option: " << arg;
       throw sw_excep(exception);
     }
     else
-      switch ((*i)[1]) {
-        case 's': getoption(*i,gamemode,SINGLE); break;
-        case 'c': getoption(*i,gamemode,COMPUTER); break;
-        /**/case 'n': getoption(*i,gamemode,NOVICE); break;/**/
+      switch (arg[1]) {
+        case 's': getoption(arg,gamemode,SINGLE); break;
+        case 'c': getoption(arg,gamemode,COMPUTER); break;
+        /**/case 'n': getoption(arg,gamemode,NOVICE); break;/**/
         case 'm':
           if (networkavailable)
-            getoption(*i,gamemode,MULTIPLE);
+            getoption(arg,gamemode,MULTIPLE);
           break;
-        case 'k': getoption(*i,controls,(controls|KEYBOARD)&~JOYSTICK); break;
-        case 'j': getoption(*i,controls,controls|JOYSTICK); break;
-        case 'i': getoption(*i,ibmkeyboard,true); break;
-        case 'q': getoption(*i,soundflag,false); break;
-        case 'y': getoption(*i,latency); break;
-        case 'g': getoption(*i,level); break;
-        case 'h': getoption(*i,recordfilename); break;
-        case 'v': getoption(*i,playbackfilename); break;
-        /**/case 'D': getoption(*i,version,7); break;/**/
-        /**/case 'F': getoption(*i,complementsprites,true); break;/**/
-        case 'S': getoption(*i,connmode,SERVER); break;
-        case 'C': getoption(*i,connmode,CLIENT); break;
-        case 'A': getoption(*i,address); break;
-        case 'R': getoption(*i,maxremoteplanes); break;
-        case 'E': getoption(*i,computerplayers); break;
-        case 'O': getoption(*i,fixedorder,true); break;
-        case 'H': getoption(*i,showhelp,true); break;
+        case 'k': getoption(arg,controls,(controls|KEYBOARD)&~JOYSTICK); break;
+        case 'j': getoption(arg,controls,controls|JOYSTICK); break;
+        case 'i': getoption(arg,ibmkeyboard,true); break;
+        case 'q': getoption(arg,soundflag,false); break;
+        case 'y': getoption(arg,latency); break;
+        case 'g': getoption(arg,level); break;
+        case 'h': getoption(arg,recordfilename); break;
+        case 'v': getoption(arg,playbackfilename); break;
+        case 'W':
+          if (arg.length()>2)
+            getoption(arg,requested_screen_width);
+          else {
+            if (argi+1>=argv.size()) {
+              std::stringstream exception;
+              exception << "Option -W requires a valid integer";
+              throw sw_excep(exception);
+            }
+            getoption(std::string("-W")+argv[++argi],requested_screen_width);
+          }
+          if (requested_screen_width<=0) {
+            std::stringstream exception;
+            exception << "Option -W requires an integer greater than 0";
+            throw sw_excep(exception);
+          }
+          break;
+        /**/case 'D': getoption(arg,version,7); break;/**/
+        /**/case 'F': getoption(arg,complementsprites,true); break;/**/
+        case 'S': getoption(arg,connmode,SERVER); break;
+        case 'C': getoption(arg,connmode,CLIENT); break;
+        case 'A': getoption(arg,address); break;
+        case 'R': getoption(arg,maxremoteplanes); break;
+        case 'E': getoption(arg,computerplayers); break;
+        case 'O': getoption(arg,fixedorder,true); break;
+        case 'H': getoption(arg,showhelp,true); break;
         default:
           {
             std::stringstream exception;
-            exception << "Unrecognized option: " << *i;
+            exception << "Unrecognized option: " << arg;
             throw sw_excep(exception);
           }
         break;

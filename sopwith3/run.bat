@@ -1,1 +1,1 @@
-.\sopwith3.exe -s -k
+.\sopwith3.exe -s -i -W 2560
