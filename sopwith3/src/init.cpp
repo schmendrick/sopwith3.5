@@ -23,13 +23,6 @@
 
 #include "init.h"
 
-#ifdef SDL
 #include "sdl/init.h"
-#elif defined(ALLEGRO)
-#include "allegro/init.h"
-#else
-void init() {}
-void deinit() {}
-#endif
 
 #endif /* SOPWITH_INIT_CPP */

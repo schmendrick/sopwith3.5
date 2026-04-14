@@ -7,4 +7,4 @@
 
 - **Renderer/asset path behavior differs by build target:** The codebase has compile-time paths for multiple render backends (notably SDL and Allegro4-era paths). Allegro-oriented builds load repository PCX sprite assets when available, and can fall back to built-in/generated sprite data if files are missing/unreadable. SDL builds currently use built-in/generated sprite data by default.
   - **Why this matters:** Visual output differences can come from backend-specific asset loading behavior, not gameplay logic.
-  - **Potential improvement:** Enable optional PCX loading on SDL path could be possible.
+  - **Potential improvement:** Enable optional PCX loading on SDL path could be possible. Otherwise we should remove them from the repo because they are unused

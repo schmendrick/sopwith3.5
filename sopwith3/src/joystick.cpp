@@ -24,20 +24,6 @@
 #include "joystick.h"
 #include "sopwith.h"
 
-#ifdef SDL
 #include "sdl/joystick.h"
-#elif defined(ALLEGRO)
-#include "allegro/joystick.h"
-#elif defined(__DJGPP__)
-#include "djgpp/joystick.h"
-#else
-int joykeysprev=0;
-int joykeyspressed=0;
-int joykeysnext=0;
-
-void initjoystick() {}
-void deinitjoystick() {}
-void updatejoy() {}
-#endif
 
 #endif /* SOPWITH_JOYSTICK_CPP */

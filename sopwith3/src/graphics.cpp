@@ -25,14 +25,6 @@
 #include "title.h"
 #include "font.h"
 
-#ifdef SDL
 #include "sdl/graphics.h"
-#elif defined(ALLEGRO)
-#include "allegro/graphics.h"
-#elif defined(__DJGPP__)
-#include "djgpp/graphics.h"
-#else
-#error No graphics functionality implemented for current platform
-#endif
 
 #endif /* SOPWITH_GRAPHICS_CPP */

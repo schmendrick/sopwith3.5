@@ -24,15 +24,6 @@
 #include "message.h"
 #include <iostream>
 
-#ifdef SDL
 #include "sdl/message.h"
-#elif defined(ALLEGRO)
-#include "allegro/message.h"
-#else
-void message(const std::string& s)
-{
-  std::cerr << s << std::endl;
-}
-#endif
 
 #endif /* SOPWITH_MESSAGE_CPP */

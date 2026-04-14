@@ -1,10 +1,8 @@
-# Sopwith 3 -- MSYS2 MinGW64 build (SDL / Allegro backend selectable)
+# Sopwith 3 -- MSYS2 MinGW64 build (SDL backend)
 # Build from this directory in a MINGW64 shell:
-#   mingw32-make -f Makefile.msys2 BACKEND=sdl
-#   mingw32-make -f Makefile.msys2 BACKEND=allegro
+#   mingw32-make -f Makefile.msys2
 #
 PKG_CONFIG ?= pkg-config
-ALLEGRO_CONFIG ?= allegro-config
 
 # Absolute tools for when mingw32-make is started via Windows batch wrapper.
 RMCMD := C:/msys64/usr/bin/rm.exe -f
@@ -13,7 +11,6 @@ CP := C:/msys64/usr/bin/cp.exe
 MINGW_BIN := C:/msys64/mingw64/bin
 BINDIR := ..
 
-BACKEND ?= sdl
 CXX := g++
 BASE_CXXFLAGS := -Wall -W -Wno-deprecated-declarations
 
@@ -22,7 +19,6 @@ COMMON_SRC := sopwith.cpp bird.cpp bomb.cpp bullet.cpp coll.cpp computer.cpp flo
 	plane.cpp player.cpp smoke.cpp sound.cpp sprites.cpp target.cpp timer.cpp message.cpp \
 	soundsys.cpp tune.cpp network.cpp remote.cpp
 
-ifeq ($(BACKEND),sdl)
 BIN := ../sopwith3.exe
 OBJDIR := build/sdl
 BACKEND_SRC := sdl/event.cpp
@@ -31,36 +27,6 @@ BACKEND_LIBS := $(shell $(PKG_CONFIG) --libs sdl)
 # Still required at runtime: SDL.dll (and any deps SDL pulls in from mingw64/bin).
 RUNTIME_DLLS := SDL.dll libwinpthread-1.dll
 POST_BUILD := copy-dlls
-else ifeq ($(BACKEND),allegro)
-BIN := ../sopwith3-allegro.exe
-OBJDIR := build/allegro
-BACKEND_SRC :=
-ALLEGRO_HEADER := C:/msys64/mingw64/include/allegro.h
-ALLEGRO_IMPORT_LIB := C:/msys64/mingw64/lib/liballeg44.dll.a
-ifeq ($(wildcard $(ALLEGRO_HEADER)),)
-$(error Missing Allegro 4 headers at /mingw64/include/allegro.h. Install an Allegro 4 toolchain for MINGW64 or migrate backend to Allegro 5)
-endif
-BACKEND_CXXFLAGS := -DALLEGRO $(shell $(ALLEGRO_CONFIG) --cflags 2>/dev/null)
-BACKEND_LIBS := $(shell $(ALLEGRO_CONFIG) --libs 2>/dev/null)
-ALLEGRO_VERSION := $(shell $(ALLEGRO_CONFIG) --version 2>/dev/null)
-ifeq ($(strip $(ALLEGRO_VERSION)),)
-ifeq ($(wildcard $(ALLEGRO_IMPORT_LIB)),)
-$(error Could not find Allegro 4 import library (/mingw64/lib/liballeg44.dll.a))
-endif
-BACKEND_LIBS := -lalleg44
-else
-ifneq ($(firstword $(subst ., ,$(ALLEGRO_VERSION))),4)
-$(error Detected Allegro version '$(ALLEGRO_VERSION)'. Allegro backend is pinned to Allegro 4.x)
-endif
-ifeq ($(strip $(BACKEND_LIBS)),)
-$(error allegro-config did not provide linker flags. Verify your Allegro 4 toolchain installation)
-endif
-endif
-RUNTIME_DLLS := alleg44.dll libwinpthread-1.dll
-POST_BUILD := copy-dlls
-else
-$(error Invalid BACKEND '$(BACKEND)'. Use BACKEND=sdl or BACKEND=allegro)
-endif
 
 CXXFLAGS := $(BASE_CXXFLAGS) $(BACKEND_CXXFLAGS)
 SRC := $(COMMON_SRC) $(BACKEND_SRC)

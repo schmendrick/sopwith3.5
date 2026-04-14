@@ -309,17 +309,6 @@ bool run_front_end_menus()
     updatesound();
     while (!exiting) {
       processtimerticks();
-#ifdef ALLEGRO
-      static unsigned long lastTitlePresentTick=static_cast<unsigned long>(-1);
-      if ((processedtimerticks%30)==0 && processedtimerticks!=lastTitlePresentTick) {
-        displaytitlescreen();
-        // #region agent log
-        debug_log("baseline","H13","sopwith.cpp:run_front_end_menus","title_present_refresh",
-                  std::string("\"tick\":")+tostring(static_cast<int>(processedtimerticks)));
-        // #endregion
-        lastTitlePresentTick=processedtimerticks;
-      }
-#endif
       int c=inkey();
       if (c!=0) {
         // #region agent log

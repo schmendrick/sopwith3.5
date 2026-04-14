@@ -27,13 +27,9 @@
 #include <SDL/SDL.h>
 #endif
 
-#ifdef ALLEGRO
-#include "allegro/main.h"
-#else
 int main(int argc,char* argv[])
 {
   return start(argc,argv);
 }
-#endif
 
 #endif /* SOPWITH_MAIN_CPP */

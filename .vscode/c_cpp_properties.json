@@ -5,8 +5,6 @@
       "includePath": [
         "${workspaceFolder}/sopwith3/src",
         "${workspaceFolder}/sopwith3/src/sdl",
-        "${workspaceFolder}/sopwith3/src/allegro",
-        "${workspaceFolder}/sopwith3/src/djgpp",
         "${workspaceFolder}/sopwith3/src/hawknl",
         "${workspaceFolder}/sopwith3/src/libnet",
         "C:/msys64/mingw64/include",
