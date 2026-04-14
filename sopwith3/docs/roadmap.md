@@ -41,7 +41,8 @@ The **C# port is explicitly out of scope for this repository** and will happen l
 
 - **Phase 0:** Completed with **CONDITIONAL GO** (see `docs/phase0-deterministic-replay-memo.md`).
 - **Phase 1:** Manual smoke baseline verified (build, launch, controls, clean quit path).
-- **Next active work:** Phase 2A replay-model decision doc at `docs/phase2-replay-model-decision.md`.
+- **Phase 2A:** Replay-model decision finalized (see `docs/phase2-replay-model-decision.md`).
+- **Next active work:** Phase 2B determinism prerequisites (RNG/timer hardening + one-step simulation API).
 
 ## Phases
 
