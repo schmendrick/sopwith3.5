@@ -23,14 +23,6 @@
 
 #include "timer.h"
 
-#ifdef SDL
 #include "sdl/timer.h"
-#elif defined(ALLEGRO)
-#include "allegro/timer.h"
-#elif defined(__DJGPP__)
-#include "djgpp/timer.h"
-#else
-#error No timer functionality implemented for current platform
-#endif
 
 #endif /* SOPWITH_TIMER_CPP */

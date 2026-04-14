@@ -12,9 +12,8 @@ This document describes how to compile and run **Sopwith 3.5** from source. A fu
   - `mingw-w64-x86_64-make` (provides `mingw32-make`)
   - `mingw-w64-x86_64-pkg-config`
   - `mingw-w64-x86_64-SDL` — **SDL 1.2** (the build uses `pkg-config` flags for `sdl`)
-  - Do **not** use `mingw-w64-x86_64-allegro` for this codepath; it is Allegro 5.
 
-Network multiplayer in this tree may rely on HawkNL in other configurations; the **Makefile.msys2** build is set up for **local play without HawkNL** (`-DSDL` only).
+Network multiplayer in this tree may rely on "HawkNL" and "libnet" in other configurations; the **Makefile.msys2** build is set up for **local play without HawkNL** (`-DSDL` only).
 
 ## Build (recommended: `Makefile.msys2`)
 
@@ -41,40 +40,7 @@ Network multiplayer in this tree may rely on HawkNL in other configurations; the
    mingw32-make -f Makefile.msys2 clean
    ```
 
-## Allegro build path (current status)
-
-There is now a dedicated batch wrapper for Allegro and a backend switch in the shared makefile:
-
-- `sopwith3/allegrobuild.bat`
-- `sopwith3/src/Makefile.msys2` (with `BACKEND=allegro`)
-
-Run from repo root (PowerShell/cmd):
-
-```bat
-.\sopwith3\allegrobuild.bat
-```
-
-Current result in this environment:
-
-- `mingw-w64-x86_64-allegro` (Allegro 5) was explicitly removed to avoid accidental linkage against the wrong major API.
-- This codebase's Allegro backend includes `<allegro.h>` and therefore expects Allegro 4 APIs.
-- Allegro 4.4.3.1 was built from source and installed into `/mingw64`.
-- `allegrobuild.bat` and `Makefile.msys2` now pin this backend to Allegro 4 artifacts (`/mingw64/include/allegro.h` and `/mingw64/lib/liballeg44.dll.a`).
-
-Allegro 4 source build (MSYS2 MINGW64) used:
-
-```bash
-cd /tmp
-wget -O allegro-4.4.3.1.tar.gz https://github.com/liballeg/allegro5/releases/download/4.4.3.1/allegro-4.4.3.1.tar.gz
-tar -xzf allegro-4.4.3.1.tar.gz
-cd allegro-4.4.3.1
-mkdir build-mingw && cd build-mingw
-cmake -G "MinGW Makefiles" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/mingw64 -DWANT_TESTS=off -DWANT_EXAMPLES=off -DWANT_TOOLS=off -DWANT_ALLEGROGL=off -DWANT_LOADPNG=off -DWANT_LOGG=off -DWANT_JPGALLEG=off ..
-mingw32-make -j4
-mingw32-make install
-```
-
-In short: SDL build is reproducible now; Allegro build wiring exists, but completing Allegro compilation requires an Allegro 4-compatible toolchain or backend migration to Allegro 5 APIs.
+Allegro and DJGPP code paths have been removed from the maintained build.
 
 ## Run
 
@@ -99,12 +65,11 @@ Open the **repository root** folder that contains **`sopwith3/src`** and **`.vsc
 ## Other makefiles
 
 - **`Makefile.win`** — legacy **Dev-C++**-style makefile (SDL + HawkNL). It expects a Dev-C++/MinGW layout and is not the maintained path; use **`Makefile.msys2`** unless you are deliberately reviving that setup.
-- **`Makefile.msys2`** — supports `BACKEND=sdl` (default) and `BACKEND=allegro`; the Allegro backend is currently blocked by missing Allegro 4 headers in default modern MSYS2 packages.
+- **`Makefile.msys2`** — maintained SDL build path used by `sdlbuild.bat`.
 
 ## Troubleshooting
 
 - **`pkg-config: command not found` or missing SDL flags:** install `mingw-w64-x86_64-pkg-config` and `mingw-w64-x86_64-SDL`, and ensure you are in the **MINGW64** shell, not plain MSYS.
-- **`allegrobuild.bat` reports missing `/mingw64/include/allegro.h`:** this means only Allegro 5 is present (`mingw-w64-x86_64-allegro`). The current source still targets Allegro 4 headers/APIs.
 - **`mingw32-make` not found:** install `mingw-w64-x86_64-make`.
 - **Wrong shell:** building with the MSYS (Cygwin-like) environment instead of **MINGW64** often breaks MinGW paths and `pkg-config` output.
 - **VS Code / Cursor: “miDebuggerPath is invalid”:** install **`mingw-w64-x86_64-gdb`** in the **MINGW64** environment (`pacman -S mingw-w64-x86_64-gdb`) so **`mingw64\bin\gdb.exe`** exists, or point **`MINGW64_GDB`** at your **`gdb.exe`** and use the matching launch configuration.

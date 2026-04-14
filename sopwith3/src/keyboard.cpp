@@ -24,14 +24,6 @@
 #include "keyboard.h"
 #include "sopwith.h"
 
-#ifdef SDL
 #include "sdl/keyboard.h"
-#elif defined(ALLEGRO)
-#include "allegro/keyboard.h"
-#elif defined(__DJGPP__)
-#include "djgpp/keyboard.h"
-#else
-#error No keyboard functionality implemented for current platform
-#endif
 
 #endif /* SOPWITH_KEYBOARD_CPP */

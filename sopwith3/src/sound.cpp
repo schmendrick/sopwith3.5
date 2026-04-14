@@ -24,34 +24,6 @@
 #include "sound.h"
 #include "sopwith.h"
 
-#ifdef SDL
 #include "sdl/sound.h"
-#elif defined(ALLEGRO)
-#include "allegro/sound.h"
-#elif defined(__DJGPP__)
-#include "djgpp/sound.h"
-#else
-void initsound() {}
-void deinitsound() {}
-void soundoff() {}
-void deletevoice(void* /*voice*/) {}
-bool tone(unsigned short /*freq*/,int /*soundpriority*/,void*& /*voice*/)
-{
-  return false;
-}
-void finalizesound() {}
-void* sample(Soundevent /*soundevent*/)
-{
-  return 0;
-}
-bool playsoundevent(void* /*eventvoice*/)
-{
-  return false;
-}
-bool playtheme()
-{
-  return false;
-}
-#endif
 
 #endif /* SOPWITH_SOUND_CPP */

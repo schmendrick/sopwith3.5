@@ -16,10 +16,8 @@ It starts from the Sopwith 3 source code published on SourceForge, which itself 
 
 Another core goal of this project is to explore the practical potential of modern AI-assisted coding on a real legacy codebase. I do not plan to write much code myself (mostly). I want to see how much AI can really do.
 
-In short, the roadmap focus is to:
+In short, the roadmap focuses on:
 
-- Build a stable C++ foundation.
-- Make SDL and Allegro builds possible and documented (with the latter planned to be removed from `main` later).
 - Make behavior deterministic and replay/test friendly.
 - Add headless verification outputs for automated comparison.
 - Create a reliable regression workflow.
