@@ -102,7 +102,7 @@ void deletevoice(void* voice)
 
 bool tone(unsigned short freq,int soundpriority,void*& voice)
 {
-  Voice*& voice_=reinterpret_cast<Voice*>(voice);
+  Voice*& voice_=reinterpret_cast<Voice*&>(voice);
   SAMPLE* sample=samples[soundpriority];
   if (freq==0)
     freq=0xffff;

@@ -26,6 +26,7 @@ In short, the roadmap focus is to:
 
 
 See `sopwith3/docs/roadmap.md` for the full roadmap and phase details.
+See `sopwith3/docs/findings.md` for found discoveries found.
 
 ## Scope (current)
 

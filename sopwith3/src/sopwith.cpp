@@ -54,6 +54,7 @@
 #include <algorithm>
 #include <utility>
 #include <map>
+#include <chrono>
 
 int version=2;
 const unsigned int singleplayermaxlives=5;
@@ -285,6 +286,21 @@ void request_app_exit()
   gamestatus=EXITING;
 }
 
+void debug_log(const char* runId,const char* hypothesisId,const char* location,const char* message,const std::string& data)
+{
+  std::ofstream dbg("F:/Development/ai/sopwith3/sopwith3/debug-bea600.log",std::ios::app);
+  if (!dbg)
+    return;
+  const long long ts=std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::system_clock::now().time_since_epoch()).count();
+  dbg << "{\"sessionId\":\"bea600\",\"runId\":\"" << runId
+      << "\",\"hypothesisId\":\"" << hypothesisId
+      << "\",\"location\":\"" << location
+      << "\",\"message\":\"" << message
+      << "\",\"data\":{" << data
+      << "},\"timestamp\":" << ts << "}\n";
+}
+
 bool run_front_end_menus()
 {
   if (gamemode==NO_GAMEMODE && controls==0) {
@@ -293,7 +309,34 @@ bool run_front_end_menus()
     updatesound();
     while (!exiting) {
       processtimerticks();
+#ifdef ALLEGRO
+      static unsigned long lastTitlePresentTick=static_cast<unsigned long>(-1);
+      if ((processedtimerticks%30)==0 && processedtimerticks!=lastTitlePresentTick) {
+        displaytitlescreen();
+        // #region agent log
+        debug_log("baseline","H13","sopwith.cpp:run_front_end_menus","title_present_refresh",
+                  std::string("\"tick\":")+tostring(static_cast<int>(processedtimerticks)));
+        // #endregion
+        lastTitlePresentTick=processedtimerticks;
+      }
+#endif
       int c=inkey();
+      if (c!=0) {
+        // #region agent log
+        debug_log("baseline","H8","sopwith.cpp:run_front_end_menus","menu_key_detected",
+                  std::string("\"timer\":")+tostring(static_cast<int>(processedtimerticks))+
+                  ",\"key\":"+tostring(c));
+        // #endregion
+      }
+      static unsigned long lastMenuLogTick=static_cast<unsigned long>(-1);
+      if ((processedtimerticks%120)==0 && processedtimerticks!=lastMenuLogTick) {
+        // #region agent log
+        debug_log("baseline","H3","sopwith.cpp:run_front_end_menus","menu_loop_tick",
+                  std::string("\"timer\":")+tostring(static_cast<int>(processedtimerticks))+
+                  ",\"key\":"+tostring(c));
+        // #endregion
+        lastMenuLogTick=processedtimerticks;
+      }
       if (c==0)
         continue;
       if (menu_key_exits(c))
@@ -342,8 +385,17 @@ void run()
   Resource keyboardobject(initkeyboard,deinitkeyboard);
   Resource soundobject(initsound,deinitsound);
   Resource timerobject(inittimer,deinittimer);
-  if (!run_front_end_menus())
+  // #region agent log
+  debug_log("baseline","H1","sopwith.cpp:run","post_init","\"timer\":0");
+  // #endregion
+  if (!run_front_end_menus()) {
+    // #region agent log
+    debug_log("baseline","H15","sopwith.cpp:run","menu_exit_early",
+              std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus))+
+              ",\"exiting\":"+(exiting?"1":"0"));
+    // #endregion
     return;
+  }
   Resource joystickobject;
   if ((controls&JOYSTICK)!=0) {
     initjoystick();
@@ -356,6 +408,11 @@ void run()
   }
   initlevel();
   mainloop();
+  // #region agent log
+  debug_log("baseline","H15","sopwith.cpp:run","after_mainloop",
+            std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus))+
+            ",\"exiting\":"+(exiting?"1":"0"));
+  // #endregion
 }
 
 void inithistory()
@@ -432,6 +489,12 @@ Gamemode getgamemode()
   while (!exiting) {
     processtimerticks();
     int c=inkey();
+    if (c!=0) {
+      // #region agent log
+      debug_log("baseline","H8","sopwith.cpp:getgamemode","gamemode_key",
+                std::string("\"key\":")+tostring(c));
+      // #endregion
+    }
     if (menu_key_exits(c)) {
       request_app_exit();
       return NO_GAMEMODE;
@@ -451,7 +514,52 @@ Gamemode getgamemode()
 
 void processtimerticks()
 {
-  for (;processedtimerticks!=timer();++processedtimerticks) {
+  unsigned long now=timer();
+  if (processedtimerticks==now) {
+    static unsigned long idleloops=0;
+    static unsigned long idleyields=0;
+    ++idleloops;
+    timeridle();
+    ++idleyields;
+    if ((idleyields%120)==0) {
+      // #region agent log
+      debug_log("baseline","H14","sopwith.cpp:processtimerticks","idle_yield",
+                std::string("\"processed\":")+tostring(static_cast<int>(processedtimerticks))+
+                ",\"now\":"+tostring(static_cast<int>(now))+
+                ",\"idleyields\":"+tostring(static_cast<int>(idleyields)));
+      // #endregion
+    }
+    if ((idleloops%100000000)==0) {
+      // #region agent log
+      debug_log("baseline","H1","sopwith.cpp:processtimerticks","timer_stalled",
+                std::string("\"processed\":")+tostring(static_cast<int>(processedtimerticks))+
+                ",\"now\":"+tostring(static_cast<int>(now))+
+                ",\"idleloops\":"+tostring(static_cast<int>(idleloops)));
+      // #endregion
+    }
+    return;
+  }
+  static long long firstAdvanceMs=0;
+  static unsigned long advancedTicks=0;
+  if (firstAdvanceMs==0)
+    firstAdvanceMs=std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+  advancedTicks+=now-processedtimerticks;
+  // #region agent log
+  debug_log("baseline","H1","sopwith.cpp:processtimerticks","timer_advanced",
+            std::string("\"processed\":")+tostring(static_cast<int>(processedtimerticks))+
+            ",\"now\":"+tostring(static_cast<int>(now)));
+  // #endregion
+  if ((advancedTicks%120)==0) {
+    const long long curMs=std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()).count();
+    // #region agent log
+    debug_log("baseline","H6","sopwith.cpp:processtimerticks","timer_rate_sample",
+              std::string("\"advancedTicks\":")+tostring(static_cast<int>(advancedTicks))+
+              ",\"elapsedMs\":"+tostring(static_cast<int>(curMs-firstAdvanceMs)));
+    // #endregion
+  }
+  for (;processedtimerticks!=now;++processedtimerticks) {
     speedtick+=10;
     soundadjust();
   }
@@ -468,6 +576,12 @@ void getcontrol()
   while (!exiting) {
     processtimerticks();
     int c=inkey();
+    if (c!=0) {
+      // #region agent log
+      debug_log("baseline","H8","sopwith.cpp:getcontrol","control_key",
+                std::string("\"key\":")+tostring(c));
+      // #endregion
+    }
     if (menu_key_exits(c)) {
       request_app_exit();
       return;
@@ -502,6 +616,12 @@ Connmode getside()
   while (!exiting) {
     processtimerticks();
     int c=inkey();
+    if (c!=0) {
+      // #region agent log
+      debug_log("baseline","H8","sopwith.cpp:getside","side_key",
+                std::string("\"key\":")+tostring(c));
+      // #endregion
+    }
     if (menu_key_exits(c)) {
       request_app_exit();
       return NO_CONN;
@@ -711,8 +831,16 @@ void initdifficulty()
 
 void mainloop()
 {
+  // #region agent log
+  debug_log("baseline","H2","sopwith.cpp:mainloop","enter_mainloop",
+            std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus)));
+  // #endregion
   processtimerticks();
   while (true) {
+    // #region agent log
+    debug_log("baseline","H9","sopwith.cpp:mainloop","outer_loop_state",
+              std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus)));
+    // #endregion
     speedtick=0;
     while (gamestatus==PLAYING) {
       #ifdef DEBUG
@@ -729,9 +857,26 @@ void mainloop()
       checkcollisions();
       updatejoy();
       updatesound();
+      if ((framecounter%60)==0) {
+        // #region agent log
+        debug_log("baseline","H2","sopwith.cpp:mainloop","playing_frame",
+                  std::string("\"frame\":")+tostring(framecounter)+
+                  ",\"speedtick\":"+tostring(static_cast<int>(speedtick)));
+        // #endregion
+      }
     }
+    // #region agent log
+    debug_log("baseline","H15","sopwith.cpp:mainloop","playing_loop_exit",
+              std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus))+
+              ",\"frame\":"+tostring(framecounter));
+    // #endregion
     if (gamestatus==EXITING)
+    {
+      // #region agent log
+      debug_log("baseline","H15","sopwith.cpp:mainloop","mainloop_break_exit","\"reason\":\"gamestatus_exiting\"");
+      // #endregion
       break;
+    }
     if (gamestatus==RESTARTING)
       restart();
   }
@@ -814,6 +959,15 @@ bool onscreen(Object* obj)
 
 void updatescreen()
 {
+  static int updatescreenCount=0;
+  ++updatescreenCount;
+  if (updatescreenCount<=20 || (updatescreenCount%120)==0) {
+    // #region agent log
+    debug_log("baseline","H7","sopwith.cpp:updatescreen","updatescreen_entry",
+              std::string("\"count\":")+tostring(updatescreenCount)+
+              ",\"frame\":"+tostring(framecounter));
+    // #endregion
+  }
   initscreen();
   drawmapground();
   const std::list<Object*>::const_iterator end=objectlist.end();
@@ -840,6 +994,14 @@ void updatescreen()
   if (gameover)
     drawstr(screen_width/2-28,screen_height/2-4,colour_magenta,TRANSPARENT_BACKGROUND,"THE END");
   displayscreen();
+  if ((framecounter%60)==0) {
+    // #region agent log
+    debug_log("baseline","H5","sopwith.cpp:updatescreen","display_called",
+              std::string("\"frame\":")+tostring(framecounter)+
+              ",\"w\":"+tostring(screen_width)+
+              ",\"h\":"+tostring(screen_height));
+    // #endregion
+  }
 }
 
 void checkcollisions()

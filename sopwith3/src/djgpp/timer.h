@@ -54,6 +54,10 @@ unsigned long timer()
   return timertick;
 }
 
+void timeridle()
+{
+}
+
 void deinittimer()
 {
   _go32_dpmi_set_protected_mode_interrupt_vector(8,&oldtimer);

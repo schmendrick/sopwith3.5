@@ -47,6 +47,11 @@ unsigned long timer()
   return timertick;
 }
 
+void timeridle()
+{
+  rest(1);
+}
+
 void deinittimer()
 {
   remove_timer();
