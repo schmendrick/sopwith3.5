@@ -3,7 +3,21 @@
 **Feature Branch**: `001-baseline-replay-verification`  
 **Created**: 2026-04-21  
 **Status**: Draft  
-**Input**: User description: "Create the baseline replay verification feature spec from sopwith3/docs/phase2-replay-model-decision.md. Preserve the chosen Option A model, treat schema/version rules as guidelines, row ordering contract, logical-frame cadence, and first-divergence comparison contract as normative requirements. Scope is single-player baseline first."
+**Input**: User description: "Create the baseline replay verification feature spec from sopwith3/docs/phase2-replay-model-decision.md. Preserve the chosen Option A model; row ordering contract, logical-frame cadence, and first-divergence comparison contract as normative requirements; schema/version match as a strict comparison gate (see clarifications). Scope is single-player baseline first."
+
+## Delivery phases *(implementation alignment)*
+
+- **Phase A (done / scaffold)**: Text sidecar next to the binary tape (`<replay>.state.txt`) with a minimal
+  `SESSION` row; replay test harness and playback instrumentation logs. Serves wiring and manual smoke,
+  not full parity dumps yet.
+- **Phase B (next)**: Complete `SESSION` per decision doc (including `gamemode`, `session_id`, `version`,
+  and any other fields required so two runs are comparable only when session identity matches). Emit
+  per-frame blocks (`FRAME_BEGIN` … `FRAME_END`) at logical-frame cadence with required row kinds/fields.
+- **Phase C**: Comparator consumes full artifact contract (structure + field equality + first divergence)
+  end-to-end against real emitted frames.
+
+Until Phase B is complete, success criteria that require full frame blocks apply to **Phase B onward**,
+not to Phase A scaffold output.
 
 ## Clarifications
 
@@ -24,15 +38,20 @@ using the agreed Option A text model, so I can compare runs reliably.
 **Why this priority**: Baseline artifact generation is the minimum value needed before any comparison or
 parity workflow is useful.
 
-**Independent Test**: Run the same recorded single-player tape twice with the same seed and confirm both
-generated artifacts are byte-identical and contain all required row groups in each frame block.
+**Independent Test (Phase A)**: Record twice with the same single-player tape and seed; confirm both
+`.state.txt` sidecars are byte-identical for the emitted `SESSION` line only.
+
+**Independent Test (Phase B onward)**: Same as Phase A, and confirm both artifacts are byte-identical
+including all required row groups in each frame block.
 
 **Acceptance Scenarios**:
 
 1. **Given** a valid single-player replay tape and seed, **When** baseline replay artifact generation runs,
-   **Then** a text artifact is produced with one `SESSION` row and ordered frame blocks.
+   **Then** a text artifact is produced with one `SESSION` row; **after Phase B**, it also includes ordered
+   frame blocks per logical frame.
 2. **Given** a produced artifact, **When** it is inspected for required row kinds and fields,
-   **Then** all required data for baseline verification is present and consistently formatted.
+   **Then** all required data for baseline verification is present and consistently formatted (**Phase B onward**
+   for full frame contract; Phase A validates `SESSION` only).
 
 ---
 
@@ -132,9 +151,11 @@ completes without replay-flow failure.
 
 ### Measurable Outcomes
 
-- **SC-001**: In repeated baseline runs with the same single-player tape and seed, 100% of produced artifacts are identical across at least two runs.
+- **SC-001**: In repeated baseline runs with the same single-player tape and seed, 100% of produced
+  artifacts are identical across at least two runs (**Phase A**: `SESSION` line only; **Phase B onward**:
+  full artifact including frame blocks).
 - **SC-002**: Comparison of two artifacts with a known injected difference reports the first divergence at the expected frame and field in 100% of validation cases.
-- **SC-003**: For baseline test sessions, 100% of generated artifacts contain complete ordered frame blocks with required row groups.
+- **SC-003**: For baseline test sessions, 100% of generated artifacts contain complete ordered frame blocks with required row groups (**Phase B onward**; Phase A does not claim this yet).
 - **SC-004**: Maintainers can identify mismatch location (frame, row kind, field, values) from comparison output within one review pass for all divergence test cases.
 - **SC-005**: For baseline validation runs, 100% of replay samples selected for verification can be opened and viewed end-to-end in visual playback mode.
 
@@ -144,3 +165,5 @@ completes without replay-flow failure.
 - Existing replay recording and playback workflow remains the source input path for this feature.
 - Artifact consumers need deterministic, human-reviewable outputs suitable for automated diff workflows.
 - Schema changes may evolve in later phases, but baseline comparison requires matching schema versions.
+- Session identity for comparison includes mode and related CLI-affecting settings once Phase B emits a
+  complete `SESSION` row; differing settings imply different baselines, not “similar” parity runs.

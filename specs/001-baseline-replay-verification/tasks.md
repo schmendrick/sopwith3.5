@@ -7,6 +7,9 @@
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
+**Phase naming**: Phases **1–7** are this file’s execution order (delivered on the branch, except open **8–9**).
+In `spec.md`, **Phase A / B / C** is product maturity: **tasks Phase 8 = spec Phase B**, **tasks Phase 9 = spec Phase C**.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
@@ -45,7 +48,11 @@
 
 **Goal**: Emit canonical baseline replay artifact files using Option A text format and required row/field contracts.
 
-**Independent Test**: Record a replay, dump artifacts on two runs with same input/seed, and verify byte-identical outputs with complete frame blocks.
+**Status**: **Phase A** (minimal `SESSION` sidecar + wiring) is complete. **Phase B** (full `SESSION` + per-frame blocks at logical cadence) is tracked in Phase 8 below.
+
+**Independent Test (current)**: Record twice with the same tape/seed; `.state.txt` `SESSION` lines match (Phase A).
+
+**Independent Test (Phase B onward)**: Byte-identical full artifacts including complete ordered frame blocks.
 
 ### Tests for User Story 1
 
@@ -60,6 +67,9 @@
 - [X] T016 [US1] Wire replay artifact dump path into replay execution flow in `sopwith3/src/sopwith.cpp`
 - [X] T017 [US1] Add deterministic entity ordering before emission in `sopwith3/src/replay_writer_entities.cpp`
 - [X] T018 [US1] Update replay artifact usage documentation for baseline generation in `sopwith3/docs/replay-usage.md`
+
+**Note**: T013–T017 cover writer modules and hooks; **emitting a full per-frame sidecar during record** is
+closed under **Phase 8** (T043–T045), not this checkpoint.
 
 **Checkpoint**: User Story 1 produces deterministic baseline artifacts and passes repeatability checks.
 
@@ -143,6 +153,35 @@
 
 ---
 
+## Phase 8: Phase B — Full `SESSION` + per-frame Option A emission *(follow-up)*
+
+**Purpose**: Satisfy `spec.md` Phase B: complete session identity and logical-frame dumps into `<replay>.state.txt`, enabling SC-001/SC-003 for full artifacts.
+
+**Prerequisites**: Phase 3 scaffold (sidecar path, writer modules, tests harness) complete.
+
+- [ ] T042 [US1] Extend `SESSION` with decision-doc fields (`gamemode`, `session_id`, `version`, and other CLI/runtime identity needed for comparable baselines) in `sopwith3/src/replay_writer.cpp` and wire sources from `sopwith3/src/sopwith.cpp`
+- [ ] T043 [US1] Drive `FRAME_BEGIN`…`FRAME_END` emission once per logical simulation frame during record/replay dump in `sopwith3/src/sopwith.cpp`, using existing helpers in `sopwith3/src/replay_writer.cpp`
+- [ ] T044 [US1] Ensure PLAYER/ENEMY/OBJECT (and any other required kinds) serialize with stable ordering each frame in `sopwith3/src/replay_writer_entities.cpp`
+- [ ] T045 [P] [US1] Update `sopwith3/tests/replay/test_artifact_generation.cpp` and `sopwith3/tests/replay/test_artifact_repeatability.cpp` to assert full frame contract and byte-identical full sidecars (Phase B acceptance)
+- [ ] T046 [P] [US1] Refresh `sopwith3/docs/replay-usage.md` and `specs/001-baseline-replay-verification/quickstart.md` for full-artifact workflow
+
+**Checkpoint**: Two runs with identical inputs produce byte-identical `.state.txt` including all required frame blocks.
+
+---
+
+## Phase 9: Phase C — Comparator on real emitted artifacts *(follow-up)*
+
+**Purpose**: Close the loop from emitted tapes to strict compare + first divergence using production frame data, not fixture-only paths.
+
+**Prerequisites**: Phase 8 checkpoint (real per-frame emission).
+
+- [ ] T047 [US2] Add integration path: compare two `.state.txt` files produced by the game in `sopwith3/scripts/replay/verify-baseline.ps1` (or sibling script), failing on schema/row/field mismatch per contract
+- [ ] T048 [P] [US2] Add regression fixture update process note in `specs/001-baseline-replay-verification/contracts/replay-verification-contract.md` once live emission stabilizes
+
+**Checkpoint**: Baseline verification script exercises real dumps end-to-end with documented expected outcomes.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -153,6 +192,8 @@
   - Preferred order: US1 (P1) -> US2 (P2) -> US3/US4 (P3).
   - US3 and US4 can run in parallel after US2 if team capacity allows.
 - **Polish (Phase 7)**: Depends on completion of selected user stories.
+- **Phase B (Phase 8)**: Depends on Phase 3 sidecar + writer plumbing; replaces “SESSION-only” acceptance with full artifact acceptance.
+- **Phase C (Phase 9)**: Depends on Phase 8; validates comparator + scripts against live emission.
 
 ### User Story Dependencies
 
@@ -195,17 +236,18 @@ Task: "T022 [US2] Add truncation policy test in sopwith3/tests/replay/test_trunc
 
 1. Complete Phase 1 (Setup).
 2. Complete Phase 2 (Foundational).
-3. Complete Phase 3 (US1 artifact generation).
-4. Validate deterministic repeatability for US1.
+3. Complete Phase 3 (US1 artifact generation — **Phase A** `SESSION` scaffold on this branch).
+4. Validate deterministic repeatability for US1 (Phase A scope).
 5. Pause for review before comparator expansion.
 
 ### Incremental Delivery
 
-1. Deliver US1 for stable artifact generation baseline.
+1. Deliver US1 for stable artifact generation baseline (Phase A done; **Phase 8** completes spec Phase B).
 2. Add US2 for strict comparator + first divergence.
 3. Add US3 for explicit scope guardrails.
 4. Add US4 for visual playback validation.
 5. Finish with polish and evidence capture.
+6. **Phase 8–9**: full sidecar emission + compare real dumps (see checkpoints in those sections).
 
 ### Parallel Team Strategy
 
@@ -221,5 +263,5 @@ With multiple contributors after Phase 2:
 
 - All tasks follow required checklist format: `- [ ] T### [P?] [US#?] Description with file path`.
 - Story-labeled tasks appear only in user story phases.
-- Suggested MVP scope: **US1 only**.
+- Delivered MVP for this branch: **Phase A** (minimal `SESSION` + harness + visual validation). **Phase 8–9** carry Phase B/C from `spec.md`.
 - Keep deterministic and structural contract enforcement strict per clarified requirements.
