@@ -14,3 +14,13 @@
 - **`-D` (“Author’s Edition”) is `version=7`, not one switch:** The CLI flag sets `version` to `7` via `getoption(..., version, 7)` in `sopwith.cpp`. Gameplay differences are everywhere the code branches on `version==2` vs `version!=2` (anything not `2` follows the alternate path, including `7`).
   - **Why this matters:** Treating `-D` as “one feature” is misleading; it is an alternate physics/combat/tuning profile spread across `plane.cpp`, `target.cpp`, `object.cpp`, `frag.cpp`, `bomb.cpp`, etc.
   - **Notable effects (non-exhaustive):** Default main-loop `speed` differs (`20` when `version==2`, else `15` in `run()`). Plane collisions can wound vs explode differently; AI/autopilot thresholds and gun lead differ; target bullet-hit and explosion paths differ; explosion velocity inherits more parent motion when not v2; distance/range helpers weight vertical differently; fragment collision rules differ from classic mode.
+
+## 2026-04-22
+- **Replay sidecar deterministic compare (playback vs playback):** Evidence that two identical playbacks yield byte-identical `.state.txt` for the same tape and CLI (schema v2 sidecars with `object_kind` on `OBJECT` rows, stable ordering, initialized `Object` fields).
+  - **Tape:** `short.rec` (example; any fixed tape works).
+  - **Commands run from `sopwith3/` (directory containing `sopwith3.exe` and `replay-compare.exe`):**
+```powershell
+.\sopwith3.exe --% -vshort.rec -s -i
+copy .\short.rec.state.txt .\short.rec.state-a.txt
+.\sopwith3.exe --% -vshort.rec -s -i
+.\replay-compare.exe .\short.rec.state-a.txt .\short.rec.state.txt

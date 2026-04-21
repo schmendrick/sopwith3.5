@@ -90,6 +90,9 @@ stable enough that two reference runs produce identical bytes under those contro
 Each `FRAME` row includes only `frame_index` (no timer remainder fields), so comparisons are not sensitive
 to wall-clock pacing differences between runs.
 
+Schema **v2** sidecars include **`object_kind=`** on every `OBJECT` row (see phase2 decision doc for tokens).
+Some kinds omit **`hitcounter`** in the dump when gameplay never uses that field on that type.
+
 ## Visual Playback Validation
 
 Use the smoke script to prepare visual verification:
