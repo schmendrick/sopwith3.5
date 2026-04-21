@@ -8,8 +8,9 @@ From `sopwith3` directory:
 sopwith3.exe -h<replay_file>
 ```
 
-This writes binary replay input history. Baseline artifact scaffolding additionally writes a text
-state file at `<replay_file>.state.txt` during recording initialization.
+This writes binary replay input history. A text state artifact is written to `<replay_file>.state.txt`
+with a full `SESSION` row plus one `FRAME_BEGIN`…`FRAME_END` block per simulated frame while the match
+is in progress.
 
 Notes:
 - Replay options require attached filenames (no space): `-hmy.rec`, `-vmy.rec`.
@@ -22,7 +23,9 @@ Notes:
 sopwith3.exe -v<replay_file>
 ```
 
-Use playback for visual inspection and deterministic baseline checks.
+Use playback for visual inspection and deterministic baseline checks. Playback also writes
+`<replay_file>.state.txt` using the same layout as recording (session identity reflects the tape
+basename and current options).
 
 ## Playback Log Output
 
@@ -57,13 +60,21 @@ playback_close=ok
 - Deferred scope: multiplayer/network parity and non-baseline replay formats.
 - Schema version mismatch is treated as a hard comparison failure.
 
-## Baseline Verification Scaffold
+## Baseline verification (byte compare)
 
-The baseline helper script verifies expected artifact inputs exist:
+Build the standalone comparator from `sopwith3/src`:
+
+```text
+mingw32-make -f Makefile.msys2 replay-compare
+```
+
+Then compare two artifacts (exit code 0 only when files are byte-identical line-for-line):
 
 ```text
 powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.state.txt> -RightArtifact <b.state.txt>
 ```
+
+`replay-compare.exe` is produced next to `sopwith3.exe` in the `sopwith3` directory.
 
 ## Visual Playback Validation
 

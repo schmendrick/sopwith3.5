@@ -65,3 +65,10 @@ Across artifact:
 - `field_name`
 - `lhs_value`
 - `rhs_value`
+
+## Regression fixtures after live emission stabilizes
+
+When `schema_version`, `engine_version` (`SESSION|version=`), entity field sets, or terrain serialization
+(`GROUND|...`) change intentionally, update any checked-in `.state.txt` fixtures and the replay unit tests
+that embed canonical artifacts. Prefer regenerating fixtures from two identical controlled runs (same
+tape, seed, and CLI flags) and committing the pair only after `replay-compare.exe` reports success.

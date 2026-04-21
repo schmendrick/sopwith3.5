@@ -46,6 +46,7 @@
 #include "smoke.h"
 #include "bullet.h"
 #include "replay_writer.h"
+#include "replay_writer_entities.h"
 #include "replay_visual_validation.h"
 #include <string>
 #include <fstream>
@@ -166,7 +167,7 @@ int start(int argc,char* argv[])
         helptext+="-O : Position players in order of connection (!)\n";
         helptext+="-H : Show this help\n";
         helptext+="-h/-v require attached filename (no space), e.g. -hmy.rec -vmy.rec\n";
-        helptext+="-Recording also writes <file>.state.txt (current scaffold)\n";
+        helptext+="-Recording or playback writes <file>.state.txt (full frame dump)\n";
         helptext+="-h and -v are single player only      -E is multiplayer only\n";
         helptext+="(!) will be overridden by server";
         message(helptext);
@@ -380,7 +381,6 @@ void run()
   #endif
   randv=time(0);
   srand(randv);
-  Resource historyobject(inithistory,flushhistory);
   /*initbreak();*/
   Resource graphicsobject(graphicsmode,textmode);
   Resource keyboardobject(initkeyboard,deinitkeyboard);
@@ -397,6 +397,7 @@ void run()
     // #endregion
     return;
   }
+  Resource historyobject(inithistory,flushhistory);
   Resource joystickobject;
   if ((controls&JOYSTICK)!=0) {
     initjoystick();
@@ -414,6 +415,15 @@ void run()
             std::string("\"gamestatus\":")+tostring(static_cast<int>(gamestatus))+
             ",\"exiting\":"+(exiting?"1":"0"));
   // #endregion
+}
+
+static std::string replay_tape_basename(const std::string& path)
+{
+  std::string::size_type slash = path.find_last_of("/\\");
+  if (slash == std::string::npos) {
+    return path;
+  }
+  return path.substr(slash + 1);
 }
 
 void inithistory()
@@ -443,9 +453,27 @@ void inithistory()
     }
     putshort(outputfile,randv);
     putshort(outputfile,historybufsize);
-    std::string statefile = recordfilename + ".state.txt";
+  }
+  std::string stateTape;
+  if (!recordfilename.empty()) {
+    stateTape = recordfilename;
+  }
+  else if (!playbackfilename.empty()) {
+    stateTape = playbackfilename;
+  }
+  if (!stateTape.empty()) {
+    std::string statefile = stateTape + ".state.txt";
     if (replay_open_writer(statefile)) {
-      replay_write_session_row(1, randv, latency, playerindex);
+      ReplaySessionInfo session;
+      session.schema_version = 1;
+      session.initial_seed = randv;
+      session.latency = latency;
+      session.playerindex = playerindex;
+      session.gamemode = static_cast<int>(gamemode);
+      session.rules_version = version;
+      session.session_id = replay_tape_basename(stateTape);
+      session.engine_version = "sopwith3-replay-v1";
+      replay_write_session_row(session);
     }
   }
 }
@@ -867,6 +895,9 @@ void mainloop()
       checkcollisions();
       updatejoy();
       updatesound();
+      if (replay_writer_is_open()) {
+        replay_write_logical_frame_snapshot(framecounter, speedtick);
+      }
       if ((framecounter%60)==0) {
         // #region agent log
         debug_log("baseline","H2","sopwith.cpp:mainloop","playing_frame",

@@ -159,11 +159,11 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 
 **Prerequisites**: Phase 3 scaffold (sidecar path, writer modules, tests harness) complete.
 
-- [ ] T042 [US1] Extend `SESSION` with decision-doc fields (`gamemode`, `session_id`, `version`, and other CLI/runtime identity needed for comparable baselines) in `sopwith3/src/replay_writer.cpp` and wire sources from `sopwith3/src/sopwith.cpp`
-- [ ] T043 [US1] Drive `FRAME_BEGIN`…`FRAME_END` emission once per logical simulation frame during record/replay dump in `sopwith3/src/sopwith.cpp`, using existing helpers in `sopwith3/src/replay_writer.cpp`
-- [ ] T044 [US1] Ensure PLAYER/ENEMY/OBJECT (and any other required kinds) serialize with stable ordering each frame in `sopwith3/src/replay_writer_entities.cpp`
-- [ ] T045 [P] [US1] Update `sopwith3/tests/replay/test_artifact_generation.cpp` and `sopwith3/tests/replay/test_artifact_repeatability.cpp` to assert full frame contract and byte-identical full sidecars (Phase B acceptance)
-- [ ] T046 [P] [US1] Refresh `sopwith3/docs/replay-usage.md` and `specs/001-baseline-replay-verification/quickstart.md` for full-artifact workflow
+- [X] T042 [US1] Extend `SESSION` with decision-doc fields (`gamemode`, `session_id`, `version`, and other CLI/runtime identity needed for comparable baselines) in `sopwith3/src/replay_writer.cpp` and wire sources from `sopwith3/src/sopwith.cpp`
+- [X] T043 [US1] Drive `FRAME_BEGIN`…`FRAME_END` emission once per logical simulation frame during record/replay dump in `sopwith3/src/sopwith.cpp`, using existing helpers in `sopwith3/src/replay_writer.cpp`
+- [X] T044 [US1] Ensure PLAYER/ENEMY/OBJECT (and any other required kinds) serialize with stable ordering each frame in `sopwith3/src/replay_writer_entities.cpp`
+- [X] T045 [P] [US1] Update `sopwith3/tests/replay/test_artifact_generation.cpp` and `sopwith3/tests/replay/test_artifact_repeatability.cpp` to assert full frame contract and byte-identical full sidecars (Phase B acceptance)
+- [X] T046 [P] [US1] Refresh `sopwith3/docs/replay-usage.md` and `specs/001-baseline-replay-verification/quickstart.md` for full-artifact workflow
 
 **Checkpoint**: Two runs with identical inputs produce byte-identical `.state.txt` including all required frame blocks.
 
@@ -175,8 +175,8 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 
 **Prerequisites**: Phase 8 checkpoint (real per-frame emission).
 
-- [ ] T047 [US2] Add integration path: compare two `.state.txt` files produced by the game in `sopwith3/scripts/replay/verify-baseline.ps1` (or sibling script), failing on schema/row/field mismatch per contract
-- [ ] T048 [P] [US2] Add regression fixture update process note in `specs/001-baseline-replay-verification/contracts/replay-verification-contract.md` once live emission stabilizes
+- [X] T047 [US2] Add integration path: compare two `.state.txt` files produced by the game in `sopwith3/scripts/replay/verify-baseline.ps1` (or sibling script), failing on schema/row/field mismatch per contract
+- [X] T048 [P] [US2] Add regression fixture update process note in `specs/001-baseline-replay-verification/contracts/replay-verification-contract.md` once live emission stabilizes
 
 **Checkpoint**: Baseline verification script exercises real dumps end-to-end with documented expected outcomes.
 

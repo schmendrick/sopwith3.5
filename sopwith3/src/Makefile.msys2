@@ -35,9 +35,19 @@ CXXFLAGS := $(BASE_CXXFLAGS) $(BACKEND_CXXFLAGS)
 SRC := $(COMMON_SRC) $(BACKEND_SRC)
 OBJ := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRC))
 
-.PHONY: all clean copy-dlls replay-tests
+REPLAY_COMPARE_BIN := ../replay-compare.exe
+REPLAY_COMPARE_OBJS := $(OBJDIR)/replay_compare_tool.o $(OBJDIR)/replay_compare.o \
+	$(OBJDIR)/replay_compare_result.o $(OBJDIR)/replay_compare_diff.o \
+	$(OBJDIR)/replay_compare_cli.o $(OBJDIR)/replay_validate.o $(OBJDIR)/replay_contract.o
+
+.PHONY: all clean copy-dlls replay-tests replay-compare
 
 all: $(BIN) $(POST_BUILD)
+
+$(REPLAY_COMPARE_BIN): $(REPLAY_COMPARE_OBJS)
+	$(CXX) -o $@ $(REPLAY_COMPARE_OBJS) -static-libgcc -static-libstdc++
+
+replay-compare: $(REPLAY_COMPARE_BIN)
 
 $(BIN): $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(BACKEND_LIBS) -static-libgcc -static-libstdc++
@@ -50,6 +60,10 @@ clean:
 
 replay-tests: all
 	powershell -ExecutionPolicy Bypass -File ../scripts/replay/run-tests.ps1
+
+$(OBJDIR)/replay_compare_tool.o: replay_compare_tool.cpp replay_compare.h replay_compare_result.h
+	$(MKDIR) $(dir $@)
+	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
 
 $(OBJDIR)/%.o: %.cpp
 	$(MKDIR) $(dir $@)
