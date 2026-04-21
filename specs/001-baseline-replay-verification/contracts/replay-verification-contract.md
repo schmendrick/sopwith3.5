@@ -1,0 +1,67 @@
+# Contract: Replay Verification Baseline
+
+## Purpose
+
+Define the contract for producing and comparing baseline replay verification artifacts.
+
+Terminology normalization: this document uses "artifact" for emitted text state output and
+"replay tape" for recorded input history.
+
+## Artifact Production Contract
+
+- Encoding: UTF-8 text
+- Field format: `key=value`
+- Row delimiter: one record per line
+- Row type key: `row_kind`
+- Session/header requirement: exactly one `SESSION` row before frame rows
+- Frame boundary requirement: `FRAME_BEGIN` ... `FRAME_END`
+
+## Required Row Types
+
+- `SESSION`
+- `FRAME_BEGIN`
+- `FRAME`
+- `GROUND`
+- `PLAYER` (single-player baseline expects one per frame)
+- `ENEMY` (0..n)
+- `OBJECT` (0..n)
+- `FRAME_END`
+
+## Ordering Contract
+
+For each frame:
+1. `FRAME_BEGIN`
+2. `FRAME`
+3. `GROUND`
+4. `PLAYER*` ordered by `entity_id` ascending
+5. `ENEMY*` ordered by `entity_id` ascending
+6. `OBJECT*` ordered by `entity_id` ascending
+7. `FRAME_END`
+
+Across artifact:
+1. `SESSION`
+2. frame blocks in increasing `frame_index`
+
+## Comparison Contract
+
+1. Validate both artifacts contain one valid `SESSION` row.
+2. Validate `schema_version` equality; mismatch => fail.
+3. Validate row presence/order contract per frame.
+4. Validate required field presence for each required row.
+5. Compare required fields in deterministic order.
+6. Stop at first mismatch and emit divergence record.
+
+## Edge-Case Policies
+
+- Missing required row kind in any frame => immediate fail.
+- Missing required field in required row => immediate fail.
+- Truncated artifact tail missing final `FRAME_END` => compare only complete prior frames and emit truncation warning.
+
+## Divergence Record Minimum Shape
+
+- `frame_index`
+- `row_kind`
+- `entity_id` (if row has entity identity)
+- `field_name`
+- `lhs_value`
+- `rhs_value`

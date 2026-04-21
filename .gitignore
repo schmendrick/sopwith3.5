@@ -5,11 +5,16 @@
 *.dll
 *.a
 *.lib
+build/
+bin/
+out/
 
 # IDE / OS
 .vs/
 .DS_Store
 Thumbs.db
+*.log
+.env*
 
 # Runtime / debug output (not part of the tree)
 stderr.txt
@@ -18,3 +23,18 @@ stdout.txt
 error
 
 /debug-*.log
+
+# Cursor local/agent state (can contain private artifacts)
+.cursor/**
+# Keep shared project guidance (optional)
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
+# But still keep local Cursor config untracked
+.cursor/cli.json
+
+# Spec Kit local memory (often session-specific)
+.specify/memory/
+/sopwith3/*.rec
+/sopwith3/*.rec.state.txt

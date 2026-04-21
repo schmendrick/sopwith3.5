@@ -25,6 +25,7 @@ In short, the roadmap focuses on:
 
 See `sopwith3/docs/roadmap.md` for the full roadmap and phase details.
 See `sopwith3/docs/findings.md` for found discoveries found.
+See `sopwith3/docs/replay-usage.md` for replay record/playback usage and replay test commands.
 
 ## Scope (current)
 

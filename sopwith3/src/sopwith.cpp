@@ -45,6 +45,8 @@
 #include "frag.h"
 #include "smoke.h"
 #include "bullet.h"
+#include "replay_writer.h"
+#include "replay_visual_validation.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -154,7 +156,7 @@ int start(int argc,char* argv[])
         helptext+="-k : Keyboard only                    -j : Joystick and keyboard\n";
         helptext+="-i : IBM PC Keyboard                  -q : Begin game with sound off\n";
         helptext+="-y#: Set latency to # (default:1) (!) -g#: Start on level # (default:0) (!)\n";
-        helptext+="-h*: Record game on file *            -v*: Play back file *\n";
+        helptext+="-h*: Record game to binary file *      -v*: Play back binary file *\n";
         helptext+="-D : Turn on certain \"The Author's Edition\" features (!)\n";
         helptext+="-F : Generate missing graphics files from built-in sprites (if possible)\n";
         helptext+="-S : Play as server                   -C : Play as client\n";
@@ -163,6 +165,8 @@ int start(int argc,char* argv[])
         helptext+="-E#: Set amount of computer planes to # (may be truncated) (!)\n";
         helptext+="-O : Position players in order of connection (!)\n";
         helptext+="-H : Show this help\n";
+        helptext+="-h/-v require attached filename (no space), e.g. -hmy.rec -vmy.rec\n";
+        helptext+="-Recording also writes <file>.state.txt (current scaffold)\n";
         helptext+="-h and -v are single player only      -E is multiplayer only\n";
         helptext+="(!) will be overridden by server";
         message(helptext);
@@ -194,6 +198,7 @@ int start(int argc,char* argv[])
 
 void getoptions(const std::vector<std::string>& argv)
 {
+  replay_visual_log_note("options_parse_start");
   const std::vector<std::string>::const_iterator end=argv.end();
   for (std::vector<std::string>::const_iterator i=argv.begin();i!=end;++i) {
     if (i->length()<2 || (*i)[0]!='-') {
@@ -216,8 +221,14 @@ void getoptions(const std::vector<std::string>& argv)
         case 'q': getoption(*i,soundflag,false); break;
         case 'y': getoption(*i,latency); break;
         case 'g': getoption(*i,level); break;
-        case 'h': getoption(*i,recordfilename); break;
-        case 'v': getoption(*i,playbackfilename); break;
+        case 'h':
+          getoption(*i,recordfilename);
+          replay_visual_log_note(std::string("record_option=")+recordfilename);
+          break;
+        case 'v':
+          getoption(*i,playbackfilename);
+          replay_visual_log_note(std::string("playback_option=")+playbackfilename);
+          break;
         /**/case 'D': getoption(*i,version,7); break;/**/
         /**/case 'F': getoption(*i,complementsprites,true); break;/**/
         case 'S': getoption(*i,connmode,SERVER); break;
@@ -236,6 +247,7 @@ void getoptions(const std::vector<std::string>& argv)
         break;
     }
   }
+  replay_visual_log_note("options_parse_done");
 }
 
 void getoption(const std::string& s,int& option)
@@ -410,6 +422,7 @@ void inithistory()
   outputfile.exceptions(~std::ios::goodbit);
   /**/short historybufsize=static_cast<short>(-1);/**/ /* -1 is arbitrary */
   if (!playbackfilename.empty()) {
+    replay_visual_log_note(std::string("playback_open_attempt=")+playbackfilename);
     try {
       inputfile.open(playbackfilename.c_str(),std::ios::binary);
     }
@@ -418,6 +431,8 @@ void inithistory()
     }
     randv=getshort(inputfile);
     historybufsize=getshort(inputfile);
+    replay_visual_log_event("playback_open", true);
+    replay_visual_log_note(std::string("playback_header_seed=")+tostring(randv));
   }
   if (!recordfilename.empty()) {
     try {
@@ -428,6 +443,10 @@ void inithistory()
     }
     putshort(outputfile,randv);
     putshort(outputfile,historybufsize);
+    std::string statefile = recordfilename + ".state.txt";
+    if (replay_open_writer(statefile)) {
+      replay_write_session_row(1, randv, latency, playerindex);
+    }
   }
 }
 
@@ -451,6 +470,8 @@ std::istream& putbackshort(std::istream& in,short s)
 
 void flushhistory()
 {
+  replay_visual_log_event("playback_close", true);
+  replay_close_writer();
   if (!recordfilename.empty())
     outputfile.close();
   if (!playbackfilename.empty())
@@ -1244,6 +1265,7 @@ int history(int keys)
         }
       }
       catch(...) {
+        replay_visual_log_note("playback_stream_end_or_error");
         playbackfilename=""; /* playbackfilename.clear(); */
       }
     }
