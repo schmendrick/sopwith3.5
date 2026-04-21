@@ -5,27 +5,25 @@
 From `sopwith3` directory:
 
 ```text
-sopwith3.exe -h<replay_file>
+sopwith3.exe -h<replay_token>
 ```
 
-This writes binary replay input history. A text state artifact is written to `<replay_file>.state.txt`
-with a full `SESSION` row plus one `FRAME_BEGIN`…`FRAME_END` block per simulated frame while the match
-is in progress.
+`-h` **tape** binary replay input history (see `sopwith.cpp` option parsing). Whatever replay token you pass is normalized to a canonical **`basename.tape`** path for binary I/O: trailing `.tape`  suffixes on the basename are stripped (repeat until none), then `.tape` is appended. Example tokens `short`, and `short.tape` all resolve to **`short.tape`**.
+
+A text verification sidecar is written beside the tape as **`basename.<n>.sidecar`** (first run **`basename.1.sidecar`**; further runs allocate **`max(existing n)+1`** among `basename.*.sidecar` in that directory). Each file holds a full `SESSION` row plus one `FRAME_BEGIN`…`FRAME_END` block per simulated frame while the match is in progress.
 
 Notes:
-- Replay options require attached filenames (no space): `-hmy.rec`, `-vmy.rec`.
+- Replay options require attached filenames (no space): `-hmyreplay`, `-vmyreplay`.
 - In PowerShell, prefer `--%` to avoid argument parsing surprises, for example:
-  `.\sopwith3.exe --% -hmy.rec`
+  `.\sopwith3.exe --% -hmyreplay` or `.\sopwith3.exe --% -vshort -s -i`
 
 ## Playback Replay
 
 ```text
-sopwith3.exe -v<replay_file>
+sopwith3.exe -v<replay_token>
 ```
 
-Use playback for visual inspection and deterministic baseline checks. Playback also writes
-`<replay_file>.state.txt` using the same layout as recording (session identity reflects the tape
-basename and current options).
+`-v` **plays back** binary tape after the same **`basename.tape`** normalization as recording. Playback also writes **`basename.<n>.sidecar`** using the same layout as recording (session identity reflects the tape basename and current options).
 
 ## Playback Log Output
 
@@ -46,13 +44,15 @@ Example:
 
 ```text
 options_parse_start
-playback_option=mytest.rec
+playback_option=mytest
 options_parse_done
-playback_open_attempt=mytest.rec
+playback_open_attempt=mytest
 playback_open=ok
 playback_header_seed=-6357
 playback_close=ok
 ```
+
+*(After normalization, the engine opens the corresponding `mytest.tape` path; the log may still show the raw token.)*
 
 ## Scope Boundaries
 
@@ -68,21 +68,27 @@ Build the standalone comparator from `sopwith3/src`:
 mingw32-make -f Makefile.msys2 replay-compare
 ```
 
-Then compare two artifacts (exit code 0 only when files are byte-identical line-for-line):
+**Two explicit artifacts** (exit code 0 only when files are byte-identical line-for-line):
 
 ```text
-powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.state.txt> -RightArtifact <b.state.txt>
+powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.sidecar> -RightArtifact <b.sidecar>
+```
+
+**Batch compare** (single basename, no extension): discover **`basename.*.sidecar`** in the current directory, numeric sort by `n`, require at least two files, then run pairwise comparison on every unordered pair (see feature spec `specs/001-baseline-replay-verification/spec.md`).
+
+```text
+.\replay-compare.exe short
 ```
 
 `replay-compare.exe` is produced next to `sopwith3.exe` in the `sopwith3` directory.
 
 ### Parity notes (golden baselines and ports)
 
-Treat two `.state.txt` files as comparable only when the underlying run is intended to be the same:
-same binary replay tape [tape meaning the binary replay file you create via "-h"] 
+Treat two sidecar files as comparable only when the underlying run is intended to be the same:
+same binary replay tape 
 (same file path not required; same tape bytes and header seed matter), same
 CLI-affecting options that appear in `SESSION`, and the same stretch of gameplay (artifact length and
-frame count change if one run exits earlier). The tape is the source of input history; the sidecar (the .state.txt file besides your tape) is a
+frame count change if one run exits earlier). The tape is the source of input history; the sidecar (the `basename.n.sidecar` file beside your `basename.tape`) is a
 derived trace for diffing and for future parity checks (for example a C# port replaying the same tape at
 logical-frame cadence). Checked-in golden artifacts are optional until serialization and repeatability are
 stable enough that two reference runs produce identical bytes under those controlled conditions.

@@ -36,7 +36,7 @@
 /* Value-initialize all Object primitives so subclasses that omit a field never leave it undefined.
    The replay verification sidecar may serialize fields from the Object base before every subclass sets
    them (e.g. Smoke/Bullet constructors set position/life but not hitcounter). Previously uninitialized
-   ints produced run-to-run garbage in .state.txt diffs; zeros mean "unset" consistently. */
+   ints produced run-to-run garbage in replay sidecar diffs; zeros mean "unset" consistently. */
 
 Object::Object() :
   x(0, 0),

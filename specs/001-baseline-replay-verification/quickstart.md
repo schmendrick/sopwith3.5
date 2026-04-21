@@ -32,7 +32,7 @@ or playback:
 .\sopwith3.exe --% -vmy.rec
 ```
 
-Each run writes `my.rec.state.txt` beside the tape: one `SESSION` row (including `gamemode`,
+Binary tape is always **`my.tape`** after normalization (`-hmy`, `-hmy.rec`, and `-hmy.tape` open the same file). Each run writes **`my.<n>.sidecar`** beside it (first run **`my.1.sidecar`**; later runs bump **n** per spec): one `SESSION` row (including `gamemode`,
 `session_id`, `version`, `rules_version`, seed, latency, player index) and full per-frame blocks for
 every simulation frame while the session is playing.
 
@@ -41,7 +41,7 @@ every simulation frame while the session is playing.
 Record or play the same tape twice with identical CLI flags and seed behavior, then compare artifacts:
 
 ```powershell
-powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact run1.rec.state.txt -RightArtifact run2.rec.state.txt
+powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact run1.1.sidecar -RightArtifact run2.1.sidecar
 ```
 
 Expected: exit code 0 and `Replay compare success` when outputs are byte-identical.
