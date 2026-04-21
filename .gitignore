@@ -18,3 +18,16 @@ stdout.txt
 error
 
 /debug-*.log
+
+# Cursor local/agent state (can contain private artifacts)
+.cursor/**
+# Keep shared project guidance (optional)
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/skills/
+!.cursor/skills/**
+# But still keep local Cursor config untracked
+.cursor/cli.json
+
+# Spec Kit local memory (often session-specific)
+.specify/memory/
