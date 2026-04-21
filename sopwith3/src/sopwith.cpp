@@ -156,7 +156,7 @@ int start(int argc,char* argv[])
         helptext+="-k : Keyboard only                    -j : Joystick and keyboard\n";
         helptext+="-i : IBM PC Keyboard                  -q : Begin game with sound off\n";
         helptext+="-y#: Set latency to # (default:1) (!) -g#: Start on level # (default:0) (!)\n";
-        helptext+="-h*: Record game on file *            -v*: Play back file *\n";
+        helptext+="-h*: Record game to binary file *      -v*: Play back binary file *\n";
         helptext+="-D : Turn on certain \"The Author's Edition\" features (!)\n";
         helptext+="-F : Generate missing graphics files from built-in sprites (if possible)\n";
         helptext+="-S : Play as server                   -C : Play as client\n";
@@ -165,6 +165,8 @@ int start(int argc,char* argv[])
         helptext+="-E#: Set amount of computer planes to # (may be truncated) (!)\n";
         helptext+="-O : Position players in order of connection (!)\n";
         helptext+="-H : Show this help\n";
+        helptext+="-h/-v require attached filename (no space), e.g. -hmy.rec -vmy.rec\n";
+        helptext+="-Recording also writes <file>.state.txt (current scaffold)\n";
         helptext+="-h and -v are single player only      -E is multiplayer only\n";
         helptext+="(!) will be overridden by server";
         message(helptext);

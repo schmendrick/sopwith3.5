@@ -36,3 +36,5 @@ error
 
 # Spec Kit local memory (often session-specific)
 .specify/memory/
+/sopwith3/*.rec
+/sopwith3/*.rec.state.txt
