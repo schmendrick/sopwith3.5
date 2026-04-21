@@ -4,6 +4,9 @@
 
 Define the contract for producing and comparing baseline replay verification artifacts.
 
+Terminology normalization: this document uses "artifact" for emitted text state output and
+"replay tape" for recorded input history.
+
 ## Artifact Production Contract
 
 - Encoding: UTF-8 text

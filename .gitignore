@@ -5,11 +5,16 @@
 *.dll
 *.a
 *.lib
+build/
+bin/
+out/
 
 # IDE / OS
 .vs/
 .DS_Store
 Thumbs.db
+*.log
+.env*
 
 # Runtime / debug output (not part of the tree)
 stderr.txt

@@ -58,3 +58,9 @@ Expected:
 - Replay starts
 - Replay progresses frame-to-frame
 - Replay can be inspected end-to-end without replay-flow interruption
+
+## 8) Capture validation evidence
+
+- Store command outputs and comparison summaries for the run.
+- Record artifact filenames and replay file used.
+- Record whether truncated-tail warning path was exercised.

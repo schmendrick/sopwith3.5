@@ -54,3 +54,10 @@
 - **Alternatives considered**:
   - Summary-only mismatch counts
   - Full per-field dump of all mismatches
+
+## Alignment Note
+
+Research, contract, and plan remain aligned on these invariants:
+- schema mismatch => hard fail
+- missing required row kind => hard fail
+- truncation tail => compare complete prior frames + warning
