@@ -1,44 +1,46 @@
 # Implementation Plan: Baseline Replay Verification
 
-**Branch**: `001-baseline-replay-verification` | **Date**: 2026-04-21 | **Spec**: `specs/001-baseline-replay-verification/spec.md`
+**Branch**: `001-baseline-replay-verification` | **Date**: 2026-04-22 | **Spec**: `specs/001-baseline-replay-verification/spec.md`  
 **Input**: Feature specification from `specs/001-baseline-replay-verification/spec.md`
 
 ## Summary
 
-Define and implement a strict deterministic replay verification baseline for single-player runs using
-the Option A text artifact model, deterministic ordering/cadence contracts, strict schema-version
-match enforcement, and first-divergence reporting. Include visual replay playback validation in
-feature acceptance and support truncated-tail handling by comparing only complete frame blocks with
-warning emission.
+Implement and maintain a strict deterministic replay verification baseline for single-player runs using
+the Option A compact text artifact model (`*.sidecar`), deterministic ordering and logical-frame cadence,
+schema-version parity as a hard gate, and first-divergence diagnostics. Extend the filesystem contract:
+canonical binary tapes as **`<basename>.tape`** after normalizing replay tokens from **`-h`/`-v`**;
+numbered sidecars **`basename.<n>.sidecar`** with **`max(existing n)+1`** allocation; **`replay-compare`**
+supports two-path compares and **single-basename batch mode** (discover sidecars, numeric sort,
+all unordered pairs). Visual playback validation and truncated-tail comparison policy remain in scope per
+spec.
 
 ## Technical Context
 
-**Language/Version**: C++ (legacy Sopwith 3 codebase, current maintained Windows/MSYS2 SDL path)  
-**Primary Dependencies**: SDL 1.2 runtime path, existing replay/history game code, file I/O utilities  
-**Storage**: File-based replay artifacts (`.txt` canonical output)  
-**Testing**: Deterministic replay comparison checks + repeat-run artifact equality checks + playback smoke checks  
-**Target Platform**: Windows 11 (MSYS2 MinGW64 maintained baseline)  
-**Project Type**: Native desktop game runtime with deterministic verification tooling  
-**Performance Goals**: First-divergence report produced in one comparator pass; replay artifacts remain usable for 3-5 minute single-player sessions  
-**Constraints**: Preserve existing gameplay baseline; logical-frame cadence only; strict row ordering; schema mismatch hard fail; missing required row kind hard fail  
-**Scale/Scope**: Single-player baseline first; multiplayer/network parity deferred
+**Language/Version**: C++ (legacy Sopwith 3 codebase), Windows/MSYS2 SDL maintained path  
+**Primary Dependencies**: SDL 1.2, existing replay/history code (`sopwith.cpp` `recordfilename` /
+`playbackfilename`), `replay_writer*` / `replay_compare*` toolchain  
+**Storage**: Files only — canonical binary **`*.tape`** next to numbered UTF-8 **`*.sidecar`** verification artifacts  
+**Testing**: Repeat-run SESSION/full-artifact equality, `replay-compare` two-file and batch modes,
+`replay-tests` / `test.bat`, optional `scripts/replay/verify-baseline.ps1` integration  
+**Target Platform**: Windows 11 (MSYS2 MinGW64 baseline)  
+**Project Type**: Native desktop game + standalone comparator executable  
+**Performance Goals**: Comparator remains single-pass capable per pair; batch mode runs \(\binom{N}{2}\)
+pair comparisons for \(N\) sidecars  
+**Constraints**: Preserve gameplay baseline (Principle I); normalization must not fork tape identity;
+sidecar numbering must follow **max(n)+1** scan in tape directory  
+**Scale/Scope**: Single-player baseline first; multiplayer parity deferred
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **Principle I - Preserve Gameplay Baseline While Hardening Determinism**: PASS  
-  Plan remains single-player-first and avoids gameplay rewrites.
-- **Principle II - Replay Artifacts and First-Divergence Diagnostics Are Canonical**: PASS  
-  Feature centers on canonical artifact schema and comparator outputs.
-- **Principle III - Verification Gates and Reproducible Evidence**: PASS  
-  Plan includes repeatability checks, mismatch checks, and playback validation evidence.
-- **Principle IV - Stable Identity, Ordering, and Logical-Frame Contracts**: PASS  
-  Ordering and cadence contracts are explicit and enforced in design artifacts.
-- **Principle V - Scope Discipline, Toolchain Reality, and Legal Integrity**: PASS  
-  Scope aligned to this repo baseline and Windows/MSYS2 maintained toolchain.
+- **Principle I — Preserve gameplay baseline**: PASS — file naming changes only affect I/O paths, not sim rules.
+- **Principle II — Replay artifacts canonical**: PASS — **`*.tape` / `*.sidecar`** and comparator outputs remain the diagnostic surface.
+- **Principle III — Verification gates**: PASS — repeatability, first-divergence, and playback smoke remain required evidence.
+- **Principle IV — Contracts**: PASS — logical-frame cadence and ordering unchanged; artifact schema parity enforced before field compare.
+- **Principle V — Scope / toolchain**: PASS — Windows MSYS2 path preserved; replay docs must ship with workflow changes.
 
-No constitutional violations require complexity exemptions.
+No justification entries required in Complexity Tracking.
 
 ## Project Structure
 
@@ -46,69 +48,69 @@ No constitutional violations require complexity exemptions.
 
 ```text
 specs/001-baseline-replay-verification/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
+├── plan.md              # This file (/speckit.plan)
+├── research.md          # Phase 0 — resolved policy decisions
+├── data-model.md        # Phase 1 — artifact/session/frame/divergence + path naming model
+├── quickstart.md        # Phase 1 — maintainer validation steps
 ├── contracts/
 │   └── replay-verification-contract.md
-└── tasks.md
+└── tasks.md             # Phase 2 (/speckit.tasks) — not produced by /speckit.plan
 ```
 
-### Source Code (repository root)
+### Source Code (areas touched)
 
 ```text
-sopwith3/
-├── src/
-│   ├── sopwith.cpp
-│   ├── object.cpp
-│   ├── plane.cpp
-│   ├── bomb.cpp
-│   ├── target.cpp
-│   ├── soundsys.cpp
-│   └── ...
-├── docs/
-│   ├── phase2-replay-model-decision.md
-│   └── replay-usage.md (to be added/updated by implementation)
-└── sopwith3.exe
+sopwith3/src/
+├── sopwith.cpp           # replay token → normalized .tape opens; sidecar path + allocation
+├── replay_compare_tool.cpp    # CLI: two paths + optional single-basename batch mode
+├── replay_compare.cpp         # core two-file compare (reuse from batch)
+├── replay_writer.cpp          # unchanged stream API; path chosen by caller
+├── Makefile.msys2 / Makefile  # replay-compare target
 
-specs/001-baseline-replay-verification/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
-└── contracts/replay-verification-contract.md
+sopwith3/scripts/replay/
+└── verify-baseline.ps1   # LeftArtifact/RightArtifact paths → align with *.sidecar
+
+sopwith3/docs/
+├── replay-usage.md
+└── findings.md              # operational notes / evidence
 ```
 
-**Structure Decision**: Use existing single-project native code layout under `sopwith3/src` and keep
-feature design artifacts isolated in `specs/001-baseline-replay-verification`.
+**Structure Decision**: Single native project under `sopwith3/`; specification artifacts isolated under `specs/001-baseline-replay-verification/`.
 
-## Phase 0 - Research Outcome
+## Phase 0 — Research outcome
 
-See `specs/001-baseline-replay-verification/research.md`.
+Captured in `research.md`. Prior comparator/session policies unchanged. Added filesystem and CLI decisions (tape normalization, sidecar allocation, batch pairwise matrix). No unresolved NEEDS CLARIFICATION items remain for implementation planning.
 
-All prior ambiguities are resolved with these decisions:
-- Schema mismatch is a hard comparator failure.
-- Truncated artifact tails compare only through last complete frame, with truncation warning.
-- Missing required row kind is a hard comparator failure.
-- Visual playback validation is included in this feature acceptance.
+## Phase 1 — Design outcome
 
-## Phase 1 - Design Outcome
+| Artifact | Purpose |
+|---------|---------|
+| `data-model.md` | Artifact rows (`SESSION`, frame blocks, divergence) plus **tape/sidecar path** semantics |
+| `contracts/replay-verification-contract.md` | Row/order/compare rules + **file naming and batch replay-compare** CLI contract |
+| `quickstart.md` | Build/run/compare steps aligned with **`*.tape`** / **`*.n.sidecar`** |
 
-- Data model defined in `specs/001-baseline-replay-verification/data-model.md`
-- Interface/contract document defined in `specs/001-baseline-replay-verification/contracts/replay-verification-contract.md`
-- Validation execution guide defined in `specs/001-baseline-replay-verification/quickstart.md`
+Agent context marker in `.cursor/rules/specify-rules.mdc` updated to reference this plan.
 
-## Post-Design Constitution Re-Check
+## Phase 2 — Implementation planning *(stop here for /speckit.plan)*
 
-- Principle I: PASS
-- Principle II: PASS
-- Principle III: PASS
-- Principle IV: PASS
-- Principle V: PASS
+Workstreams for `/speckit.tasks` / implementation (not scheduled in this command):
 
-Re-check result: PASS. No additional constitutional risk introduced by Phase 1 artifacts.
+1. **Tape normalization helper** shared by record/playback open paths in `sopwith.cpp`; apply before `fstream::open`; keep `replay_tape_basename`/session identity consistent with stripped basename sans `.tape`.
+2. **Sidecar path**: resolve directory of normalized tape file; glob/match **`basename.*.sidecar`**; allocate **`max(n)+1`**; replace **`.state.txt`** construction.
+3. **`replay-compare`**: preserve **two-argument** mode; add **single-argument basename** mode per FR-016/FR-017 — discovery, stderr on &lt;2 files, stdout line 1 listing files, nested pairwise loop calling existing **`replay_compare_files`**.
+4. **Docs & scripts**: `replay-usage.md`, `verify-baseline.ps1`, `.gitignore` patterns for **`*.sidecar`** as needed.
+5. **Verification**: unit/integration tests covering normalization edge cases and batch comparator exit codes.
+
+## Post-design constitution re-check
+
+| Principle | Result |
+|-----------|--------|
+| I | PASS |
+| II | PASS |
+| III | PASS |
+| IV | PASS |
+| V | PASS |
 
 ## Complexity Tracking
 
-No constitutional violations or complexity exceptions identified.
+None.

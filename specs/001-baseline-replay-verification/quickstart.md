@@ -38,13 +38,19 @@ every simulation frame while the session is playing.
 
 ## 4) Validate deterministic repeatability
 
-Record or play the same tape twice with identical CLI flags and seed behavior, then compare artifacts:
+Record or play the same tape twice with identical CLI flags and seed behavior (second run allocates a **higher** **`n`** in the same directory: e.g. **`my.1.sidecar`** then **`my.2.sidecar`**). Compare the two sidecars:
 
 ```powershell
-powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact run1.1.sidecar -RightArtifact run2.1.sidecar
+powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact my.1.sidecar -RightArtifact my.2.sidecar
 ```
 
-Expected: exit code 0 and `Replay compare success` when outputs are byte-identical.
+Or batch-compare all pairs for that basename:
+
+```powershell
+.\replay-compare.exe my
+```
+
+Expected: exit code 0 and `Replay compare success` when outputs are byte-identical (two-file mode); batch mode exits 0 only when **every** pairwise comparison succeeds.
 
 ## 5) Validate first-divergence behavior
 
@@ -62,7 +68,7 @@ Create or inject a known mismatch in one artifact and run `replay-compare.exe` d
 Open the same replay for human inspection:
 
 ```powershell
-.\sopwith3.exe -v<replay_file>
+.\sopwith3.exe --% -v<replay_token>
 ```
 
 Expected:

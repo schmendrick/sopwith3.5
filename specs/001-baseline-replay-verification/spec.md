@@ -82,8 +82,7 @@ using the agreed Option A text model, so I can compare runs reliably.
 **Why this priority**: Baseline artifact generation is the minimum value needed before any comparison or
 parity workflow is useful.
 
-**Independent Test (Phase A)**: Record twice with the same single-player tape and seed; confirm both
-numbered sidecars for that basename yield byte-identical output for the emitted `SESSION` line only when comparing the same index (or specify same-run reproduction).
+**Independent Test (Phase A)**: Record or play twice under the same single-player tape and seed; confirm the **`SESSION`** line is byte-identical across the two emitted **`basename.<n>.sidecar`** files (indices may differ between runs—content must still match under controlled inputs).
 
 **Independent Test (Phase B onward)**: Same as Phase A, and confirm both artifacts are byte-identical
 including all required row groups in each frame block.
@@ -207,9 +206,8 @@ completes without replay-flow failure.
 
 ### Measurable Outcomes
 
-- **SC-001**: In repeated baseline runs with the same single-player tape and seed, 100% of produced
-  artifacts at the same sidecar index are identical across runs (**Phase A**: `SESSION` line only; **Phase B onward**:
-  full artifact including frame blocks).
+- **SC-001**: In repeated baseline runs with the same single-player tape and seed, 100% of pairwise
+  comparisons across runs report identical **`SESSION`** rows (**Phase A**) and identical full artifacts (**Phase B onward**, including frame blocks)—independent of which **`n`** each run allocated for the sidecar filename.
 - **SC-002**: Comparison of two artifacts with a known injected difference reports the first divergence at the expected frame and field in 100% of validation cases.
 - **SC-003**: For baseline test sessions, 100% of generated artifacts contain complete ordered frame blocks with required row groups (**Phase B onward**; Phase A does not claim this yet).
 - **SC-004**: Maintainers can identify mismatch location (frame, row kind, field, values) from comparison output within one review pass for all divergence test cases.
