@@ -8,8 +8,9 @@ From `sopwith3` directory:
 sopwith3.exe -h<replay_file>
 ```
 
-This writes binary replay input history. Baseline artifact scaffolding additionally writes a text
-state file at `<replay_file>.state.txt` during recording initialization.
+This writes binary replay input history. A text state artifact is written to `<replay_file>.state.txt`
+with a full `SESSION` row plus one `FRAME_BEGIN`…`FRAME_END` block per simulated frame while the match
+is in progress.
 
 Notes:
 - Replay options require attached filenames (no space): `-hmy.rec`, `-vmy.rec`.
@@ -22,7 +23,9 @@ Notes:
 sopwith3.exe -v<replay_file>
 ```
 
-Use playback for visual inspection and deterministic baseline checks.
+Use playback for visual inspection and deterministic baseline checks. Playback also writes
+`<replay_file>.state.txt` using the same layout as recording (session identity reflects the tape
+basename and current options).
 
 ## Playback Log Output
 
@@ -57,13 +60,38 @@ playback_close=ok
 - Deferred scope: multiplayer/network parity and non-baseline replay formats.
 - Schema version mismatch is treated as a hard comparison failure.
 
-## Baseline Verification Scaffold
+## Baseline verification (byte compare)
 
-The baseline helper script verifies expected artifact inputs exist:
+Build the standalone comparator from `sopwith3/src`:
+
+```text
+mingw32-make -f Makefile.msys2 replay-compare
+```
+
+Then compare two artifacts (exit code 0 only when files are byte-identical line-for-line):
 
 ```text
 powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.state.txt> -RightArtifact <b.state.txt>
 ```
+
+`replay-compare.exe` is produced next to `sopwith3.exe` in the `sopwith3` directory.
+
+### Parity notes (golden baselines and ports)
+
+Treat two `.state.txt` files as comparable only when the underlying run is intended to be the same:
+same binary replay tape [tape meaning the binary replay file you create via "-h"] 
+(same file path not required; same tape bytes and header seed matter), same
+CLI-affecting options that appear in `SESSION`, and the same stretch of gameplay (artifact length and
+frame count change if one run exits earlier). The tape is the source of input history; the sidecar (the .state.txt file besides your tape) is a
+derived trace for diffing and for future parity checks (for example a C# port replaying the same tape at
+logical-frame cadence). Checked-in golden artifacts are optional until serialization and repeatability are
+stable enough that two reference runs produce identical bytes under those controlled conditions.
+
+Each `FRAME` row includes only `frame_index` (no timer remainder fields), so comparisons are not sensitive
+to wall-clock pacing differences between runs.
+
+Schema **v2** sidecars include **`object_kind=`** on every `OBJECT` row (see phase2 decision doc for tokens).
+Some kinds omit **`hitcounter`** in the dump when gameplay never uses that field on that type.
 
 ## Visual Playback Validation
 

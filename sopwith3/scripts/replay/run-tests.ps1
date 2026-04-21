@@ -26,7 +26,9 @@ $testCases = @(
     Name = "test_artifact_generation"
     Source = Join-Path $repoRoot "tests\replay\test_artifact_generation.cpp"
     ExtraObjects = @(
-      (Join-Path $srcDir "build\sdl\replay_contract.o")
+      (Join-Path $srcDir "build\sdl\replay_contract.o"),
+      (Join-Path $srcDir "build\sdl\replay_ordering.o"),
+      (Join-Path $srcDir "build\sdl\replay_parser.o")
     )
     Args = @()
   },

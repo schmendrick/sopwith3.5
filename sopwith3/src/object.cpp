@@ -33,11 +33,30 @@
 #include "bomb.h"
 #include <algorithm>
 
+/* Value-initialize all Object primitives so subclasses that omit a field never leave it undefined.
+   The replay verification sidecar may serialize fields from the Object base before every subclass sets
+   them (e.g. Smoke/Bullet constructors set position/life but not hitcounter). Previously uninitialized
+   ints produced run-to-run garbage in .state.txt diffs; zeros mean "unset" consistently. */
+
 Object::Object() :
+  x(0, 0),
+  y(0, 0),
+  xv(0, 0),
+  yv(0, 0),
+  angle(0),
+  inverted(false),
   speed(0),
+  firing(false),
+  hitcounter(0),
+  life(0),
+  width(0),
+  height(0),
+  colour(0),
   /**/sprite(0),/**/
   /**/coll(0),/**/
-  hastone(false)
+  hastone(false),
+  tonefreq(0),
+  tonechange(0)
 {}
 
 bool Object::onmap()

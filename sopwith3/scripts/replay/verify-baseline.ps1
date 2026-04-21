@@ -3,6 +3,13 @@ param(
   [string]$RightArtifact
 )
 
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
+$compareExe = Join-Path $repoRoot "replay-compare.exe"
+
 if (-not $LeftArtifact -or -not $RightArtifact) {
   Write-Host "Usage: verify-baseline.ps1 -LeftArtifact <file> -RightArtifact <file>"
   exit 1
@@ -18,7 +25,15 @@ if (-not (Test-Path $RightArtifact)) {
   exit 1
 }
 
-Write-Host "Baseline replay verification scaffold ready."
+if (-not (Test-Path $compareExe)) {
+  Write-Host "replay-compare.exe not found at: $compareExe"
+  Write-Host "Build it from sopwith3/src: mingw32-make -f Makefile.msys2 replay-compare"
+  exit 1
+}
+
+Write-Host "Comparing artifacts with replay-compare.exe"
 Write-Host "Left:  $LeftArtifact"
 Write-Host "Right: $RightArtifact"
-exit 0
+
+& $compareExe $LeftArtifact $RightArtifact
+exit $LASTEXITCODE

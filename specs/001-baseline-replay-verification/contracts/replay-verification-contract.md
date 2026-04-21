@@ -24,7 +24,7 @@ Terminology normalization: this document uses "artifact" for emitted text state 
 - `GROUND`
 - `PLAYER` (single-player baseline expects one per frame)
 - `ENEMY` (0..n)
-- `OBJECT` (0..n)
+- `OBJECT` (0..n): each row MUST include **`object_kind`** (`Bomb`, `Bullet`, `Bird`, … per schema v2+) so consumers can validate fields per type.
 - `FRAME_END`
 
 ## Ordering Contract
@@ -65,3 +65,10 @@ Across artifact:
 - `field_name`
 - `lhs_value`
 - `rhs_value`
+
+## Regression fixtures after live emission stabilizes
+
+When `schema_version`, `engine_version` (`SESSION|version=`), entity field sets, or terrain serialization
+(`GROUND|...`) change intentionally, update any checked-in `.state.txt` fixtures and the replay unit tests
+that embed canonical artifacts. Prefer regenerating fixtures from two identical controlled runs (same
+tape, seed, and CLI flags) and committing the pair only after `replay-compare.exe` reports success.

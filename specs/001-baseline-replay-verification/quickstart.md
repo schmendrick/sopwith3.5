@@ -8,36 +8,47 @@ From repository root, use the maintained MSYS2 SDL build workflow:
 .\sopwith3\sdlbuild.bat
 ```
 
-## 2) Record a replay tape (baseline input)
+## 2) Build the replay comparator (optional but required for script compare)
+
+From `sopwith3/src` in a MINGW64 shell:
+
+```text
+mingw32-make -f Makefile.msys2 replay-compare
+```
+
+This places `replay-compare.exe` next to `sopwith3.exe` in the `sopwith3` directory.
+
+## 3) Record or play back a replay tape
 
 From `sopwith3` directory:
 
 ```powershell
-.\sopwith3.exe -h<replay_file>
+.\sopwith3.exe --% -hmy.rec
 ```
 
-Create two runs with identical intended seed/input conditions for repeatability checks.
-
-## 3) Generate replay verification artifacts
-
-Run replay playback with artifact dump output enabled (flag names may match final implementation):
+or playback:
 
 ```powershell
-.\sopwith3.exe -v<replay_file> --dump-state <artifact_file>
+.\sopwith3.exe --% -vmy.rec
 ```
 
-Generate at least:
-- `artifact_run1.txt`
-- `artifact_run2.txt`
+Each run writes `my.rec.state.txt` beside the tape: one `SESSION` row (including `gamemode`,
+`session_id`, `version`, `rules_version`, seed, latency, player index) and full per-frame blocks for
+every simulation frame while the session is playing.
 
 ## 4) Validate deterministic repeatability
 
-- Compare `artifact_run1.txt` and `artifact_run2.txt`
-- Expected: no divergence for identical replay and seed
+Record or play the same tape twice with identical CLI flags and seed behavior, then compare artifacts:
+
+```powershell
+powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact run1.rec.state.txt -RightArtifact run2.rec.state.txt
+```
+
+Expected: exit code 0 and `Replay compare success` when outputs are byte-identical.
 
 ## 5) Validate first-divergence behavior
 
-Create or inject a known mismatch in one artifact and run comparator:
+Create or inject a known mismatch in one artifact and run `replay-compare.exe` directly:
 - Expected: first mismatch output with `frame_index`, `row_kind`, `field_name`, `lhs_value`, `rhs_value`
 
 ## 6) Validate structural failure rules
