@@ -37,7 +37,7 @@ int main()
     "SESSION|schema_version=1|initial_seed=42|latency=1|playerindex=0|gamemode=SINGLE|session_id=demo.rec|"
     "version=sopwith3-replay-v1|rules_version=2\n"
     "FRAME_BEGIN|frame_index=0\n"
-    "FRAME|frame_index=0|speedtick=0\n"
+    "FRAME|frame_index=0\n"
     "GROUND|frame_index=0|z0000=0\n"
     "PLAYER|entity_id=0|angle=0|x_int=0\n"
     "FRAME_END|frame_index=0\n";

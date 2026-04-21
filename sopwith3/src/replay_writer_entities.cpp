@@ -108,7 +108,7 @@ static void append_ground_line(int frame_index)
   replay_writer_emit_line(line);
 }
 
-void replay_write_logical_frame_snapshot(int frame_index, unsigned speedtick)
+void replay_write_logical_frame_snapshot(int frame_index)
 {
   if (!replay_writer_is_open()) {
     return;
@@ -139,7 +139,7 @@ void replay_write_logical_frame_snapshot(int frame_index, unsigned speedtick)
   std::sort(objects.begin(), objects.end(), replay_object_less);
 
   replay_write_frame_begin(frame_index);
-  replay_write_frame_row(frame_index, speedtick);
+  replay_write_frame_row(frame_index);
   append_ground_line(frame_index);
 
   std::vector<ReplayEntityRow> player_rows;

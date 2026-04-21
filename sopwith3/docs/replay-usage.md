@@ -76,6 +76,20 @@ powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.state.txt> 
 
 `replay-compare.exe` is produced next to `sopwith3.exe` in the `sopwith3` directory.
 
+### Parity notes (golden baselines and ports)
+
+Treat two `.state.txt` files as comparable only when the underlying run is intended to be the same:
+same binary replay tape [tape meaning the binary replay file you create via "-h"] 
+(same file path not required; same tape bytes and header seed matter), same
+CLI-affecting options that appear in `SESSION`, and the same stretch of gameplay (artifact length and
+frame count change if one run exits earlier). The tape is the source of input history; the sidecar (the .state.txt file besides your tape) is a
+derived trace for diffing and for future parity checks (for example a C# port replaying the same tape at
+logical-frame cadence). Checked-in golden artifacts are optional until serialization and repeatability are
+stable enough that two reference runs produce identical bytes under those controlled conditions.
+
+Each `FRAME` row includes only `frame_index` (no timer remainder fields), so comparisons are not sensitive
+to wall-clock pacing differences between runs.
+
 ## Visual Playback Validation
 
 Use the smoke script to prepare visual verification:

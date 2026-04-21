@@ -103,10 +103,10 @@ void replay_write_frame_end(int frame_index)
   replay_writer_stream << "FRAME_END|frame_index=" << frame_index << "\n";
 }
 
-void replay_write_frame_row(int frame_index, unsigned speedtick)
+void replay_write_frame_row(int frame_index)
 {
   if (!replay_writer_is_open()) {
     return;
   }
-  replay_writer_stream << "FRAME|frame_index=" << frame_index << "|speedtick=" << speedtick << "\n";
+  replay_writer_stream << "FRAME|frame_index=" << frame_index << "\n";
 }

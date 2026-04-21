@@ -896,7 +896,7 @@ void mainloop()
       updatejoy();
       updatesound();
       if (replay_writer_is_open()) {
-        replay_write_logical_frame_snapshot(framecounter, speedtick);
+        replay_write_logical_frame_snapshot(framecounter);
       }
       if ((framecounter%60)==0) {
         // #region agent log

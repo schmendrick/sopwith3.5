@@ -22,7 +22,7 @@ void replay_writer_emit_line(const std::string& line);
 void replay_write_session_row(const ReplaySessionInfo& info);
 void replay_write_frame_begin(int frame_index);
 void replay_write_frame_end(int frame_index);
-void replay_write_frame_row(int frame_index, unsigned speedtick);
+void replay_write_frame_row(int frame_index);
 
 std::string replay_build_entity_payload(const std::string& row_kind, int entity_id, const std::string& payload);
 
