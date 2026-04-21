@@ -465,7 +465,7 @@ void inithistory()
     std::string statefile = stateTape + ".state.txt";
     if (replay_open_writer(statefile)) {
       ReplaySessionInfo session;
-      session.schema_version = 1;
+      session.schema_version = 2;
       session.initial_seed = randv;
       session.latency = latency;
       session.playerindex = playerindex;

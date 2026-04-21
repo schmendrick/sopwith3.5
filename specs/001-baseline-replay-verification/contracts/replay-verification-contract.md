@@ -24,7 +24,7 @@ Terminology normalization: this document uses "artifact" for emitted text state 
 - `GROUND`
 - `PLAYER` (single-player baseline expects one per frame)
 - `ENEMY` (0..n)
-- `OBJECT` (0..n)
+- `OBJECT` (0..n): each row MUST include **`object_kind`** (`Bomb`, `Bullet`, `Bird`, … per schema v2+) so consumers can validate fields per type.
 - `FRAME_END`
 
 ## Ordering Contract
