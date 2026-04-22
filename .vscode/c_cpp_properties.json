@@ -2,6 +2,7 @@
   "configurations": [
     {
       "name": "Win32-MinGW-SDL",
+      "compileCommands": "${workspaceFolder}/compile_commands.json",
       "includePath": [
         "${workspaceFolder}/sopwith3/src",
         "${workspaceFolder}/sopwith3/src/sdl",

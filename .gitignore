@@ -9,6 +9,9 @@ build/
 bin/
 out/
 
+# Generated locally (paths match this machine's MSYS2 layout)
+compile_commands.json
+
 # IDE / OS
 .vs/
 .DS_Store
@@ -37,4 +40,6 @@ error
 # Spec Kit local memory (often session-specific)
 .specify/memory/
 /sopwith3/*.rec
+/sopwith3/*.tape
+/sopwith3/*.sidecar
 /sopwith3/*.rec.state.txt

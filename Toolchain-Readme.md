@@ -57,6 +57,14 @@ Or start it from that folder in File Explorer. If you move only the `.exe` witho
 
 Open the **repository root** folder that contains **`sopwith3/src`** and **`.vscode/`** (the parent of the inner `sopwith3` game directory).
 
+- **Compile database (clangd / IntelliSense):** From a shell where **`mingw32-make`**, **`g++`**, and **`pkg-config`** work (same as for building — typically **MSYS2 MinGW 64-bit**), run:
+
+  ```bash
+  python sopwith3/scripts/gen-compile-commands.py
+  ```
+
+  This writes **`compile_commands.json`** at the repository root (ignored by git). **clangd** and **Anysphere C/C++** pick it up so **Go to Definition**, `<string>`, and `std::` resolve correctly. Regenerate after changing **`Makefile.msys2`** or the source list.
+
 - **Build:** Command Palette → **Tasks: Run Build Task** (or set a keybinding for **`workbench.action.tasks.build`**). In **Cursor**, **Ctrl+Shift+B** is sometimes bound to something else (for example opening a browser); if so, assign **Run Build Task** to **Ctrl+Shift+B** in **Keyboard Shortcuts**, or run the task named **`build: sopwith3 (MSYS2)`** from the command palette.
 - **C++ extension:** In **Cursor**, use **Anysphere C/C++** (`anysphere.cpptools`);
 - **Debug:** **F5** needs the **C/C++** debugger support from that extension (or **CodeLLDB** if you switch) and **GDB** at **`C:\msys64\mingw64\bin\gdb.exe`**. The compiler package alone does not install GDB; from an **MSYS2 MinGW 64-bit** shell run **`pacman -S mingw-w64-x86_64-gdb`**. If **`miDebuggerPath` is invalid**, GDB is missing or MSYS2 lives elsewhere—in the latter case set a user environment variable **`MINGW64_GDB`** to the full path of **`gdb.exe`** and use the launch configuration **Debug sopwith3 (gdb, MINGW64_GDB)**. The debug configuration runs the build task first; if the build fails, fix **`sopwith3/sdlbuild.bat`** first.
