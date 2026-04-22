@@ -18,7 +18,7 @@
 **Purpose**: Prepare feature docs and harness baselines for branch-parity extension.
 
 - [X] T001 Create branch-parity evidence file scaffold in `specs/004-rng-branch-parity/evidence.md`
-- [X] T002 Align parity-harness readme references to new branch-parity feature in `parity-harness/README.md`
+- [X] T002 Align tools README references to new branch-parity feature in `tools/README.md`
 
 ---
 
@@ -29,7 +29,7 @@
 **⚠️ CRITICAL**: No story implementation starts until this phase is complete.
 
 - [X] T003 Define canonical branch-output field order in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
-- [X] T004 Implement/refresh common output parser helper for parity rows in `parity-harness/run-rng-parity.ps1`
+- [X] T004 Implement/refresh common output parser helper for parity rows in `tools/run-rng-parity.ps1`
 - [X] T005 Add mismatch report format contract (`token`, `steps`, `step`, `field`) in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
 
 **Checkpoint**: Shared branch-parity output contract is fixed.
@@ -49,10 +49,10 @@
 
 ### Implementation for User Story 1
 
-- [X] T008 [US1] Extend C++ harness output rows with `troubled_sound_bit` and `explosion_type` in `sopwith3/src/rng_parity_tool.cpp`
-- [X] T009 [US1] Extend C# harness output rows with `troubled_sound_bit` and `explosion_type` in `parity-harness/csharp/Program.cs`
+- [X] T008 [US1] Extend C++ harness output rows with `troubled_sound_bit` and `explosion_type` in `sopwith3/tools/rng_parity_tool.cpp`
+- [X] T009 [US1] Extend C# harness output rows with `troubled_sound_bit` and `explosion_type` in `tools/csharp/Program.cs`
 - [X] T010 [US1] Ensure C++ build target remains valid after output extension in `sopwith3/src/Makefile.msys2`
-- [X] T011 [US1] Update parity runner row-compare assumptions for new fields in `parity-harness/run-rng-parity.ps1`
+- [X] T011 [US1] Update parity runner row-compare assumptions for new fields in `tools/run-rng-parity.ps1`
 
 **Checkpoint**: Branch-decision parity for troubled-sound-bit and explosion-type is executable and comparable.
 
@@ -66,14 +66,14 @@
 
 ### Tests for User Story 2
 
-- [X] T012 [P] [US2] Validate default matrix run command and expected pass output text in `parity-harness/README.md`
+- [X] T012 [P] [US2] Validate default matrix run command and expected pass output text in `tools/README.md`
 - [X] T013 [P] [US2] Validate expanded matrix command (`1024` steps) in `specs/004-rng-branch-parity/quickstart.md`
 
 ### Implementation for User Story 2
 
 - [X] T014 [US2] Add explicit branch-parity reproduce commands and prerequisites in `specs/004-rng-branch-parity/quickstart.md`
-- [X] T015 [US2] Add .NET/MSYS2 troubleshooting notes specific to branch parity in `parity-harness/README.md`
-- [X] T016 [US2] Add deterministic command examples for token/step overrides in `parity-harness/run-rng-parity.ps1` usage section/comments
+- [X] T015 [US2] Add .NET/MSYS2 troubleshooting notes specific to branch parity in `tools/README.md`
+- [X] T016 [US2] Add deterministic command examples for token/step overrides in `tools/run-rng-parity.ps1` usage section/comments
 
 **Checkpoint**: Maintainers can reliably reproduce branch-parity checks end-to-end.
 
@@ -105,7 +105,7 @@
 
 - [X] T021 [P] Re-run full parity matrix (including `1024` steps) and capture output in `specs/004-rng-branch-parity/evidence.md`
 - [X] T022 Verify branch-parity contract/spec/plan/tasks alignment in `specs/004-rng-branch-parity/`
-- [X] T023 [P] Update any cross-feature references from `003` to `004` where branch parity is now authoritative in `parity-harness/README.md` and `specs/004-rng-branch-parity/quickstart.md`
+- [X] T023 [P] Update any cross-feature references from `003` to `004` where branch parity is now authoritative in `tools/README.md` and `specs/004-rng-branch-parity/quickstart.md`
 
 ---
 

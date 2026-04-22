@@ -45,9 +45,9 @@ Branch: `003-phase2b-determinism-prereqs`
 ### Harness artifacts
 
 - C++ mini-exe: `sopwith3/rng-parity-cpp.exe`
-- C# mini-exe project: `parity-harness/csharp/RngParityHarness.csproj`
-- parity runner: `parity-harness/run-rng-parity.ps1`
-- harness usage/repro doc: `parity-harness/README.md`
+- C# mini-exe project: `tools/csharp/RngParityHarness.csproj`
+- parity runner: `tools/run-rng-parity.ps1`
+- harness usage/repro doc: `tools/README.md`
 - frozen contract: `specs/003-phase2b-determinism-prereqs/rng-core-contract.md`
 
 ### Executed command
@@ -55,7 +55,7 @@ Branch: `003-phase2b-determinism-prereqs`
 From repo root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1
 ```
 
 ### Cases
@@ -83,3 +83,7 @@ choco install dotnet-sdk --version=10.0.203 -y
 
 - The parity harness provides an objective pre-port gate for deterministic behavior.
 - Isolating RNG-core parity from full game logic reduces debugging scope and de-risks C# implementation.
+
+## Phase 2C gameplay parity surface (rollup pointer)
+
+Phase 2C adds a separate gameplay parity harness and matrix runner (does not replace RNG parity). Evidence and commands for that feature live under `specs/006-gameplay-parity-surface/evidence.md` and `tools/run-gameplay-parity.ps1`.

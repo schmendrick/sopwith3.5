@@ -5,7 +5,7 @@
 This harness validates deterministic RNG-core and branch-decision parity between:
 
 - C++ executable: `sopwith3/rng-parity-cpp.exe`
-- C# executable: `parity-harness/csharp` (`net10.0`)
+- C# executable: `tools/csharp` (`net10.0`)
 
 It verifies that both languages produce byte-identical output for:
 
@@ -43,8 +43,21 @@ dotnet --list-sdks
 From repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1
 ```
+
+## Gameplay parity (Phase 2C)
+
+This is a **separate** harness from RNG parity. It validates a bounded gameplay decision surface with byte-identical C++/C# output for a versioned matrix.
+
+- Runner: `tools/run-gameplay-parity.ps1`
+- Matrix: `tools/gameplay-parity-matrix.json`
+- Contract: `specs/006-gameplay-parity-surface/contracts/gameplay-parity-contract.md`
+
+RNG parity remains the Phase 2B/004 gate and is unchanged:
+
+- Runner: `tools/run-rng-parity.ps1`
+- Branch contract: `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
 
 Default matrix:
 
@@ -54,13 +67,13 @@ Default matrix:
 Expanded confidence run:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Steps 16,128,1024
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Steps 16,128,1024
 ```
 
 Token/step override example:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Tokens full,computer -Steps 16,128,1024
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Tokens full,computer -Steps 16,128,1024
 ```
 
 The script builds both harnesses, compares outputs byte-by-byte, and reports the first mismatch

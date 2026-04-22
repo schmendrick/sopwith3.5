@@ -199,7 +199,7 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 
 ### Implementation for User Story 2 (comparator CLI)
 
-- [X] T053 [US2] Extend `main` / usage in `sopwith3/src/replay_compare_tool.cpp`: **two args** unchanged; **one arg** basename ⇒ glob cwd **`basename.<n>.sidecar`**, numeric sort, print matched paths; **exactly two** ⇒ **`replay_compare_files`**; otherwise non-zero per FR-016
+- [X] T053 [US2] Extend `main` / usage in `sopwith3/tools/replay_compare_tool.cpp`: **two args** unchanged; **one arg** basename ⇒ glob cwd **`basename.<n>.sidecar`**, numeric sort, print matched paths; **exactly two** ⇒ **`replay_compare_files`**; otherwise non-zero per FR-016
 - [X] T054 [P] [US2] Register new replay tests target sources in `sopwith3/src/Makefile.msys2` if adding new test translation units
 
 ### Tests *(spec mandates measurable outcomes)*

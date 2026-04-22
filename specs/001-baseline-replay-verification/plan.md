@@ -61,10 +61,12 @@ specs/001-baseline-replay-verification/
 ```text
 sopwith3/src/
 ├── sopwith.cpp           # replay token → normalized .tape opens; sidecar path + allocation
-├── replay_compare_tool.cpp    # CLI: two paths + single-basename discover (exactly 2 ⇒ compare)
 ├── replay_compare.cpp         # core two-file compare
 ├── replay_writer.cpp          # unchanged stream API; path chosen by caller
 ├── Makefile.msys2 / Makefile  # replay-compare target
+
+sopwith3/tools/
+└── replay_compare_tool.cpp    # CLI: two paths + single-basename discover (exactly 2 ⇒ compare)
 
 sopwith3/scripts/replay/
 └── verify-baseline.ps1   # LeftArtifact/RightArtifact paths → align with *.sidecar

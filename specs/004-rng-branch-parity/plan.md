@@ -52,10 +52,12 @@ specs/004-rng-branch-parity/
 
 ```text
 sopwith3/src/
-├── rng_parity_tool.cpp
 └── Makefile.msys2
 
-parity-harness/
+sopwith3/tools/
+└── rng_parity_tool.cpp
+
+tools/
 ├── run-rng-parity.ps1
 └── csharp/
    ├── RngParityHarness.csproj
