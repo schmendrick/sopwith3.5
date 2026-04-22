@@ -40,10 +40,20 @@ every simulation frame while the session is playing.
 
 ## 4) Validate deterministic repeatability
 
+Stay in the **`sopwith3`** directory (same folder as **`sopwith3.exe`** and **`replay-compare.exe`**).
+
 Record or play the same tape twice with identical CLI flags and seed behavior (second run allocates a **higher** **`n`** in the same directory: e.g. **`my.1.sidecar`** then **`my.2.sidecar`**). Compare the two sidecars:
 
+From repository root:
+
 ```powershell
-powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact my.1.sidecar -RightArtifact my.2.sidecar
+powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact sopwith3/my.1.sidecar -RightArtifact sopwith3/my.2.sidecar
+```
+
+Or from **`sopwith3`** with relative artifact paths:
+
+```powershell
+powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact my.1.sidecar -RightArtifact my.2.sidecar
 ```
 
 Or invoke basename discovery (compare **only** if **exactly two** `my.*.sidecar` files exist):

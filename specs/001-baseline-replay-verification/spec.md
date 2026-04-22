@@ -2,8 +2,8 @@
 
 **Feature Branch**: `001-baseline-replay-verification`  
 **Created**: 2026-04-21  
-**Updated**: 2026-04-23 (single-basename two-file compare + >2 matches list-only behavior)  
-**Status**: Draft  
+**Updated**: 2026-04-24 (feature close-out: delivery phases aligned with completed `tasks.md`; status implemented)  
+**Status**: Implemented  
 **Input**: User description: "Create the baseline replay verification feature spec from sopwith3/docs/phase2-replay-model-decision.md. Preserve the chosen Option A model; row ordering contract, logical-frame cadence, and first-divergence comparison contract as normative requirements; schema/version match as a strict comparison gate (see clarifications). Scope is single-player baseline first." Subsequent updates (2026-04-22): tape filename normalization (`*.tape`), numbered sidecar files (`*.n.sidecar`), single-basename `replay-compare` discovery (exactly two sidecars to compare), CLI record/playback flag wording aligned with current `sopwith3/src` behavior.
 
 ## CLI record vs playback *(terminology)*
@@ -12,17 +12,14 @@ Examples and requirements use **record** and **playback** semantics. Behavior ap
 
 ## Delivery phases *(implementation alignment)*
 
-- **Phase A (done / scaffold)**: Text sidecar next to the normalized binary tape (`<replay>.<n>.sidecar`; see naming below) with a minimal
-  `SESSION` row; replay test harness and playback instrumentation logs. Serves wiring and manual smoke,
-  not full parity dumps yet.
-- **Phase B (next)**: Complete `SESSION` per decision doc (including `gamemode`, `session_id`, `version`,
-  and any other fields required so two runs are comparable only when session identity matches). Emit
-  per-frame blocks (`FRAME_BEGIN` … `FRAME_END`) at logical-frame cadence with required row kinds/fields.
-- **Phase C**: Comparator consumes full artifact contract (structure + field equality + first divergence)
-  end-to-end against real emitted frames.
+Shipped milestones align with [`tasks.md`](tasks.md) Phases 3–10:
 
-Until Phase B is complete, success criteria that require full frame blocks apply to **Phase B onward**,
-not to Phase A scaffold output.
+- **Phase A (historical scaffold)**: Early wiring with minimal `SESSION`, harness, and instrumentation. Superseded by full emission for current builds.
+- **Phase B — delivered** (`tasks.md` Phase 8): Complete `SESSION` per decision doc (including `gamemode`, `session_id`, `version`, and fields needed for comparable baselines). Emits ordered per-frame blocks (`FRAME_BEGIN` … `FRAME_END`) at logical simulation cadence with required row kinds/fields.
+- **Phase C — delivered** (`tasks.md` Phase 9): Comparator and verification scripts run end-to-end against **live** emitted sidecars (integration path and documented fixture/process notes).
+- **Filesystem contract — delivered** (`tasks.md` Phase 10; FR-014–FR-016): Canonical **`basename.tape`** after replay-token normalization; numbered **`basename.<n>.sidecar`** with **`max(existing n)+1`** allocation; **`replay-compare <basename>`** discovery (exactly two matches ⇒ one compare; list-only + non-zero when not exactly two).
+
+Normative success criteria in this spec apply to the **shipped** baseline (full frame blocks + filesystem contract). Legacy Phase-A-only artifacts are not the acceptance target for new work.
 
 ## Clarifications
 
@@ -87,19 +84,16 @@ using the agreed Option A text model, so I can compare runs reliably.
 **Why this priority**: Baseline artifact generation is the minimum value needed before any comparison or
 parity workflow is useful.
 
-**Independent Test (Phase A)**: Record or play twice under the same single-player tape and seed; confirm the **`SESSION`** line is byte-identical across the two emitted **`basename.<n>.sidecar`** files (indices may differ between runs—content must still match under controlled inputs).
+**Independent Test (minimal)**: Record or play twice under the same single-player tape and seed; confirm the **`SESSION`** line is byte-identical across the two emitted **`basename.<n>.sidecar`** files (indices may differ between runs—content must still match under controlled inputs).
 
-**Independent Test (Phase B onward)**: Same as Phase A, and confirm both artifacts are byte-identical
-including all required row groups in each frame block.
+**Independent Test (full baseline)**: Same as minimal, and confirm both artifacts are byte-identical including all required row groups in each frame block.
 
 **Acceptance Scenarios**:
 
 1. **Given** a valid single-player replay tape and seed, **When** baseline replay artifact generation runs,
-   **Then** a text artifact is produced with one `SESSION` row; **after Phase B**, it also includes ordered
-   frame blocks per logical frame.
+   **Then** a text artifact is produced with one `SESSION` row and ordered frame blocks per logical frame.
 2. **Given** a produced artifact, **When** it is inspected for required row kinds and fields,
-   **Then** all required data for baseline verification is present and consistently formatted (**Phase B onward**
-   for full frame contract; Phase A validates `SESSION` only).
+   **Then** all required data for baseline verification is present and consistently formatted under the full frame contract.
 3. **Given** a replay token passed with `-h` or `-v`, **When** the engine resolves binary tape paths,
    **Then** normalization yields a single canonical `.tape` path and sidecars follow `<basename>.<n>.sidecar` rules.
 
@@ -213,9 +207,9 @@ completes without replay-flow failure.
 ### Measurable Outcomes
 
 - **SC-001**: In repeated baseline runs with the same single-player tape and seed, 100% of pairwise
-  comparisons across runs report identical **`SESSION`** rows (**Phase A**) and identical full artifacts (**Phase B onward**, including frame blocks)—independent of which **`n`** each run allocated for the sidecar filename.
+  comparisons across runs report identical **`SESSION`** rows and identical full artifacts (including frame blocks)—independent of which **`n`** each run allocated for the sidecar filename.
 - **SC-002**: Comparison of two artifacts with a known injected difference reports the first divergence at the expected frame and field in 100% of validation cases.
-- **SC-003**: For baseline test sessions, 100% of generated artifacts contain complete ordered frame blocks with required row groups (**Phase B onward**; Phase A does not claim this yet).
+- **SC-003**: For baseline test sessions, 100% of generated artifacts contain complete ordered frame blocks with required row groups.
 - **SC-004**: Maintainers can identify mismatch location (frame, row kind, field, values) from comparison output within one review pass for all divergence test cases.
 - **SC-005**: For baseline validation runs, 100% of replay samples selected for verification can be opened and viewed end-to-end in visual playback mode.
 - **SC-006**: For any replay token, normalized tape path resolves consistently: two tokens that differ only by `.rec` vs `.tape` suffix yield the same opened binary file path.
@@ -227,7 +221,10 @@ completes without replay-flow failure.
 - Existing replay recording and playback workflow remains the source input path for this feature, augmented by canonical `.tape` naming.
 - Artifact consumers need deterministic, human-reviewable outputs suitable for automated diff workflows.
 - Schema changes may evolve in later phases, but baseline comparison requires matching schema versions.
-- Session identity for comparison includes mode and related CLI-affecting settings once Phase B emits a
-  complete `SESSION` row; differing settings imply different baselines, not “similar” parity runs.
+- Session identity for comparison includes mode and related CLI-affecting settings from the complete `SESSION` row; differing settings imply different baselines, not “similar” parity runs.
 - Two-argument **`replay-compare`** compares explicit paths; single-basename mode (FR-016) is a convenience when **exactly two** sidecars exist for that basename.
 - Maintainers run **one** recording/playback session at a time per basename output directory when relying on deterministic sidecar numbering (concurrent processes undefined for v1).
+
+## Feature close-out
+
+After implementation, use [`CLOSEOUT.md`](CLOSEOUT.md) for branch merge and optional tagging steps.
