@@ -48,6 +48,7 @@
 #include "replay_writer.h"
 #include "replay_writer_entities.h"
 #include "replay_visual_validation.h"
+#include "replay_paths.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -166,8 +167,8 @@ int start(int argc,char* argv[])
         helptext+="-E#: Set amount of computer planes to # (may be truncated) (!)\n";
         helptext+="-O : Position players in order of connection (!)\n";
         helptext+="-H : Show this help\n";
-        helptext+="-h/-v require attached filename (no space), e.g. -hmy.rec -vmy.rec\n";
-        helptext+="-Recording or playback writes <file>.state.txt (full frame dump)\n";
+        helptext+="-h/-v require attached filename (no space), e.g. -hmy -vshort (canonical tape is basename.tape)\n";
+        helptext+="-Recording or playback writes basename.<n>.sidecar beside the tape (full frame dump)\n";
         helptext+="-h and -v are single player only      -E is multiplayer only\n";
         helptext+="(!) will be overridden by server";
         message(helptext);
@@ -417,24 +418,19 @@ void run()
   // #endregion
 }
 
-static std::string replay_tape_basename(const std::string& path)
-{
-  std::string::size_type slash = path.find_last_of("/\\");
-  if (slash == std::string::npos) {
-    return path;
-  }
-  return path.substr(slash + 1);
-}
-
 void inithistory()
 {
   inputfile.exceptions(~std::ios::goodbit);
   outputfile.exceptions(~std::ios::goodbit);
   /**/short historybufsize=static_cast<short>(-1);/**/ /* -1 is arbitrary */
+  std::string normPlayback;
+  std::string normRecord;
   if (!playbackfilename.empty()) {
+    normPlayback = replay_normalize_replay_token_to_tape_path(playbackfilename);
     replay_visual_log_note(std::string("playback_open_attempt=")+playbackfilename);
+    replay_visual_log_note(std::string("playback_tape_path=")+normPlayback);
     try {
-      inputfile.open(playbackfilename.c_str(),std::ios::binary);
+      inputfile.open(normPlayback.c_str(),std::ios::binary);
     }
     catch(...) {
       throw sw_excep("Unable to open history input file");
@@ -445,8 +441,9 @@ void inithistory()
     replay_visual_log_note(std::string("playback_header_seed=")+tostring(randv));
   }
   if (!recordfilename.empty()) {
+    normRecord = replay_normalize_replay_token_to_tape_path(recordfilename);
     try {
-      outputfile.open(recordfilename.c_str(),std::ios::binary);
+      outputfile.open(normRecord.c_str(),std::ios::binary);
     }
     catch(...) {
       throw sw_excep("Unable to open history output file");
@@ -454,15 +451,15 @@ void inithistory()
     putshort(outputfile,randv);
     putshort(outputfile,historybufsize);
   }
-  std::string stateTape;
+  std::string stateTapeNorm;
   if (!recordfilename.empty()) {
-    stateTape = recordfilename;
+    stateTapeNorm = normRecord;
   }
   else if (!playbackfilename.empty()) {
-    stateTape = playbackfilename;
+    stateTapeNorm = normPlayback;
   }
-  if (!stateTape.empty()) {
-    std::string statefile = stateTape + ".state.txt";
+  if (!stateTapeNorm.empty()) {
+    std::string statefile = replay_allocate_next_sidecar_path(stateTapeNorm);
     if (replay_open_writer(statefile)) {
       ReplaySessionInfo session;
       session.schema_version = 2;
@@ -471,7 +468,7 @@ void inithistory()
       session.playerindex = playerindex;
       session.gamemode = static_cast<int>(gamemode);
       session.rules_version = version;
-      session.session_id = replay_tape_basename(stateTape);
+      session.session_id = replay_session_id_from_normalized_path(stateTapeNorm);
       session.engine_version = "sopwith3-replay-v1";
       replay_write_session_row(session);
     }

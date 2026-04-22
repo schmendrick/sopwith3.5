@@ -2,7 +2,7 @@
 
 **Feature Branch**: `001-baseline-replay-verification`  
 **Created**: 2026-04-21  
-**Updated**: 2026-04-23 (single-basename compare: exactly two matches only; overfull ⇒ list + error)  
+**Updated**: 2026-04-23 (single-basename two-file compare + >2 matches list-only behavior)  
 **Status**: Draft  
 **Input**: User description: "Create the baseline replay verification feature spec from sopwith3/docs/phase2-replay-model-decision.md. Preserve the chosen Option A model; row ordering contract, logical-frame cadence, and first-divergence comparison contract as normative requirements; schema/version match as a strict comparison gate (see clarifications). Scope is single-player baseline first." Subsequent updates (2026-04-22): tape filename normalization (`*.tape`), numbered sidecar files (`*.n.sidecar`), single-basename `replay-compare` discovery (exactly two sidecars to compare), CLI record/playback flag wording aligned with current `sopwith3/src` behavior.
 
@@ -55,7 +55,6 @@ not to Phase A scaffold output.
 - **Examples**:
   - Token `short` → `short.tape`
   - Token `short.tape` → `short.tape`
-  - Token `short.rec` → `short.tape`
   - Token `C:\runs\demo.rec` → `C:\runs\demo.tape`
 - **Example command line** (PowerShell, pass-through): `.\sopwith3.exe --% -vshort -s -i` performs single-player playback with IBM keyboard layout; replay token `short` normalizes to binary tape **`short.tape`** in the working directory.
 

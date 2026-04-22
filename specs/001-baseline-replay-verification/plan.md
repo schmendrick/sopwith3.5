@@ -12,7 +12,7 @@ canonical binary tapes as **`<basename>.tape`** after normalizing replay tokens 
 numbered sidecars **`basename.<n>.sidecar`** with **`max(existing n)+1`** allocation; **`replay-compare`**
 supports two-path compares and **single-basename discover mode** (exactly **two** sidecars ⇒ one compare;
 **more than two** ⇒ list matches, exit error). Visual playback validation and truncated-tail comparison policy remain in scope per
-spec.
+wspec.
 
 ## Technical Context
 

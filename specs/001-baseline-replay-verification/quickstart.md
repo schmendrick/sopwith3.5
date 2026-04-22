@@ -1,5 +1,7 @@
 # Quickstart: Baseline Replay Verification
 
+> **Filesystem:** Canonical binary tapes are **`*.tape`** (replay tokens normalized from **`-h`/`-v`**). Runs emit **`basename.<n>.sidecar`** next to the tape. **`replay-compare`** compares two artifact paths or a single basename when **exactly two** matching sidecars exist in the working directory.
+
 ## 1) Build the game executable
 
 From repository root, use the maintained MSYS2 SDL build workflow:

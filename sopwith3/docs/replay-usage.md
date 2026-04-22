@@ -8,7 +8,8 @@ From `sopwith3` directory:
 sopwith3.exe -h<replay_token>
 ```
 
-`-h` **tape** binary replay input history (see `sopwith.cpp` option parsing). Whatever replay token you pass is normalized to a canonical **`basename.tape`** path for binary I/O: trailing `.tape`  suffixes on the basename are stripped (repeat until none), then `.tape` is appended. Example tokens `short`, and `short.tape` all resolve to **`short.tape`**.
+`-h` **records** binary replay input history (see `sopwith.cpp` option parsing). The replay token is normalized to **`basename.tape`** for binary I/O: strip trailing **`.
+
 
 A text verification sidecar is written beside the tape as **`basename.<n>.sidecar`** (first run **`basename.1.sidecar`**; further runs allocate **`max(existing n)+1`** among `basename.*.sidecar` in that directory). Each file holds a full `SESSION` row plus one `FRAME_BEGIN`…`FRAME_END` block per simulated frame while the match is in progress.
 
