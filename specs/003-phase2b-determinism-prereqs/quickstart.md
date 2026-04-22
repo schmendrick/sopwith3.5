@@ -19,6 +19,11 @@ In the working replay directory, confirm these tapes exist:
 
 ## 2) Build executable and replay comparator
 
+Toolchain requirement for this step:
+
+- Windows build path uses **MSYS2 MinGW64 + SDL 1.2**
+- See `Toolchain-Readme.md` for package details and environment setup
+
 From repo root:
 
 ```powershell

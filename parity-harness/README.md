@@ -19,8 +19,11 @@ The contract source of truth is:
 
 ## Prerequisites
 
-- MSYS2 MinGW64 toolchain available (`mingw32-make`)
+- Native toolchain: **MSYS2 MinGW64 + SDL 1.2** (same as the main game build path)
+- `mingw32-make` available from the MSYS2 MinGW64 environment
 - .NET 10 SDK installed (`10.0.x`)
+
+For the full native toolchain setup, see `Toolchain-Readme.md`.
 
 Admin install command (Chocolatey):
 

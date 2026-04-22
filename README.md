@@ -26,11 +26,22 @@ In short, the roadmap focuses on:
 See `sopwith3/docs/roadmap.md` for the full roadmap and phase details.
 See `sopwith3/docs/findings.md` for found discoveries found.
 See `sopwith3/docs/replay-usage.md` for replay record/playback usage and replay test commands.
+See `Toolchain-Readme.md` for the required Windows SDL toolchain setup (**MSYS2 MinGW64 + SDL 1.2**).
 
 ## Scope (current)
 
 - In scope: compilability, bug fixes, deterministic replay/testing infrastructure, and tooling for reliable verification.
 - Out of scope (for now): full gameplay rewrites and a possible future C# port (planned separately, yeah I kinda still have that in my head).
+
+## Build Toolchain Requirement
+
+The maintained/native build path for this repository is:
+
+- **Windows 11**
+- **MSYS2 MinGW64 toolchain**
+- **SDL 1.2 package (`mingw-w64-x86_64-SDL`)**
+
+Use `sopwith3/src/Makefile.msys2` (or `sopwith3/sdlbuild.bat`, which wraps it) for supported builds.
 
 ## Name
 
