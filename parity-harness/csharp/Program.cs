@@ -25,13 +25,17 @@ internal static class Program
             int y = 200 + (7 * n);
             int i = 1 + (n % 15);
             uint type = V2Type(state, x, y, i);
+            uint troubledSoundBit = TroubledSoundBit(state);
+            uint explosionType = ExplosionType(state, x, y, i);
             Console.WriteLine(
                 "step=" + n +
                 " randv=" + state +
                 " x=" + x +
                 " y=" + y +
                 " i=" + i +
-                " v2_type=" + type);
+                " v2_type=" + type +
+                " troubled_sound_bit=" + troubledSoundBit +
+                " explosion_type=" + explosionType);
             state = LegacyStep(state, x, y);
         }
         return 0;
@@ -164,5 +168,15 @@ internal static class Program
         }
 
         return ((uint)u16 * 8u) >> 16;
+    }
+
+    private static uint TroubledSoundBit(short randv)
+    {
+        return (uint)(randv & 1);
+    }
+
+    private static uint ExplosionType(short randv, int x, int y, int i)
+    {
+        return V2Type(randv, x, y, i);
     }
 }

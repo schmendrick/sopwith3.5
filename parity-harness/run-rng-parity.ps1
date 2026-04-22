@@ -13,6 +13,61 @@ $cppExe = Join-Path $root "sopwith3\rng-parity-cpp.exe"
 $csProjDir = Join-Path $root "parity-harness\csharp"
 $csDll = Join-Path $csProjDir "bin\Release\net10.0\RngParityHarness.dll"
 
+function Convert-StepLineToMap {
+  param([string]$Line)
+  $map = [ordered]@{}
+  foreach ($segment in ($Line -split " ")) {
+    if ($segment -match "=") {
+      $parts = $segment -split "=", 2
+      if ($parts.Length -eq 2) {
+        $map[$parts[0]] = $parts[1]
+      }
+    }
+  }
+  return $map
+}
+
+function Find-FirstMismatch {
+  param(
+    [string[]]$CppLines,
+    [string[]]$CsLines
+  )
+
+  $lineCount = [Math]::Min($CppLines.Length, $CsLines.Length)
+  for ($idx = 0; $idx -lt $lineCount; $idx++) {
+    $cppLine = $CppLines[$idx]
+    $csLine = $CsLines[$idx]
+    if ($cppLine -ceq $csLine) {
+      continue
+    }
+
+    if ($cppLine.StartsWith("step=") -and $csLine.StartsWith("step=")) {
+      $cppMap = Convert-StepLineToMap -Line $cppLine
+      $csMap = Convert-StepLineToMap -Line $csLine
+      $step = if ($cppMap.ContainsKey("step")) { $cppMap["step"] } else { "unknown" }
+      foreach ($k in $cppMap.Keys) {
+        if (-not $csMap.ContainsKey($k) -or $cppMap[$k] -ne $csMap[$k]) {
+          return @{ Step = $step; Field = $k; Line = ($idx + 1) }
+        }
+      }
+      foreach ($k in $csMap.Keys) {
+        if (-not $cppMap.ContainsKey($k)) {
+          return @{ Step = $step; Field = $k; Line = ($idx + 1) }
+        }
+      }
+      return @{ Step = $step; Field = "unknown"; Line = ($idx + 1) }
+    }
+
+    return @{ Step = "n/a"; Field = "header"; Line = ($idx + 1) }
+  }
+
+  if ($CppLines.Length -ne $CsLines.Length) {
+    return @{ Step = "n/a"; Field = "line_count"; Line = ($lineCount + 1) }
+  }
+
+  return $null
+}
+
 if (-not $SkipBuild) {
   Push-Location $cppSrcDir
   try {
@@ -44,6 +99,8 @@ if (-not (Test-Path $csDll)) {
 }
 
 $failures = 0
+# Example overrides:
+#   powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Tokens full,computer -Steps 16,128,1024
 foreach ($token in $Tokens) {
   foreach ($step in $Steps) {
     $cppOut = & $cppExe --token $token --steps $step
@@ -57,10 +114,16 @@ foreach ($token in $Tokens) {
       continue
     }
 
-    $cppText = ($cppOut -join "`n").TrimEnd()
-    $csText = ($csOut -join "`n").TrimEnd()
+    $cppLines = @($cppOut)
+    $csLines = @($csOut)
+    $cppText = ($cppLines -join "`n").TrimEnd()
+    $csText = ($csLines -join "`n").TrimEnd()
     if ($cppText -ne $csText) {
       Write-Host "[FAIL] token=$token steps=$step (output mismatch)"
+      $mismatch = Find-FirstMismatch -CppLines $cppLines -CsLines $csLines
+      if ($null -ne $mismatch) {
+        Write-Host "[FAIL] first_mismatch token=$token steps=$step step=$($mismatch.Step) field=$($mismatch.Field) line=$($mismatch.Line)"
+      }
       Write-Host "--- C++ ---"
       Write-Host $cppText
       Write-Host "--- C# ---"
