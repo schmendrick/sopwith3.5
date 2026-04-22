@@ -10,8 +10,8 @@ the Option A compact text artifact model (`*.sidecar`), deterministic ordering a
 schema-version parity as a hard gate, and first-divergence diagnostics. Extend the filesystem contract:
 canonical binary tapes as **`<basename>.tape`** after normalizing replay tokens from **`-h`/`-v`**;
 numbered sidecars **`basename.<n>.sidecar`** with **`max(existing n)+1`** allocation; **`replay-compare`**
-supports two-path compares and **single-basename batch mode** (discover sidecars, numeric sort,
-all unordered pairs). Visual playback validation and truncated-tail comparison policy remain in scope per
+supports two-path compares and **single-basename discover mode** (exactly **two** sidecars ⇒ one compare;
+**more than two** ⇒ list matches, exit error). Visual playback validation and truncated-tail comparison policy remain in scope per
 spec.
 
 ## Technical Context
@@ -20,12 +20,11 @@ spec.
 **Primary Dependencies**: SDL 1.2, existing replay/history code (`sopwith.cpp` `recordfilename` /
 `playbackfilename`), `replay_writer*` / `replay_compare*` toolchain  
 **Storage**: Files only — canonical binary **`*.tape`** next to numbered UTF-8 **`*.sidecar`** verification artifacts  
-**Testing**: Repeat-run SESSION/full-artifact equality, `replay-compare` two-file and batch modes,
+**Testing**: Repeat-run SESSION/full-artifact equality, `replay-compare` two-file and basename-discover modes,
 `replay-tests` / `test.bat`, optional `scripts/replay/verify-baseline.ps1` integration  
 **Target Platform**: Windows 11 (MSYS2 MinGW64 baseline)  
 **Project Type**: Native desktop game + standalone comparator executable  
-**Performance Goals**: Comparator remains single-pass capable per pair; batch mode runs \(\binom{N}{2}\)
-pair comparisons for \(N\) sidecars  
+**Performance Goals**: Comparator remains single-pass for each two-file invocation  
 **Constraints**: Preserve gameplay baseline (Principle I); normalization must not fork tape identity;
 sidecar numbering must follow **max(n)+1** scan in tape directory  
 **Scale/Scope**: Single-player baseline first; multiplayer parity deferred
@@ -62,8 +61,8 @@ specs/001-baseline-replay-verification/
 ```text
 sopwith3/src/
 ├── sopwith.cpp           # replay token → normalized .tape opens; sidecar path + allocation
-├── replay_compare_tool.cpp    # CLI: two paths + optional single-basename batch mode
-├── replay_compare.cpp         # core two-file compare (reuse from batch)
+├── replay_compare_tool.cpp    # CLI: two paths + single-basename discover (exactly 2 ⇒ compare)
+├── replay_compare.cpp         # core two-file compare
 ├── replay_writer.cpp          # unchanged stream API; path chosen by caller
 ├── Makefile.msys2 / Makefile  # replay-compare target
 
@@ -79,14 +78,14 @@ sopwith3/docs/
 
 ## Phase 0 — Research outcome
 
-Captured in `research.md`. Prior comparator/session policies unchanged. Added filesystem and CLI decisions (tape normalization, sidecar allocation, batch pairwise matrix). No unresolved NEEDS CLARIFICATION items remain for implementation planning.
+Captured in `research.md`. Prior comparator/session policies unchanged. Added filesystem and CLI decisions (tape normalization, sidecar allocation, basename discover rules). No unresolved NEEDS CLARIFICATION items remain for implementation planning.
 
 ## Phase 1 — Design outcome
 
 | Artifact | Purpose |
 |---------|---------|
 | `data-model.md` | Artifact rows (`SESSION`, frame blocks, divergence) plus **tape/sidecar path** semantics |
-| `contracts/replay-verification-contract.md` | Row/order/compare rules + **file naming and batch replay-compare** CLI contract |
+| `contracts/replay-verification-contract.md` | Row/order/compare rules + **file naming and replay-compare** CLI contract |
 | `quickstart.md` | Build/run/compare steps aligned with **`*.tape`** / **`*.n.sidecar`** |
 
 Agent context marker in `.cursor/rules/specify-rules.mdc` updated to reference this plan.
@@ -97,9 +96,9 @@ Workstreams for `/speckit.tasks` / implementation (not scheduled in this command
 
 1. **Tape normalization helper** shared by record/playback open paths in `sopwith.cpp`; apply before `fstream::open`; keep `replay_tape_basename`/session identity consistent with stripped basename sans `.tape`.
 2. **Sidecar path**: resolve directory of normalized tape file; glob/match **`basename.*.sidecar`**; allocate **`max(n)+1`**; replace **`.state.txt`** construction.
-3. **`replay-compare`**: preserve **two-argument** mode; add **single-argument basename** mode per FR-016/FR-017 — discovery, stderr on &lt;2 files, stdout line 1 listing files, nested pairwise loop calling existing **`replay_compare_files`**.
+3. **`replay-compare`**: preserve **two-argument** mode; implement **single-argument basename** per FR-016 — discovery, **exactly two** ⇒ **`replay_compare_files`**; **&gt;2** ⇒ print matches, non-zero; **&lt;2** ⇒ non-zero.
 4. **Docs & scripts**: `replay-usage.md`, `verify-baseline.ps1`, `.gitignore` patterns for **`*.sidecar`** as needed.
-5. **Verification**: unit/integration tests covering normalization edge cases and batch comparator exit codes.
+5. **Verification**: unit/integration tests covering normalization edge cases and basename-discover exit codes (**0/1/2+** matches).
 
 ## Post-design constitution re-check
 

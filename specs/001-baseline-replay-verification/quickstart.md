@@ -44,13 +44,13 @@ Record or play the same tape twice with identical CLI flags and seed behavior (s
 powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact my.1.sidecar -RightArtifact my.2.sidecar
 ```
 
-Or batch-compare all pairs for that basename:
+Or invoke basename discovery (compare **only** if **exactly two** `my.*.sidecar` files exist):
 
 ```powershell
 .\replay-compare.exe my
 ```
 
-Expected: exit code 0 and `Replay compare success` when outputs are byte-identical (two-file mode); batch mode exits 0 only when **every** pairwise comparison succeeds.
+Expected: exit code **0** only when two matches exist **and** they compare equal; **more than two** matches ⇒ tool lists files and exits non-zero (pick two paths and use two-arg mode).
 
 ## 5) Validate first-divergence behavior
 

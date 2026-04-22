@@ -19,7 +19,7 @@ These are naming/path rules for **binary replay tapes** and **verification sidec
 ### ComparatorInvocation *(tooling)*
 
 - **Two-path mode**: **`replay-compare <left.sidecar> <right.sidecar>`** — applies **Comparison Contract** once.
-- **Batch mode**: **`replay-compare <basename>`** — discovers **`basename.*.sidecar`** in cwd, sorts by numeric suffix, requires **≥2** files, runs **Comparison Contract** on each unordered pair **(nᵢ, nⱼ)**, **nᵢ < nⱼ**.
+- **Basename mode**: **`replay-compare <basename>`** — discovers **`basename.*.sidecar`** in cwd, sorts by numeric suffix. **Exactly two** files ⇒ **Comparison Contract** once. **Fewer than two** or **more than two** ⇒ no compare (listing / error paths per **spec.md**).
 
 ---
 
@@ -116,7 +116,7 @@ These are naming/path rules for **binary replay tapes** and **verification sidec
   - `rhs_value`
   - `entity_id` (when applicable)
 - **Lifecycle**:
-  - Created once per **two-artifact** comparison run at earliest mismatch (each batch pair is a separate comparison).
+  - Created once per **two-artifact** comparison run at earliest mismatch.
   - No additional mismatch records required in baseline mode
 
 ## State Transitions

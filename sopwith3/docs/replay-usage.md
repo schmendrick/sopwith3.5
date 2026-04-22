@@ -74,7 +74,7 @@ mingw32-make -f Makefile.msys2 replay-compare
 powershell -File scripts/replay/verify-baseline.ps1 -LeftArtifact <a.sidecar> -RightArtifact <b.sidecar>
 ```
 
-**Batch compare** (single basename, no extension): discover **`basename.*.sidecar`** in the current directory, numeric sort by `n`, require at least two files, then run pairwise comparison on every unordered pair (see feature spec `specs/001-baseline-replay-verification/spec.md`).
+**Basename shortcut** (single basename, no extension): discover **`basename.*.sidecar`** in the current directory, numeric sort by `n`. **Exactly two** matches ⇒ run one two-file compare. **More than two** ⇒ prints which files matched, exits non-zero — use **`replay-compare left right`** for the pair you care about (see `specs/001-baseline-replay-verification/spec.md`).
 
 ```text
 .\replay-compare.exe short

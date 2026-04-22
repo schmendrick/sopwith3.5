@@ -16,7 +16,7 @@ Terminology normalization: this document uses "artifact" for emitted text sideca
 ## CLI: replay-compare
 
 - **Two arguments**: **`replay-compare <left> <right>`** — compares two artifact paths using **Comparison Contract** below.
-- **One argument**: **`replay-compare <basename>`** — **basename** has no extension; discovers **`basename.<n>.sidecar`** in the **current working directory**; sorts by numeric **n** ascending; prints loaded paths on **first line of stdout**; exits non-zero if fewer than **two** matches or if **any** pairwise comparison fails; otherwise compares **all unordered pairs** **(nᵢ, nⱼ)** with **nᵢ < nⱼ** using the same contract.
+- **One argument**: **`replay-compare <basename>`** — **basename** has no extension; discovers **`basename.<n>.sidecar`** in the **current working directory**; sorts by numeric **n** ascending; prints every matched path. **Exactly two** matches ⇒ run **Comparison Contract** once on that pair. **Zero or one** match ⇒ non-zero. **More than two** matches ⇒ print matches, **no** comparison run, non-zero (operator picks two paths and uses two-argument mode).
 
 ## Artifact Production Contract
 

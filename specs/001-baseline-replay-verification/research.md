@@ -71,13 +71,13 @@
   - Timestamp-based names (less sortable / stable in scripts)
   - Fill lowest gap first (spec explicitly chose **max+1**)
 
-## Decision 9: Batch replay-compare discovery and matrix
+## Decision 9: Single-basename replay-compare discovery
 
-- **Decision**: Single CLI argument (**basename**, no extension) discovers **`basename.<n>.sidecar`** in cwd, numeric sort by **n**, stdout line **1** lists loaded files; **&lt;2** files ⇒ non-zero with clear message; **`≥2`** ⇒ run baseline two-file comparator on **every unordered pair** **(nᵢ, nⱼ)** with **nᵢ &lt; nⱼ**; non-zero if **any** pair fails.
-- **Rationale**: Batch regression over multiple captures without shell glob glue; exhaustive pairwise coverage.
+- **Decision**: Single CLI argument (**basename**, no extension) discovers **`basename.<n>.sidecar`** in cwd, numeric sort by **n**, prints all matched paths. **Exactly two** matches ⇒ one two-file compare. **&lt;2** ⇒ non-zero. **&gt;2** ⇒ print matches only, non-zero, **no** comparison sweep (maintainer uses **`replay-compare left right`** for a chosen pair).
+- **Rationale**: Avoid \(\binom{N}{2}\) runs and ambiguous pair selection; listing extra captures is enough for diagnostics.
 - **Alternatives considered**:
-  - First sidecar vs rest only (rejected: misses divergences between non-reference pairs)
-  - Lexicographic filename sort (rejected: spec requires numeric **n** sort)
+  - Exhaustive pairwise comparison for **N≥3** (rejected: user scope — not needed)
+  - Compare two lowest **n** when **N&gt;2** (rejected: silent choice, surprising)
 
 ## Alignment Note
 
@@ -87,3 +87,4 @@ Research, contract, and plan remain aligned on these invariants:
 - truncation tail => compare complete prior frames + warning
 - canonical **`.tape`** path for binary replay I/O
 - numbered **`*.sidecar`** via **max(n)+1**
+- single-basename **`replay-compare`**: compare **only** when **exactly two** matches; **&gt;2** ⇒ list and error
