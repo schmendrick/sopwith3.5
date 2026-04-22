@@ -31,7 +31,11 @@ Computerplane::Computerplane(int runwayx,int colour,bool runwayleft,bool unlimit
   unlimitedterr(unlimitedterr),
   left_terr(left_terr),
   right_terr(right_terr),
-  nearobject(0) {}
+  nearobject(0)
+{
+  lives=0;
+  maxlives=0;
+}
 
 bool Computerplane::update()
 {
