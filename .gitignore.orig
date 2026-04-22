@@ -43,7 +43,12 @@ error
 /sopwith3/*.tape
 /sopwith3/*.sidecar
 /sopwith3/*.rec.state.txt
+<<<<<<< Updated upstream
+
+/parity-harness/csharp/*
+=======
 
 # Parity harness (.NET build outputs only)
 /parity-harness/csharp/bin/
 /parity-harness/csharp/obj/
+>>>>>>> Stashed changes

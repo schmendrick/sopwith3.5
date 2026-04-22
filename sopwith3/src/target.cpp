@@ -120,6 +120,7 @@ void Target::docollision(const Object* obj)
   if (type==FUEL)
     createexplosion((version==2 ? maxspeed : minspeed),1,false,!(onscreen(this) && requestsoundevent(TARGET_DESTROYED,SOUND_PRIORITY_EXPLOSION,0)));
   else
+    /* Keep non-fuel target explosion randomness on randv stream for deterministic replays. */
     createexplosion(minspeed>>(version==2||(randv&7)!=7 ? 1 : 0),2,false,!(onscreen(this) && requestsoundevent(TARGET_DESTROYED,SOUND_PRIORITY_EXPLOSION,0)));
   scoretarget(this,this->type==FUEL ? 200 : 100);
   const std::list<Object*>::const_iterator end=objectlist.end();

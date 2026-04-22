@@ -59,6 +59,7 @@
 #include <utility>
 #include <map>
 #include <chrono>
+#include <cstdlib>
 
 int version=2;
 const unsigned int singleplayermaxlives=5;
@@ -300,6 +301,40 @@ void request_app_exit()
   gamestatus=EXITING;
 }
 
+short seed_from_replay_token(const std::string& replayToken)
+{
+  const std::string normalized=replay_normalize_replay_token_to_tape_path(replayToken);
+  /* Stable hash seed for replay-validation paths so repeated runs with the same replay token
+     do not depend on wall clock time. */
+  unsigned int h=2166136261u;
+  for (std::string::size_type i=0;i<normalized.size();++i) {
+    h^=static_cast<unsigned char>(normalized[i]);
+    h*=16777619u;
+  }
+  short s=static_cast<short>(h&0x7fff);
+  if (s==0)
+    s=1;
+  return s;
+}
+
+bool replay_validation_active()
+{
+  return !recordfilename.empty() || !playbackfilename.empty();
+}
+
+bool fixed_step_validation_enabled()
+{
+  const char* env=std::getenv("SOPWITH_FIXED_STEP");
+  if (env==0)
+    return false;
+  return *env!=0 && *env!='0';
+}
+
+bool use_fixed_step_validation()
+{
+  return replay_validation_active() && fixed_step_validation_enabled();
+}
+
 void debug_log(const char* runId,const char* hypothesisId,const char* location,const char* message,const std::string& data)
 {
   std::ofstream dbg("F:/Development/ai/sopwith3/sopwith3/debug-bea600.log",std::ios::app);
@@ -380,8 +415,12 @@ void run()
     speed=15;
   #endif
   #endif
-  randv=time(0);
-  srand(randv);
+  if (replay_validation_active()) {
+    const std::string seedToken=!playbackfilename.empty() ? playbackfilename : recordfilename;
+    randv=seed_from_replay_token(seedToken);
+  }
+  else
+    randv=static_cast<short>(time(0));
   /*initbreak();*/
   Resource graphicsobject(graphicsmode,textmode);
   Resource keyboardobject(initkeyboard,deinitkeyboard);
@@ -881,9 +920,13 @@ void mainloop()
       #ifdef DEBUG
       speed=0;
       #endif
-      do {
-        processtimerticks();
-      } while (speedtick<speed);
+      if (use_fixed_step_validation())
+        speedtick=speed;
+      else {
+        do {
+          processtimerticks();
+        } while (speedtick<speed);
+      }
       speedtick-=speed;
       updateobjects();
       updatejoy();

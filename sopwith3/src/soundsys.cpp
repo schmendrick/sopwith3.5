@@ -269,7 +269,8 @@ void updatesound()
         room=tone<Sound_slide>((sr->first)->tonefreq,*sr);
         break;
       case SOUND_PRIORITY_PLANE_TROUBLED:
-        room=tone<Sound>((rand()&1)!=0 ? troubledplanesound[0] : troubledplanesound[1],*sr);
+        /* Use simulation RNG state instead of libc rand() to keep replay-validation runs deterministic. */
+        room=tone<Sound>(((randv&1)!=0) ? troubledplanesound[0] : troubledplanesound[1],*sr);
         break;
       case SOUND_PRIORITY_EXPLOSION:
         room=tone<Sound>(explosion.tone,*sr);

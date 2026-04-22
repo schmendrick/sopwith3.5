@@ -350,6 +350,7 @@ void Plane::docollision(const Object* obj)
   if (instanceof<Smoke>(*obj) || (instanceof<Bird>(*obj) && athome))
     return;
   if (obj==0) {
+    /* Keep explosion variance tied to randv; avoid independent RNG sources for replay determinism. */
     if (state==FALLING) {
       stopsound();
       createexplosion(minspeed>>(version==2||(randv&7)!=7 ? 1 : 0),6,false);

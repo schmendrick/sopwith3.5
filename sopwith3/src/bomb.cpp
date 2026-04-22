@@ -77,6 +77,7 @@ bool Bomb::onmap()
 void Bomb::docollision(const Object* obj)
 {
   if (!instanceof<Bird>(*obj) && !instanceof<Flock>(*obj) && !instanceof<Smoke>(*obj)) {
+    /* Explosion branch randomness intentionally uses randv to stay on the deterministic replay stream. */
     createexplosion(minspeed>>(version==2||(randv&7)!=7 ? 1 : 0),2,false,!(onscreen(this) && requestsoundevent(BOMB_DESTROYED,SOUND_PRIORITY_EXPLOSION,0)));
     life=-1;
     if (obj==0)
