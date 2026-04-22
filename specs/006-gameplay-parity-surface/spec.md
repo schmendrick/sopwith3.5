@@ -2,7 +2,7 @@
 
 **Feature Branch**: `006-gameplay-parity-surface`  
 **Created**: 2026-04-22  
-**Status**: Draft  
+**Status**: Complete  
 **Input**: User description: "Phase 2C gameplay parity surface: extend deterministic C++/C# parity coverage beyond RNG branch outputs to selected gameplay event decisions and ordering (spawn/lifecycle, collision outcome categories, score/lives deltas, and replay-writer entity ordering) using a fixed token/step case matrix, byte-comparable cross-language output, explicit first-mismatch diagnostics, and updated reproducibility/evidence docs while preserving current Phase 2B/004 contracts and scope boundaries."
 
 ## Clarifications

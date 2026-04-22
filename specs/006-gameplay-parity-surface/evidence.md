@@ -18,9 +18,9 @@ powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1
 
 | case_id | matrix_version | result | notes |
 |---------|------------------|--------|-------|
-| smoke-full-16 | 006.1 | PASS | 2026-04-22 local run |
-| smoke-bomb-16 | 006.1 | PASS | 2026-04-22 local run |
-| smoke-computer-128 | 006.1 | PASS | 2026-04-22 local run |
+| smoke-full-16 | 006.1 | PASS | 2026-04-23 verified (`run-gameplay-parity.ps1 -SkipBuild`) |
+| smoke-bomb-16 | 006.1 | PASS | 2026-04-23 verified (`run-gameplay-parity.ps1 -SkipBuild`) |
+| smoke-computer-128 | 006.1 | PASS | 2026-04-23 verified (`run-gameplay-parity.ps1 -SkipBuild`) |
 
 ## Mismatch appendix
 
@@ -30,4 +30,4 @@ _(None — or paste `first_mismatch ...` tuple + repro notes here.)_
 
 | gate | command | result | notes |
 |------|-----------|--------|-------|
-| RNG parity | `tools/run-rng-parity.ps1` | PASS | 2026-04-22 local run; all default token/step pairs |
+| RNG parity | `tools/run-rng-parity.ps1` | PASS | 2026-04-23 verified (`run-rng-parity.ps1 -SkipBuild`); all default token/step pairs |

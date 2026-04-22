@@ -44,8 +44,6 @@ error
 /sopwith3/*.sidecar
 /sopwith3/*.rec.state.txt
 
-# Tools harness (.NET build outputs only)
-/tools/csharp/bin/
-/tools/csharp/obj/
-/tools/csharp/GameplayParityHarness/bin/
-/tools/csharp/GameplayParityHarness/obj/
+# Tools harness (.NET build outputs; any nested csproj under tools/csharp)
+tools/csharp/**/bin/
+tools/csharp/**/obj/
