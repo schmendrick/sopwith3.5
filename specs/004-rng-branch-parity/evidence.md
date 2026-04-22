@@ -16,7 +16,7 @@ Branch: `004-rng-branch-parity`
 From repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Steps 16,128,1024
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Steps 16,128,1024
 ```
 
 ## Case Matrix

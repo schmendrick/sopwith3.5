@@ -142,6 +142,11 @@ Execution steps:
           - Alignment with any explicit project goals or constraints visible in the spec
        - Present your **recommended option prominently** at the top with clear reasoning (1-2 sentences explaining why this is the best choice).
        - Format as: `**Recommended:** Option [X] - <reasoning>`
+       - Immediately after the recommendation (and before the options table), include a compact **Question Context** block for the user. This block MUST be present for every asked question and MUST include these sub-bullets (keep each sub-bullet to 1-3 lines):
+         - **Background**: why this decision matters for this feature/spec (tie to acceptance risk, scope, or evidence).
+         - **Definitions**: define any domain terms/jargon used in the question (e.g., “matrix”, “tape”, “artifact”, “contract”).
+         - **Tradeoffs**: 2-4 bullets contrasting the options (speed vs auditability vs rigidity, etc.).
+         - **Spec impact**: which spec sections will likely change based on the answer (e.g., Requirements, Edge Cases, Success Criteria, Key Entities).
        - Then render all options as a Markdown table:
 
        | Option | Description |

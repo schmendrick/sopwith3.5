@@ -5,6 +5,13 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+<!--
+  Clarification workflow note (/speckit-clarify):
+  If you are asked clarification questions during spec hardening, prefer answers that are testable and evidence-friendly.
+  When the agent asks clarification questions, each question should include: Background, Definitions, Tradeoffs, and Spec impact
+  (this is enforced by the `.cursor/skills/speckit-clarify/SKILL.md` workflow).
+-->
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

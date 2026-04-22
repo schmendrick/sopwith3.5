@@ -14,20 +14,20 @@ between C++ and C# harness implementations.
 From repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -SkipBuild:$false
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -SkipBuild:$false
 ```
 
 This builds:
 
 - `sopwith3/rng-parity-cpp.exe`
-- `parity-harness/csharp` release output
+- `tools/csharp` release output
 
 ## 2) Run branch-parity matrix
 
 Use default matrix:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1
 ```
 
 Expected:
@@ -41,14 +41,14 @@ Expected:
 Run with an additional higher step count (example):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Steps 16,128,1024
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Steps 16,128,1024
 ```
 
 Single-case regression fixture checks:
 
 ```powershell
 # C++ and C# rows are compared by the runner with first mismatch details.
-powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Tokens full -Steps 16
+powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Tokens full -Steps 16
 ```
 
 ## 4) Record evidence

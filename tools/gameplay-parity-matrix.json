@@ -1,0 +1,23 @@
+{
+  "matrix_version": "006.1",
+  "cases": [
+    {
+      "case_id": "smoke-full-16",
+      "token": "full",
+      "steps": 16,
+      "tape_refs": []
+    },
+    {
+      "case_id": "smoke-bomb-16",
+      "token": "bomb",
+      "steps": 16,
+      "tape_refs": []
+    },
+    {
+      "case_id": "smoke-computer-128",
+      "token": "computer",
+      "steps": 128,
+      "tape_refs": []
+    }
+  ]
+}

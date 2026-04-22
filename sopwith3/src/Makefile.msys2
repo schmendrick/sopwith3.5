@@ -43,7 +43,10 @@ REPLAY_COMPARE_OBJS := $(OBJDIR)/replay_compare_tool.o $(OBJDIR)/replay_paths.o 
 RNG_PARITY_BIN := ../rng-parity-cpp.exe
 RNG_PARITY_OBJS := $(OBJDIR)/rng_parity_tool.o $(OBJDIR)/replay_paths.o
 
-.PHONY: all clean copy-dlls replay-tests replay-compare rng-parity-cpp
+GAMEPLAY_PARITY_BIN := ../gameplay-parity-cpp.exe
+GAMEPLAY_PARITY_OBJS := $(OBJDIR)/gameplay_parity_tool.o $(OBJDIR)/replay_paths.o
+
+.PHONY: all clean copy-dlls replay-tests replay-compare rng-parity-cpp gameplay-parity-cpp
 
 all: $(BIN) $(POST_BUILD)
 
@@ -57,6 +60,11 @@ $(RNG_PARITY_BIN): $(RNG_PARITY_OBJS)
 
 rng-parity-cpp: $(RNG_PARITY_BIN)
 
+$(GAMEPLAY_PARITY_BIN): $(GAMEPLAY_PARITY_OBJS)
+	$(CXX) -o $@ $(GAMEPLAY_PARITY_OBJS) -static-libgcc -static-libstdc++
+
+gameplay-parity-cpp: $(GAMEPLAY_PARITY_BIN)
+
 $(BIN): $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(BACKEND_LIBS) -static-libgcc -static-libstdc++
 
@@ -69,13 +77,17 @@ clean:
 replay-tests: all
 	powershell -ExecutionPolicy Bypass -File ../scripts/replay/run-tests.ps1
 
-$(OBJDIR)/replay_compare_tool.o: replay_compare_tool.cpp replay_compare.h replay_compare_result.h replay_paths.h
+$(OBJDIR)/replay_compare_tool.o: ../tools/replay_compare_tool.cpp replay_compare.h replay_compare_result.h replay_paths.h
 	$(MKDIR) $(dir $@)
-	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
+	$(CXX) $(BASE_CXXFLAGS) -I. -c $< -o $@
 
-$(OBJDIR)/rng_parity_tool.o: rng_parity_tool.cpp replay_paths.h
+$(OBJDIR)/rng_parity_tool.o: ../tools/rng_parity_tool.cpp replay_paths.h
 	$(MKDIR) $(dir $@)
-	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
+	$(CXX) $(BASE_CXXFLAGS) -I. -c $< -o $@
+
+$(OBJDIR)/gameplay_parity_tool.o: ../tools/gameplay_parity_tool.cpp replay_paths.h
+	$(MKDIR) $(dir $@)
+	$(CXX) $(BASE_CXXFLAGS) -I. -c $< -o $@
 
 $(OBJDIR)/replay_paths.o: replay_paths.cpp replay_paths.h
 	$(MKDIR) $(dir $@)

@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $cppSrcDir = Join-Path $root "sopwith3\src"
 $cppExe = Join-Path $root "sopwith3\rng-parity-cpp.exe"
-$csProjDir = Join-Path $root "parity-harness\csharp"
+$csProjDir = Join-Path $root "tools\csharp"
 $csDll = Join-Path $csProjDir "bin\Release\net10.0\RngParityHarness.dll"
 
 function Convert-StepLineToMap {
@@ -100,7 +100,7 @@ if (-not (Test-Path $csDll)) {
 
 $failures = 0
 # Example overrides:
-#   powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Tokens full,computer -Steps 16,128,1024
+#   powershell -ExecutionPolicy Bypass -File tools/run-rng-parity.ps1 -Tokens full,computer -Steps 16,128,1024
 foreach ($token in $Tokens) {
   foreach ($step in $Steps) {
     $cppOut = & $cppExe --token $token --steps $step
