@@ -149,6 +149,16 @@ Can Sopwith 3 be made deterministically replayable with **less than 40 hours** o
 
 ## Evidence Log (fill during investigation)
 
+- Determinism replay fixture set (baseline):
+  - `full.tape`: broad single-player coverage (general movement/combat/session progression).
+  - `bomb.tape`: explosion and blast-related behavior paths.
+  - `bird.tape`: flock/object-order-sensitive behavior paths.
+  - `computer.tape`: vs-computer AI behavior paths.
+- Fixture protocol for Phase 2B determinism checks:
+  - For each tape, run at least two identical runs (same CLI flags and seed behavior assumptions).
+  - Compare emitted sidecars for repeat-run equality (`basename.1.sidecar` vs `basename.2.sidecar`).
+  - Record pass/fail per tape before and after RNG/timer changes to measure determinism improvement.
+
 - Build/run baseline evidence is tracked in:
   - `docs/phase1-build-run-smoke.md`
 - Determinism replay trial #1:
