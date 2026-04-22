@@ -34,6 +34,7 @@ Expected:
 
 - all configured cases pass
 - final line indicates global parity pass
+- each per-step row includes `v2_type`, `troubled_sound_bit`, and `explosion_type`
 
 ## 3) Expand confidence run
 
@@ -41,6 +42,13 @@ Run with an additional higher step count (example):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Steps 16,128,1024
+```
+
+Single-case regression fixture checks:
+
+```powershell
+# C++ and C# rows are compared by the runner with first mismatch details.
+powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1 -Tokens full -Steps 16
 ```
 
 ## 4) Record evidence
@@ -51,3 +59,7 @@ Update branch parity evidence summary under this feature directory with:
 - pass/fail totals
 - any mismatch details (if present)
 - rationale for scope and confidence level
+
+Evidence target for this feature:
+
+- `specs/004-rng-branch-parity/evidence.md`

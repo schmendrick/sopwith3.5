@@ -19,7 +19,7 @@ Each run must emit:
    - token
    - normalized token
    - seed
-2. Per-step rows with fixed field order including:
+2. Per-step rows with fixed field order:
    - `step`
    - `randv`
    - `x`
@@ -28,6 +28,10 @@ Each run must emit:
    - `v2_type`
    - `troubled_sound_bit`
    - `explosion_type`
+
+Canonical row example:
+
+`step=0 randv=1234 x=100 y=200 i=1 v2_type=3 troubled_sound_bit=0 explosion_type=3`
 
 ## Parity success condition
 
@@ -41,8 +45,12 @@ For identical input arguments:
 On mismatch, comparison output must identify:
 
 - case (`token`, `steps`)
-- first mismatch location (`step`, `field` when derivable)
+- first mismatch location (`step`, `field`)
 - failing side(s)
+
+Reference mismatch tuple shape:
+
+`first_mismatch token=<token> steps=<steps> step=<step|n/a> field=<field>`
 
 ## Scope boundaries
 

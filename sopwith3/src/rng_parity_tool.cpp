@@ -55,6 +55,16 @@ uint32_t v2_type(int16_t randv, int32_t x, int32_t y, int32_t i)
   return static_cast<uint32_t>((static_cast<uint32_t>(u16) * 8u) >> 16);
 }
 
+uint32_t troubled_sound_bit(int16_t randv)
+{
+  return static_cast<uint32_t>(randv & 1);
+}
+
+uint32_t explosion_type(int16_t randv, int32_t x, int32_t y, int32_t i)
+{
+  return v2_type(randv, x, y, i);
+}
+
 bool parse_args(int argc, char** argv, std::string* token, int* steps)
 {
   *steps = 0;
@@ -97,12 +107,16 @@ int main(int argc, char** argv)
     const int32_t y = 200 + 7 * n;
     const int32_t i = 1 + (n % 15);
     const uint32_t type = v2_type(state, x, y, i);
+    const uint32_t troubled = troubled_sound_bit(state);
+    const uint32_t explosion = explosion_type(state, x, y, i);
     std::cout << "step=" << n
               << " randv=" << state
               << " x=" << x
               << " y=" << y
               << " i=" << i
               << " v2_type=" << type
+              << " troubled_sound_bit=" << troubled
+              << " explosion_type=" << explosion
               << "\n";
     state = legacy_step(state, x, y);
   }

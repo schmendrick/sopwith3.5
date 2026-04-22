@@ -17,8 +17,8 @@
 
 **Purpose**: Prepare feature docs and harness baselines for branch-parity extension.
 
-- [ ] T001 Create branch-parity evidence file scaffold in `specs/004-rng-branch-parity/evidence.md`
-- [ ] T002 Align parity-harness readme references to new branch-parity feature in `parity-harness/README.md`
+- [X] T001 Create branch-parity evidence file scaffold in `specs/004-rng-branch-parity/evidence.md`
+- [X] T002 Align parity-harness readme references to new branch-parity feature in `parity-harness/README.md`
 
 ---
 
@@ -28,9 +28,9 @@
 
 **⚠️ CRITICAL**: No story implementation starts until this phase is complete.
 
-- [ ] T003 Define canonical branch-output field order in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
-- [ ] T004 Implement/refresh common output parser helper for parity rows in `parity-harness/run-rng-parity.ps1`
-- [ ] T005 Add mismatch report format contract (`token`, `steps`, `step`, `field`) in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
+- [X] T003 Define canonical branch-output field order in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
+- [X] T004 Implement/refresh common output parser helper for parity rows in `parity-harness/run-rng-parity.ps1`
+- [X] T005 Add mismatch report format contract (`token`, `steps`, `step`, `field`) in `specs/004-rng-branch-parity/contracts/branch-parity-contract.md`
 
 **Checkpoint**: Shared branch-parity output contract is fixed.
 
@@ -44,15 +44,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Add C++ branch-output regression fixture test case notes in `specs/004-rng-branch-parity/quickstart.md`
-- [ ] T007 [P] [US1] Add C# branch-output regression fixture test case notes in `specs/004-rng-branch-parity/quickstart.md`
+- [X] T006 [P] [US1] Add C++ branch-output regression fixture test case notes in `specs/004-rng-branch-parity/quickstart.md`
+- [X] T007 [P] [US1] Add C# branch-output regression fixture test case notes in `specs/004-rng-branch-parity/quickstart.md`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Extend C++ harness output rows with `troubled_sound_bit` and `explosion_type` in `sopwith3/src/rng_parity_tool.cpp`
-- [ ] T009 [US1] Extend C# harness output rows with `troubled_sound_bit` and `explosion_type` in `parity-harness/csharp/Program.cs`
-- [ ] T010 [US1] Ensure C++ build target remains valid after output extension in `sopwith3/src/Makefile.msys2`
-- [ ] T011 [US1] Update parity runner row-compare assumptions for new fields in `parity-harness/run-rng-parity.ps1`
+- [X] T008 [US1] Extend C++ harness output rows with `troubled_sound_bit` and `explosion_type` in `sopwith3/src/rng_parity_tool.cpp`
+- [X] T009 [US1] Extend C# harness output rows with `troubled_sound_bit` and `explosion_type` in `parity-harness/csharp/Program.cs`
+- [X] T010 [US1] Ensure C++ build target remains valid after output extension in `sopwith3/src/Makefile.msys2`
+- [X] T011 [US1] Update parity runner row-compare assumptions for new fields in `parity-harness/run-rng-parity.ps1`
 
 **Checkpoint**: Branch-decision parity for troubled-sound-bit and explosion-type is executable and comparable.
 
@@ -66,14 +66,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Validate default matrix run command and expected pass output text in `parity-harness/README.md`
-- [ ] T013 [P] [US2] Validate expanded matrix command (`1024` steps) in `specs/004-rng-branch-parity/quickstart.md`
+- [X] T012 [P] [US2] Validate default matrix run command and expected pass output text in `parity-harness/README.md`
+- [X] T013 [P] [US2] Validate expanded matrix command (`1024` steps) in `specs/004-rng-branch-parity/quickstart.md`
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Add explicit branch-parity reproduce commands and prerequisites in `specs/004-rng-branch-parity/quickstart.md`
-- [ ] T015 [US2] Add .NET/MSYS2 troubleshooting notes specific to branch parity in `parity-harness/README.md`
-- [ ] T016 [US2] Add deterministic command examples for token/step overrides in `parity-harness/run-rng-parity.ps1` usage section/comments
+- [X] T014 [US2] Add explicit branch-parity reproduce commands and prerequisites in `specs/004-rng-branch-parity/quickstart.md`
+- [X] T015 [US2] Add .NET/MSYS2 troubleshooting notes specific to branch parity in `parity-harness/README.md`
+- [X] T016 [US2] Add deterministic command examples for token/step overrides in `parity-harness/run-rng-parity.ps1` usage section/comments
 
 **Checkpoint**: Maintainers can reliably reproduce branch-parity checks end-to-end.
 
@@ -87,13 +87,13 @@
 
 ### Tests for User Story 3
 
-- [ ] T017 [P] [US3] Define evidence acceptance checklist in `specs/004-rng-branch-parity/evidence.md`
+- [X] T017 [P] [US3] Define evidence acceptance checklist in `specs/004-rng-branch-parity/evidence.md`
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Record branch-parity case matrix and outcomes in `specs/004-rng-branch-parity/evidence.md`
-- [ ] T019 [US3] Record mismatch location format (or explicit all-pass note) in `specs/004-rng-branch-parity/evidence.md`
-- [ ] T020 [US3] Add rationale and continuity note linking to prior RNG-core evidence in `specs/004-rng-branch-parity/evidence.md`
+- [X] T018 [US3] Record branch-parity case matrix and outcomes in `specs/004-rng-branch-parity/evidence.md`
+- [X] T019 [US3] Record mismatch location format (or explicit all-pass note) in `specs/004-rng-branch-parity/evidence.md`
+- [X] T020 [US3] Add rationale and continuity note linking to prior RNG-core evidence in `specs/004-rng-branch-parity/evidence.md`
 
 **Checkpoint**: Branch-parity evidence is complete and traceable.
 
@@ -103,9 +103,9 @@
 
 **Purpose**: Final consistency checks across tools, docs, and evidence.
 
-- [ ] T021 [P] Re-run full parity matrix (including `1024` steps) and capture output in `specs/004-rng-branch-parity/evidence.md`
-- [ ] T022 Verify branch-parity contract/spec/plan/tasks alignment in `specs/004-rng-branch-parity/`
-- [ ] T023 [P] Update any cross-feature references from `003` to `004` where branch parity is now authoritative in `parity-harness/README.md` and `specs/004-rng-branch-parity/quickstart.md`
+- [X] T021 [P] Re-run full parity matrix (including `1024` steps) and capture output in `specs/004-rng-branch-parity/evidence.md`
+- [X] T022 Verify branch-parity contract/spec/plan/tasks alignment in `specs/004-rng-branch-parity/`
+- [X] T023 [P] Update any cross-feature references from `003` to `004` where branch parity is now authoritative in `parity-harness/README.md` and `specs/004-rng-branch-parity/quickstart.md`
 
 ---
 
