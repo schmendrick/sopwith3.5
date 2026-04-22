@@ -141,9 +141,9 @@ $rcExe = Join-Path $repoRoot "replay-compare.exe"
 if (Test-Path $rcExe) {
   $smokeDir = Join-Path $binDir "replay_compare_basename_smoke"
   New-Item -ItemType Directory -Force -Path $smokeDir | Out-Null
-  Set-Content -Path (Join-Path $smokeDir "demo.1.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
-  Set-Content -Path (Join-Path $smokeDir "demo.2.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
-  Set-Content -Path (Join-Path $smokeDir "demo.3.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  Set-Content -Path (Join-Path $smokeDir "demo.1.sidecar") -Value "SESSION|schema_version=3|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  Set-Content -Path (Join-Path $smokeDir "demo.2.sidecar") -Value "SESSION|schema_version=3|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  Set-Content -Path (Join-Path $smokeDir "demo.3.sidecar") -Value "SESSION|schema_version=3|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
   $pinfo = @{
     FilePath               = $rcExe
     ArgumentList           = @("demo")

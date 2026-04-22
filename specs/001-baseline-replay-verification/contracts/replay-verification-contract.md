@@ -32,10 +32,10 @@ Terminology normalization: this document uses "artifact" for emitted text sideca
 - `SESSION`
 - `FRAME_BEGIN`
 - `FRAME`
-- `GROUND`
+- `GROUND`: MUST include **`ground_count`** and **`ground_values`** (comma-separated terrain heights; `ground_values` has exactly `ground_count` entries). Compact encoding is **schema v3+** (replaces legacy per-column `zNNNN=` keys).
 - `PLAYER` (single-player baseline expects one per frame)
 - `ENEMY` (0..n)
-- `OBJECT` (0..n): each row MUST include **`object_kind`** (`Bomb`, `Bullet`, `Bird`, … per schema v2+) so consumers can validate fields per type.
+- `OBJECT` (0..n): each row MUST include **`object_kind`** (`Bomb`, `Bullet`, `Bird`, … per schema v2+) so consumers can validate fields per type (independent of `GROUND` schema v3 compaction).
 - `FRAME_END`
 
 ## Ordering Contract

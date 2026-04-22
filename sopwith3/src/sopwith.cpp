@@ -462,7 +462,7 @@ void inithistory()
     std::string statefile = replay_allocate_next_sidecar_path(stateTapeNorm);
     if (replay_open_writer(statefile)) {
       ReplaySessionInfo session;
-      session.schema_version = 2;
+      session.schema_version = 3;
       session.initial_seed = randv;
       session.latency = latency;
       session.playerindex = playerindex;

@@ -215,14 +215,20 @@ static std::string replay_payload_for_object(Object* obj)
 static void append_ground_line(int frame_index)
 {
   std::string line;
-  line.reserve(static_cast<std::size_t>(MAX_X) * 14u + 48u);
-  char head[48];
-  std::snprintf(head, sizeof head, "GROUND|frame_index=%d", frame_index);
+  line.reserve(static_cast<std::size_t>(MAX_X) * 13u + 96u);
+  char head[96];
+  std::snprintf(head, sizeof head,
+                "GROUND|frame_index=%d|ground_count=%d|ground_values=",
+                frame_index,
+                MAX_X);
   line.append(head);
+  char num[16];
   for (int i = 0; i < MAX_X; ++i) {
-    char chunk[32];
-    std::snprintf(chunk, sizeof chunk, "|z%04d=%d", i, static_cast<int>(ground[i]));
-    line.append(chunk);
+    if (i > 0) {
+      line.push_back(',');
+    }
+    std::snprintf(num, sizeof num, "%d", static_cast<int>(ground[i]));
+    line.append(num);
   }
   replay_writer_emit_line(line);
 }
