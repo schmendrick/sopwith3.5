@@ -1,5 +1,7 @@
 # Quickstart: Baseline Replay Verification
 
+> **Filesystem:** Canonical binary tapes are **`*.tape`** (replay tokens normalized from **`-h`/`-v`**). Runs emit **`basename.<n>.sidecar`** next to the tape. **`replay-compare`** compares two artifact paths or a single basename when **exactly two** matching sidecars exist in the working directory.
+
 ## 1) Build the game executable
 
 From repository root, use the maintained MSYS2 SDL build workflow:
@@ -38,13 +40,19 @@ every simulation frame while the session is playing.
 
 ## 4) Validate deterministic repeatability
 
-Record or play the same tape twice with identical CLI flags and seed behavior, then compare artifacts:
+Record or play the same tape twice with identical CLI flags and seed behavior (second run allocates a **higher** **`n`** in the same directory: e.g. **`my.1.sidecar`** then **`my.2.sidecar`**). Compare the two sidecars:
 
 ```powershell
-powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact run1.1.sidecar -RightArtifact run2.1.sidecar
+powershell -File sopwith3/scripts/replay/verify-baseline.ps1 -LeftArtifact my.1.sidecar -RightArtifact my.2.sidecar
 ```
 
-Expected: exit code 0 and `Replay compare success` when outputs are byte-identical.
+Or invoke basename discovery (compare **only** if **exactly two** `my.*.sidecar` files exist):
+
+```powershell
+.\replay-compare.exe my
+```
+
+Expected: exit code **0** only when two matches exist **and** they compare equal; **more than two** matches ⇒ tool lists files and exits non-zero (pick two paths and use two-arg mode).
 
 ## 5) Validate first-divergence behavior
 
@@ -62,7 +70,7 @@ Create or inject a known mismatch in one artifact and run `replay-compare.exe` d
 Open the same replay for human inspection:
 
 ```powershell
-.\sopwith3.exe -v<replay_file>
+.\sopwith3.exe --% -v<replay_token>
 ```
 
 Expected:

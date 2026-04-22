@@ -7,7 +7,7 @@
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
-**Phase naming**: Phases **1–7** are this file’s execution order (delivered on the branch, except open **8–9**).
+**Phase naming**: Phases **1–9** are delivered on the branch; **Phase 10** implements **FR-014–FR-016** (canonical **`*.tape`**, numbered **`*.sidecar`**, basename **`replay-compare`**).
 In `spec.md`, **Phase A / B / C** is product maturity: **tasks Phase 8 = spec Phase B**, **tasks Phase 9 = spec Phase C**.
 
 ## Format: `[ID] [P?] [Story] Description`
@@ -50,7 +50,7 @@ In `spec.md`, **Phase A / B / C** is product maturity: **tasks Phase 8 = spec Ph
 
 **Status**: **Phase A** (minimal `SESSION` sidecar + wiring) is complete. **Phase B** (full `SESSION` + per-frame blocks at logical cadence) is tracked in Phase 8 below.
 
-**Independent Test (current)**: Record twice with the same tape/seed; `.state.txt` `SESSION` lines match (Phase A).
+**Independent Test (current)**: Record twice with the same tape/seed; **`SESSION`** rows match across emitted sidecars (Phase A; filenames follow **Phase 10** once implemented).
 
 **Independent Test (Phase B onward)**: Byte-identical full artifacts including complete ordered frame blocks.
 
@@ -155,7 +155,7 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 
 ## Phase 8: Phase B — Full `SESSION` + per-frame Option A emission *(follow-up)*
 
-**Purpose**: Satisfy `spec.md` Phase B: complete session identity and logical-frame dumps into `<replay>.state.txt`, enabling SC-001/SC-003 for full artifacts.
+**Purpose**: Satisfy `spec.md` Phase B: complete session identity and logical-frame dumps into sidecar files (see **Phase 10** for **`basename.n.sidecar`** naming); enables SC-001/SC-003 for full artifacts.
 
 **Prerequisites**: Phase 3 scaffold (sidecar path, writer modules, tests harness) complete.
 
@@ -165,7 +165,7 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 - [X] T045 [P] [US1] Update `sopwith3/tests/replay/test_artifact_generation.cpp` and `sopwith3/tests/replay/test_artifact_repeatability.cpp` to assert full frame contract and byte-identical full sidecars (Phase B acceptance)
 - [X] T046 [P] [US1] Refresh `sopwith3/docs/replay-usage.md` and `specs/001-baseline-replay-verification/quickstart.md` for full-artifact workflow
 
-**Checkpoint**: Two runs with identical inputs produce byte-identical `.state.txt` including all required frame blocks.
+**Checkpoint**: Two runs with identical inputs produce byte-identical full sidecar artifacts including all required frame blocks.
 
 ---
 
@@ -175,10 +175,57 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 
 **Prerequisites**: Phase 8 checkpoint (real per-frame emission).
 
-- [X] T047 [US2] Add integration path: compare two `.state.txt` files produced by the game in `sopwith3/scripts/replay/verify-baseline.ps1` (or sibling script), failing on schema/row/field mismatch per contract
+- [X] T047 [US2] Add integration path: compare two sidecar text files produced by the game in `sopwith3/scripts/replay/verify-baseline.ps1` (or sibling script), failing on schema/row/field mismatch per contract
 - [X] T048 [P] [US2] Add regression fixture update process note in `specs/001-baseline-replay-verification/contracts/replay-verification-contract.md` once live emission stabilizes
 
 **Checkpoint**: Baseline verification script exercises real dumps end-to-end with documented expected outcomes.
+
+---
+
+## Phase 10: Filesystem contract — `*.tape`, `*.n.sidecar`, basename `replay-compare` *(FR-014–FR-016)*
+
+**Purpose**: Implement normative paths from `spec.md` (2026-04): canonical binary **`basename.tape`** after token normalization; verification sidecars **`tape-basename.<n>.sidecar`** with **`max(n)+1`** allocation; **`replay-compare <basename>`** discovers cwd matches (exactly **two** ⇒ compare; **0/1/>2** ⇒ list / error per FR-016).
+
+**Prerequisites**: Phases 1–9 complete (comparator + writer plumbing exists).
+
+**Independent test**: `-vshort` and `-vshort.rec` open the same **`short.tape`**; successive runs emit **`short.1.sidecar`**, **`short.2.sidecar`**; **`replay-compare.exe short`** succeeds only with exactly two matches and byte-equal content.
+
+### Implementation for User Story 1 (paths & sidecars)
+
+- [X] T049 [US1] Add replay path helpers (`normalize_replay_token_to_tape_path`, `next_sidecar_index`, `make_sidecar_path`) in `sopwith3/src/replay_paths.cpp` and `sopwith3/src/replay_paths.h` per **Tape path normalization** and **Sidecar naming** in `spec.md`
+- [X] T050 [US1] Open binary record/playback streams using normalized **`.tape`** paths only in `sopwith3/src/sopwith.cpp` (`inithistory` / file open sites for `recordfilename` / `playbackfilename`)
+- [X] T051 [US1] Allocate and open verification writer to **`basename.(max+1).sidecar`** (scan `basename.*.sidecar` in tape directory) replacing **`stateTape + ".state.txt"`** wiring in `sopwith3/src/sopwith.cpp`
+- [X] T052 [US1] Ensure `session.session_id` / `replay_tape_basename` track normalized tape stem consistently after path changes in `sopwith3/src/sopwith.cpp`
+
+### Implementation for User Story 2 (comparator CLI)
+
+- [X] T053 [US2] Extend `main` / usage in `sopwith3/src/replay_compare_tool.cpp`: **two args** unchanged; **one arg** basename ⇒ glob cwd **`basename.<n>.sidecar`**, numeric sort, print matched paths; **exactly two** ⇒ **`replay_compare_files`**; otherwise non-zero per FR-016
+- [X] T054 [P] [US2] Register new replay tests target sources in `sopwith3/src/Makefile.msys2` if adding new test translation units
+
+### Tests *(spec mandates measurable outcomes)*
+
+- [X] T055 [P] [US1] Add unit tests for tape normalization (`short`, `short.rec`, `short.tape`, relative paths) in `sopwith3/tests/replay/test_replay_paths.cpp`
+- [X] T056 [P] [US2] Add integration-style tests for basename **`replay-compare`** exit codes (0/1/2/>2 matches) in `sopwith3/scripts/replay/run-tests.ps1` (basename smoke: **>2** matches ⇒ exit 1)
+
+### Cross-cutting docs & tooling
+
+- [X] T057 [US3] Update `-h`/`-v` helptext strings that still mention **`.state.txt`** to **`basename.n.sidecar`** / **`.tape`** in `sopwith3/src/sopwith.cpp`
+- [X] T058 [P] Align `sopwith3/scripts/replay/verify-baseline.ps1` parameter docs and examples with **`*.sidecar`** filenames
+- [X] T059 [P] Add ignore patterns for **`*.sidecar`** (and canonical **`*.tape`** if needed) in `.gitignore` under `sopwith3/` or repo root per team preference
+- [X] T060 Run `specs/001-baseline-replay-verification/quickstart.md` validation sequence after Phase 10 code lands and refresh evidence notes in that file
+
+
+**Checkpoint**: FR-014–FR-016 satisfied in code; SC-006 / SC-007 testable via automated or scripted runs.
+
+### Parallel Example: Phase 10
+
+```bash
+# After T049–T053 land, tests and tooling can proceed in parallel:
+Task: "T055 [US1] test_replay_paths.cpp"
+Task: "T056 [US2] run-tests.ps1 basename smoke"
+Task: "T058 verify-baseline.ps1"
+Task: "T059 .gitignore patterns"
+```
 
 ---
 
@@ -194,6 +241,7 @@ closed under **Phase 8** (T043–T045), not this checkpoint.
 - **Polish (Phase 7)**: Depends on completion of selected user stories.
 - **Phase B (Phase 8)**: Depends on Phase 3 sidecar + writer plumbing; replaces “SESSION-only” acceptance with full artifact acceptance.
 - **Phase C (Phase 9)**: Depends on Phase 8; validates comparator + scripts against live emission.
+- **Phase 10 (Filesystem contract)**: Depends on Phases 8–9 (full emission + compare plumbing); touches **`sopwith.cpp`**, new **`replay_paths.*`**, **`replay_compare_tool.cpp`**, tests, scripts.
 
 ### User Story Dependencies
 
@@ -248,6 +296,7 @@ Task: "T022 [US2] Add truncation policy test in sopwith3/tests/replay/test_trunc
 4. Add US4 for visual playback validation.
 5. Finish with polish and evidence capture.
 6. **Phase 8–9**: full sidecar emission + compare real dumps (see checkpoints in those sections).
+7. **Phase 10**: canonical **`*.tape`**, numbered **`*.sidecar`**, basename **`replay-compare`** (FR-014–FR-016).
 
 ### Parallel Team Strategy
 
@@ -263,5 +312,5 @@ With multiple contributors after Phase 2:
 
 - All tasks follow required checklist format: `- [ ] T### [P?] [US#?] Description with file path`.
 - Story-labeled tasks appear only in user story phases.
-- Delivered MVP for this branch: **Phase A** (minimal `SESSION` + harness + visual validation). **Phase 8–9** carry Phase B/C from `spec.md`.
+- Delivered MVP for this branch: **Phase A** (minimal `SESSION` + harness + visual validation). **Phase 8–9** carry Phase B/C from `spec.md`. **Phase 10** implements filesystem naming (**FR-014–FR-016**).
 - Keep deterministic and structural contract enforcement strict per clarified requirements.

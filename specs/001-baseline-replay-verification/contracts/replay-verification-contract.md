@@ -4,8 +4,19 @@
 
 Define the contract for producing and comparing baseline replay verification artifacts.
 
-Terminology normalization: this document uses "artifact" for emitted text state output and
-"replay tape" for recorded input history.
+Terminology normalization: this document uses "artifact" for emitted text sidecar output and
+"replay tape" for recorded input history (canonical **`*.tape`** binary file).
+
+## File naming contract
+
+- **Binary tape**: Normalized **`basename.tape`** per **spec.md** (replay token from **`-h`/`-v`**).
+- **Verification sidecar**: **`basename.<n>.sidecar`** with positive integer **`n`**, allocation **`max(existing)+1`** in the tape directory.
+- **Legacy `*.state.txt`**: Deprecated; MUST NOT appear in new conformance checks once implementation lands.
+
+## CLI: replay-compare
+
+- **Two arguments**: **`replay-compare <left> <right>`** — compares two artifact paths using **Comparison Contract** below.
+- **One argument**: **`replay-compare <basename>`** — **basename** has no extension; discovers **`basename.<n>.sidecar`** in the **current working directory**; sorts by numeric **n** ascending; prints every matched path. **Exactly two** matches ⇒ run **Comparison Contract** once on that pair. **Zero or one** match ⇒ non-zero. **More than two** matches ⇒ print matches, **no** comparison run, non-zero (operator picks two paths and uses two-argument mode).
 
 ## Artifact Production Contract
 

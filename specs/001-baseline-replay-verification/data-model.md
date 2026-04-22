@@ -1,5 +1,28 @@
 # Data Model: Baseline Replay Verification
 
+## Physical storage (filesystem)
+
+These are naming/path rules for **binary replay tapes** and **verification sidecars** on disk. They do not change row payloads inside artifacts.
+
+### ReplayTapeFile
+
+- **Description**: Canonical binary history file opened for record (**`-h`**) or playback (**`-v`**).
+- **Path rule**: Directory prefix from replay token + normalized basename **`strip_repeated(.tape|.rec) + ".tape"`** (see **spec.md**).
+- **Examples**: Token `demo.rec` in cwd → **`demo.tape`**; token `subdir\x.run.tape` → **`subdir\x.run.tape`** after stripping.
+
+### SidecarFile
+
+- **Description**: UTF-8 text artifact containing structured replay verification rows (`SESSION`, frame blocks).
+- **Path rule**: **`{tape_dir}/{tape_stem}.{n}.sidecar`** where **`tape_stem`** is basename of **`ReplayTapeFile`** without the **`.tape`** suffix, and **`n`** is a positive decimal integer assigned at emission time.
+- **Allocation rule**: **`n = max(S) + 1`** where **S** is the set of integers parsed from existing **`{tape_stem}.*.sidecar`** names in **`tape_dir`**; if **S** empty, **`n = 1`**.
+
+### ComparatorInvocation *(tooling)*
+
+- **Two-path mode**: **`replay-compare <left.sidecar> <right.sidecar>`** — applies **Comparison Contract** once.
+- **Basename mode**: **`replay-compare <basename>`** — discovers **`basename.*.sidecar`** in cwd, sorts by numeric suffix. **Exactly two** files ⇒ **Comparison Contract** once. **Fewer than two** or **more than two** ⇒ no compare (listing / error paths per **spec.md**).
+
+---
+
 ## Entity: ReplaySession
 
 - **Description**: Metadata row that identifies one replay verification artifact.
@@ -93,7 +116,7 @@
   - `rhs_value`
   - `entity_id` (when applicable)
 - **Lifecycle**:
-  - Created once per comparison run at earliest mismatch
+  - Created once per **two-artifact** comparison run at earliest mismatch.
   - No additional mismatch records required in baseline mode
 
 ## State Transitions

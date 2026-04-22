@@ -90,6 +90,14 @@ $testCases = @(
       (Join-Path $srcDir "build\sdl\replay_verify.o")
     )
     Args = @()
+  },
+  @{
+    Name = "test_replay_paths"
+    Source = Join-Path $repoRoot "tests\replay\test_replay_paths.cpp"
+    ExtraObjects = @(
+      (Join-Path $srcDir "build\sdl\replay_paths.o")
+    )
+    Args = @()
   }
 )
 
@@ -129,7 +137,41 @@ foreach ($test in $testCases) {
   }
 }
 
+$rcExe = Join-Path $repoRoot "replay-compare.exe"
+if (Test-Path $rcExe) {
+  $smokeDir = Join-Path $binDir "replay_compare_basename_smoke"
+  New-Item -ItemType Directory -Force -Path $smokeDir | Out-Null
+  Set-Content -Path (Join-Path $smokeDir "demo.1.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  Set-Content -Path (Join-Path $smokeDir "demo.2.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  Set-Content -Path (Join-Path $smokeDir "demo.3.sidecar") -Value "SESSION|schema_version=2|session_id=x|initial_seed=0|latency=1|playerindex=0|gamemode=0|version=2|rules_version=2|engine_version=test|version=test`n"
+  $pinfo = @{
+    FilePath               = $rcExe
+    ArgumentList           = @("demo")
+    WorkingDirectory       = $smokeDir
+    Wait                   = $true
+    PassThru               = $true
+    NoNewWindow            = $true
+    RedirectStandardOutput = Join-Path $env:TEMP "replay-rc-out.txt"
+    RedirectStandardError  = Join-Path $env:TEMP "replay-rc-err.txt"
+  }
+  $proc = Start-Process @pinfo
+  $threeExit = $proc.ExitCode
+  Remove-Item -Recurse -Force $smokeDir
+  if ($threeExit -eq 1) {
+    Write-Host "[PASS] replay-compare basename (>2 sidecars exits non-zero)"
+    $passed++
+  }
+  else {
+    Write-Host "[FAIL] replay-compare basename (>2 sidecars expected exit 1, got $threeExit)"
+    $failed++
+  }
+}
+else {
+  Write-Host "[SKIP] replay-compare basename smoke (build with: mingw32-make -f Makefile.msys2 replay-compare)"
+}
+
 Write-Host ("Replay tests complete: {0} passed, {1} failed." -f $passed, $failed)
+
 if ($failed -gt 0) {
   exit 1
 }

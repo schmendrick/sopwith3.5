@@ -14,7 +14,7 @@ BINDIR := ..
 CXX := g++
 BASE_CXXFLAGS := -Wall -W -Wno-deprecated-declarations
 
-COMMON_SRC := sopwith.cpp bird.cpp bomb.cpp bullet.cpp coll.cpp computer.cpp flock.cpp frag.cpp \
+COMMON_SRC := sopwith.cpp replay_paths.cpp bird.cpp bomb.cpp bullet.cpp coll.cpp computer.cpp flock.cpp frag.cpp \
 	graphics.cpp ground.cpp init.cpp joystick.cpp keyboard.cpp main.cpp object.cpp ox.cpp \
 	plane.cpp player.cpp smoke.cpp sound.cpp sprites.cpp target.cpp timer.cpp message.cpp \
 	soundsys.cpp tune.cpp network.cpp remote.cpp replay_contract.cpp replay_compare_result.cpp \
@@ -36,7 +36,7 @@ SRC := $(COMMON_SRC) $(BACKEND_SRC)
 OBJ := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRC))
 
 REPLAY_COMPARE_BIN := ../replay-compare.exe
-REPLAY_COMPARE_OBJS := $(OBJDIR)/replay_compare_tool.o $(OBJDIR)/replay_compare.o \
+REPLAY_COMPARE_OBJS := $(OBJDIR)/replay_compare_tool.o $(OBJDIR)/replay_paths.o $(OBJDIR)/replay_compare.o \
 	$(OBJDIR)/replay_compare_result.o $(OBJDIR)/replay_compare_diff.o \
 	$(OBJDIR)/replay_compare_cli.o $(OBJDIR)/replay_validate.o $(OBJDIR)/replay_contract.o
 
@@ -61,7 +61,11 @@ clean:
 replay-tests: all
 	powershell -ExecutionPolicy Bypass -File ../scripts/replay/run-tests.ps1
 
-$(OBJDIR)/replay_compare_tool.o: replay_compare_tool.cpp replay_compare.h replay_compare_result.h
+$(OBJDIR)/replay_compare_tool.o: replay_compare_tool.cpp replay_compare.h replay_compare_result.h replay_paths.h
+	$(MKDIR) $(dir $@)
+	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
+
+$(OBJDIR)/replay_paths.o: replay_paths.cpp replay_paths.h
 	$(MKDIR) $(dir $@)
 	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
 

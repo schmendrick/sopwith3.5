@@ -286,21 +286,20 @@ These commands are normative targets for Phase 3 documentation and may be adjust
 ## Example (illustrative)
 
 ```text
-row_kind=SESSION|schema_version=1|session_id=baseline_001|initial_seed=173|gamemode=SINGLE|version=2|latency=1|playerindex=0
+SESSION|schema_version=1|session_id=baseline_001|initial_seed=173|gamemode=SINGLE|version=2|latency=1|playerindex=0
 ....
-row_kind=FRAME_BEGIN|frame_index=42
-row_kind=FRAME|frame_index=42|randv=8123|latencycount=0|framecounter=42|object_count=7|input_source=live|input_mask_player_raw=2048|input_mask_player_effective=2048
-row_kind=GROUND|frame_index=42|ground_count=3000|ground_values=41,41,41,...,37
-row_kind=PLAYER|entity_id=1|state=FLYING|endstatus=NOTFINISHED|x_int=1270|x_frac=0|y_int=145|y_frac=0|xv_int=2|xv_frac=0|yv_int=0|yv_frac=0|angle=6|speed=3|accel=2|life=2700|lives=5|ammo=191|bombs=4|score=120|flags=athome:0,inverted:0,goinghome:0
-row_kind=ENEMY|entity_id=14|state=FLYING|endstatus=NOTFINISHED|x_int=1930|x_frac=0|y_int=132|y_frac=0|xv_int=-2|xv_frac=0|yv_int=0|yv_frac=0|angle=10|speed=3|accel=1|life=2550|flags=athome:0,inverted:0,goinghome:0
-row_kind=OBJECT|entity_id=22|object_kind=Bomb|owner_entity_id=1|state=|x_int=1288|x_frac=0|y_int=130|y_frac=0|xv_int=1|xv_frac=0|yv_int=-2|yv_frac=0|life=
-row_kind=OBJECT|entity_id=24|object_kind=Bird|owner_entity_id=|state=|x_int=310|x_frac=0|y_int=160|y_frac=0|xv_int=1|xv_frac=0|yv_int=0|yv_frac=0|life=29
-row_kind=FRAME_END|frame_index=42
-row_kind=FRAME_BEGIN|frame_index=43
-row_kind=FRAME|...
-row_kind=GROUND|...
+FRAME_BEGIN|frame_index=42
+FRAME|frame_index=42|randv=8123|latencycount=0|framecounter=42|object_count=7|input_source=live|input_mask_player_raw=2048|input_mask_player_effective=2048
+GROUND|frame_index=42|ground_count=3000|ground_values=41,41,41,...,37
+PLAYER|entity_id=1|state=FLYING|endstatus=NOTFINISHED|x_int=1270|x_frac=0|y_int=145|y_frac=0|xv_int=2|xv_frac=0|yv_int=0|yv_frac=0|angle=6|speed=3|accel=2|life=2700|lives=5|ammo=191|bombs=4|score=120|flags=athome:0,inverted:0,goinghome:0
+ENEMY|entity_id=14|state=FLYING|endstatus=NOTFINISHED|x_int=1930|x_frac=0|y_int=132|y_frac=0|xv_int=-2|xv_frac=0|yv_int=0|yv_frac=0|angle=10|speed=3|accel=1|life=2550|flags=athome:0,inverted:0,goinghome:0
+OBJECT|entity_id=24|object_kind=Bird|owner_entity_id=|state=|x_int=310|x_frac=0|y_int=160|y_frac=0|xv_int=1|xv_frac=0|yv_int=0|yv_frac=0|life=29
+FRAME_END|frame_index=42
+FRAME_BEGIN|frame_index=43
+FRAME|...
+GROUND|...
 ...
-row_kind=FRAME_END|frame_index=43
+FRAME_END|frame_index=43
 ```
 
 ## Status

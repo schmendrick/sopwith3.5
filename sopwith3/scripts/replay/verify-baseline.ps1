@@ -11,7 +11,7 @@ $repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
 $compareExe = Join-Path $repoRoot "replay-compare.exe"
 
 if (-not $LeftArtifact -or -not $RightArtifact) {
-  Write-Host "Usage: verify-baseline.ps1 -LeftArtifact <file> -RightArtifact <file>"
+  Write-Host "Usage: verify-baseline.ps1 -LeftArtifact <basename.n.sidecar> -RightArtifact <basename.m.sidecar>"
   exit 1
 }
 
