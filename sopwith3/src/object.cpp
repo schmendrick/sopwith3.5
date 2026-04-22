@@ -49,6 +49,7 @@ Object::Object() :
   firing(false),
   hitcounter(0),
   life(0),
+  replay_entity_id(-1),
   width(0),
   height(0),
   colour(0),

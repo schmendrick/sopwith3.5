@@ -35,13 +35,14 @@ Bomb::Bomb(Plane* plane)
 {
   xv=plane->xv.integer;
   yv=plane->yv.integer;
-  int angle;
+  int drop_angle;
   if (plane->inverted)
-    angle=(plane->angle+ANGLES/4)&(ANGLES-1);
+    drop_angle=(plane->angle+ANGLES/4)&(ANGLES-1);
   else
-    angle=(plane->angle-ANGLES/4)&(ANGLES-1);
-  x=plane->x.integer+s_cos(10,angle).integer+4;
-  y=plane->y.integer+s_sin(10,angle).integer-4;
+    drop_angle=(plane->angle-ANGLES/4)&(ANGLES-1);
+  angle=drop_angle;
+  x=plane->x.integer+s_cos(10,drop_angle).integer+4;
+  y=plane->y.integer+s_sin(10,drop_angle).integer-4;
   life=BOMBLIFE;
   colour=plane->colour;
   width=BOMB_WIDTH;
@@ -62,6 +63,7 @@ bool Bomb::update()
   }
   /* http://gcc.gnu.org/cgi-bin/gnatsweb.pl?cmd=view%20audit-trail&database=gcc&pr=7209 */
   int dir=direction();
+  angle=dir;
   sprite=spritedata(BOMB,colour==colour_cyan ? 0 : 1,dir);
   coll=bombspritescoll[dir];
   return true;

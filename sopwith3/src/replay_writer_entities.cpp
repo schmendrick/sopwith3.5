@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -268,9 +269,13 @@ void replay_write_logical_frame_snapshot(int frame_index)
   append_ground_line(frame_index);
 
   std::vector<ReplayEntityRow> player_rows;
+  static int replay_next_entity_id = 0;
   for (std::size_t i = 0; i < players.size(); ++i) {
+    if (players[i]->replay_entity_id < 0) {
+      players[i]->replay_entity_id = replay_next_entity_id++;
+    }
     ReplayEntityRow row;
-    row.entity_id = static_cast<int>(i);
+    row.entity_id = players[i]->replay_entity_id;
     row.payload = replay_payload_for_object(players[i]);
     player_rows.push_back(row);
   }
@@ -281,8 +286,11 @@ void replay_write_logical_frame_snapshot(int frame_index)
 
   std::vector<ReplayEntityRow> enemy_rows;
   for (std::size_t i = 0; i < enemies.size(); ++i) {
+    if (enemies[i]->replay_entity_id < 0) {
+      enemies[i]->replay_entity_id = replay_next_entity_id++;
+    }
     ReplayEntityRow row;
-    row.entity_id = static_cast<int>(i);
+    row.entity_id = enemies[i]->replay_entity_id;
     row.payload = replay_payload_for_object(enemies[i]);
     enemy_rows.push_back(row);
   }
@@ -293,8 +301,11 @@ void replay_write_logical_frame_snapshot(int frame_index)
 
   std::vector<ReplayEntityRow> object_rows;
   for (std::size_t i = 0; i < objects.size(); ++i) {
+    if (objects[i]->replay_entity_id < 0) {
+      objects[i]->replay_entity_id = replay_next_entity_id++;
+    }
     ReplayEntityRow row;
-    row.entity_id = static_cast<int>(i);
+    row.entity_id = objects[i]->replay_entity_id;
     row.payload = replay_payload_for_sidecar_object(objects[i]);
     object_rows.push_back(row);
   }

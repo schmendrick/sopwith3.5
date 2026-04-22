@@ -49,6 +49,7 @@ public:
   bool firing;
   int hitcounter;
   int life;
+  int replay_entity_id;
   int width,height;
   int colour;
   void* sprite;
