@@ -109,6 +109,7 @@ void Object::createexplosion(int speed,int step,bool pilotflag,bool noisy)
     S_fix y(yv.integer+Object::y.integer+(height>>1));
     int type;
     if (version==2) {
+      /* Canonical deterministic explosion randomization source for replay parity. */
       int randv1=y.integer*x.integer*randv*7491;
       type=static_cast<int>(
             (
@@ -121,6 +122,7 @@ void Object::createexplosion(int speed,int step,bool pilotflag,bool noisy)
            );
     }
     else {
+      /* Legacy path still derives from randv so all gameplay randomness shares one sequence. */
       randv=y.integer*x.integer*randv+7491;
       if (randv==0)
         randv=static_cast<short>(74917777L);

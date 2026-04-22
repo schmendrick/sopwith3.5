@@ -21,22 +21,22 @@ Maintainer confirmed pre-change baseline capture for all four fixtures; baseline
 
 ## Phase 2: RNG Hardening (Active)
 
-- [ ] T005 Implement deterministic seed policy update in `sopwith3/src/sopwith.cpp` for replay validation paths.
-- [ ] T006 [P] Audit and normalize canonical `randv` consumption expectations in `sopwith3/src/object.cpp`, `sopwith3/src/plane.cpp`, `sopwith3/src/bomb.cpp`, and `sopwith3/src/target.cpp`.
-- [ ] T007 Remove or isolate direct libc `rand()` from simulation-critical behavior in `sopwith3/src/soundsys.cpp`.
+- [X] T005 Implement deterministic seed policy update in `sopwith3/src/sopwith.cpp` for replay validation paths.
+- [X] T006 [P] Audit and normalize canonical `randv` consumption expectations in `sopwith3/src/object.cpp`, `sopwith3/src/plane.cpp`, `sopwith3/src/bomb.cpp`, and `sopwith3/src/target.cpp`.
+- [X] T007 Remove or isolate direct libc `rand()` from simulation-critical behavior in `sopwith3/src/soundsys.cpp`.
 
 ## Phase 3: Fixed-Step Validation Path
 
-- [ ] T008 Add timer-independent fixed-step replay validation path in `sopwith3/src/sopwith.cpp`.
-- [ ] T009 [P] Extend replay validation test/script workflow for fixed-step runs in `sopwith3/scripts/replay/`.
+- [X] T008 Add timer-independent fixed-step replay validation path in `sopwith3/src/sopwith.cpp`.
+- [X] T009 [P] Extend replay validation test/script workflow for fixed-step runs in `sopwith3/scripts/replay/`.
 
 ## Phase 4: Post-change Verification and Evidence
 
-- [ ] T010 Re-run fixture repeatability comparisons for `full.tape` and record delta.
-- [ ] T011 Re-run fixture repeatability comparisons for `bomb.tape` and record delta.
-- [ ] T012 Re-run fixture repeatability comparisons for `bird.tape` and record delta.
-- [ ] T013 Re-run fixture repeatability comparisons for `computer.tape` and record delta.
-- [ ] T014 Publish fixture-level evidence summary (`pass_to_pass`, `fail_to_pass`, `pass_to_fail`, `fail_to_fail`) in this feature directory.
+- [X] T010 Re-run fixture repeatability comparisons for `full.tape` and record delta.
+- [X] T011 Re-run fixture repeatability comparisons for `bomb.tape` and record delta.
+- [X] T012 Re-run fixture repeatability comparisons for `bird.tape` and record delta.
+- [X] T013 Re-run fixture repeatability comparisons for `computer.tape` and record delta.
+- [X] T014 Publish fixture-level evidence summary (`pass_to_pass`, `fail_to_pass`, `pass_to_fail`, `fail_to_fail`) in this feature directory.
 
 ## Execution Order
 
