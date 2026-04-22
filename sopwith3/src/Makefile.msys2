@@ -40,7 +40,10 @@ REPLAY_COMPARE_OBJS := $(OBJDIR)/replay_compare_tool.o $(OBJDIR)/replay_paths.o 
 	$(OBJDIR)/replay_compare_result.o $(OBJDIR)/replay_compare_diff.o \
 	$(OBJDIR)/replay_compare_cli.o $(OBJDIR)/replay_validate.o $(OBJDIR)/replay_contract.o
 
-.PHONY: all clean copy-dlls replay-tests replay-compare
+RNG_PARITY_BIN := ../rng-parity-cpp.exe
+RNG_PARITY_OBJS := $(OBJDIR)/rng_parity_tool.o $(OBJDIR)/replay_paths.o
+
+.PHONY: all clean copy-dlls replay-tests replay-compare rng-parity-cpp
 
 all: $(BIN) $(POST_BUILD)
 
@@ -48,6 +51,11 @@ $(REPLAY_COMPARE_BIN): $(REPLAY_COMPARE_OBJS)
 	$(CXX) -o $@ $(REPLAY_COMPARE_OBJS) -static-libgcc -static-libstdc++
 
 replay-compare: $(REPLAY_COMPARE_BIN)
+
+$(RNG_PARITY_BIN): $(RNG_PARITY_OBJS)
+	$(CXX) -o $@ $(RNG_PARITY_OBJS) -static-libgcc -static-libstdc++
+
+rng-parity-cpp: $(RNG_PARITY_BIN)
 
 $(BIN): $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(BACKEND_LIBS) -static-libgcc -static-libstdc++
@@ -62,6 +70,10 @@ replay-tests: all
 	powershell -ExecutionPolicy Bypass -File ../scripts/replay/run-tests.ps1
 
 $(OBJDIR)/replay_compare_tool.o: replay_compare_tool.cpp replay_compare.h replay_compare_result.h replay_paths.h
+	$(MKDIR) $(dir $@)
+	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
+
+$(OBJDIR)/rng_parity_tool.o: rng_parity_tool.cpp replay_paths.h
 	$(MKDIR) $(dir $@)
 	$(CXX) $(BASE_CXXFLAGS) -c $< -o $@
 

@@ -39,3 +39,47 @@ Branch: `003-phase2b-determinism-prereqs`
 - Improvements (`fail_to_pass`): `0`
 - Stable passes (`pass_to_pass`): `4`
 - Stable fails (`fail_to_fail`): `0`
+
+## RNG core parity harness results (C++ vs C#)
+
+### Harness artifacts
+
+- C++ mini-exe: `sopwith3/rng-parity-cpp.exe`
+- C# mini-exe project: `parity-harness/csharp/RngParityHarness.csproj`
+- parity runner: `parity-harness/run-rng-parity.ps1`
+- harness usage/repro doc: `parity-harness/README.md`
+- frozen contract: `specs/003-phase2b-determinism-prereqs/rng-core-contract.md`
+
+### Executed command
+
+From repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File parity-harness/run-rng-parity.ps1
+```
+
+### Cases
+
+- Tokens: `full`, `bomb`, `bird`, `computer`, `short.rec`, `short.tape`
+- Step counts: `16`, `128`
+- Total comparisons: `12`
+
+### Outcome
+
+- All `12/12` parity cases passed.
+- C++ and C# output was byte-identical for every token/step pair.
+
+### Environment notes / reproducibility
+
+- C# harness target framework: `net10.0`.
+- SDK requirement: .NET 10 (`10.0.x`) in `dotnet --list-sdks`.
+- Admin install reference used for setup:
+
+```powershell
+choco install dotnet-sdk --version=10.0.203 -y
+```
+
+### Rationale
+
+- The parity harness provides an objective pre-port gate for deterministic behavior.
+- Isolating RNG-core parity from full game logic reduces debugging scope and de-risks C# implementation.

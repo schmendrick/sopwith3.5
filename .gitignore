@@ -43,3 +43,5 @@ error
 /sopwith3/*.tape
 /sopwith3/*.sidecar
 /sopwith3/*.rec.state.txt
+
+/parity-harness/csharp/*
